@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 7 · Window functions - learn sql with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-sql-with-phoebe</a> / Builder session 7 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe · Builder track · Session 7 of 10</div>
+    <h1>Window <span class="accent">functions</span></h1>
+    <p class="sub">This is the session that separates people who "know SQL" from people who reach for SQL first. A window function computes across a set of rows - a rank, a running total, last month's value - while keeping every row on screen. No collapsing, no self-joins, no subquery gymnastics. Same Daybreak database, one keyword that unlocks analytics you used to export to a spreadsheet.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Builder track</span>
+      <span class="chip audience">Practitioners: analysts · DE · DS · PMs</span>
+      <span class="chip audience">Runs in your browser · SQLite</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-24 · Rank, offset, running</span>
+      <span class="a3" style="flex:4">24-42 · Build-along</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where this session fits</h2>
+    </div>
+    <p class="lede">In b3 you learned <code>GROUP BY</code> - it collapses many rows into one summary per group. Powerful, but it throws the detail away. A <strong>window function</strong> does the opposite: it computes a group-level number and <strong>keeps every row</strong>, adding the result as a new column. That is how you rank products by price without losing the products, or show a running revenue total next to each month. The keyword is <code>OVER</code>, and once it clicks, you will use it constantly.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">▶ Live SQL - editable &amp; runnable</span>
+      <span class="pill inkpill">Official sources covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      The <code>OVER (...)</code> mental model, the ranking family (<code>ROW_NUMBER</code>, <code>RANK</code>, <code>DENSE_RANK</code>) with <code>PARTITION BY</code>, and the offset/running-total pair (<code>LAG</code>/<code>LEAD</code> and <code>SUM() OVER</code>) - the exact tools that make month-over-month and top-N-per-group trivial.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: A WINDOW KEEPS ROWS ============ -->
+  <section class="section" id="window-vs-group">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers Mode Advanced "SQL Window Functions", SQLZoo "Window function"</span>
+      <h2>A window aggregates without collapsing rows <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">Here is the whole idea in one sentence: <code>GROUP BY</code> gives you one row per group; a window function gives you every row plus a group-level column. The <code>OVER (...)</code> clause defines the "window" - the set of rows the function looks at - while your row stays right where it is. That is why you can show each product's price <em>and</em> its rank in the same result.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GROUP BY collapses rows into summaries while a window function keeps every row and adds a computed column">
+        <style>
+          .winT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .winL { font: 700 13px Inter, sans-serif; fill: #10222E; }
+          .winX { font: 400 12px Inter, sans-serif; fill: #526472; }
+          .winC { font: 600 12px "SF Mono", Menlo, monospace; fill: #10222E; }
+          .winN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+        </style>
+        <!-- left: GROUP BY collapses -->
+        <rect x="30" y="24" width="180" height="22" rx="5" fill="#526472"/>
+        <text class="winT" x="44" y="40">GROUP BY collapses</text>
+        <rect x="30" y="56" width="180" height="18" fill="#E9F4FB" stroke="#AEC4D2"/>
+        <rect x="30" y="76" width="180" height="18" fill="#E9F4FB" stroke="#AEC4D2"/>
+        <rect x="30" y="96" width="180" height="18" fill="#E9F4FB" stroke="#AEC4D2"/>
+        <text class="winC" x="40" y="70">3 rows</text>
+        <text class="winC" x="40" y="90">become</text>
+        <text class="winC" x="40" y="110">1 summary</text>
+        <rect x="30" y="130" width="180" height="26" rx="5" fill="#3DA0E3"/>
+        <text class="winL" x="44" y="148" fill="#FFFFFF">one row: SUM = 630</text>
+        <text class="winX" x="30" y="188">Detail is gone. You get the</text>
+        <text class="winX" x="30" y="206">total, not the rows behind it.</text>
+        <!-- right: window keeps rows -->
+        <rect x="470" y="24" width="360" height="22" rx="5" fill="#003B57"/>
+        <text class="winT" x="484" y="40">Window keeps every row + adds a column</text>
+        <rect x="470" y="56" width="250" height="18" fill="#E9F4FB" stroke="#0F80CC"/>
+        <rect x="726" y="56" width="104" height="18" fill="#9FCFEE" stroke="#0F80CC"/>
+        <rect x="470" y="76" width="250" height="18" fill="#E9F4FB" stroke="#0F80CC"/>
+        <rect x="726" y="76" width="104" height="18" fill="#9FCFEE" stroke="#0F80CC"/>
+        <rect x="470" y="96" width="250" height="18" fill="#E9F4FB" stroke="#0F80CC"/>
+        <rect x="726" y="96" width="104" height="18" fill="#9FCFEE" stroke="#0F80CC"/>
+        <text class="winC" x="480" y="70">product row 1</text>
+        <text class="winC" x="736" y="70">rank 1</text>
+        <text class="winC" x="480" y="90">product row 2</text>
+        <text class="winC" x="736" y="90">rank 2</text>
+        <text class="winC" x="480" y="110">product row 3</text>
+        <text class="winC" x="736" y="110">rank 3</text>
+        <rect x="726" y="130" width="104" height="24" rx="5" fill="#F5A623"/>
+        <text class="winL" x="738" y="147">OVER (...)</text>
+        <text class="winX" x="470" y="188">Every row survives. The new column is</text>
+        <text class="winX" x="470" y="206">computed over the window you define.</text>
+        <rect x="30" y="272" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="winN" x="54" y="284">Rule of thumb: need one row per group, use GROUP BY. Need the detail plus a group number, use OVER.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - GROUP BY collapses; a window function keeps every row and adds a computed column</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Rank every product by price - rows intact<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>RANK() OVER (ORDER BY price DESC)</code> assigns 1 to the most expensive product, 2 to the next, and so on - while every product row stays on screen. The <code>OVER (ORDER BY ...)</code> is the window: "look at all rows, ordered by price, and rank me within that". Run it and read the new <code>price_rank</code> column.</p>
+        <div class="sqlbox" data-caption="OVER (ORDER BY price DESC) is the window. Try ORDER BY price (ascending) instead.">
+          <pre class="sql-src">SELECT name, price,
+       RANK() OVER (ORDER BY price DESC) AS price_rank
+FROM products;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>The two parts of every window function</strong>
+          A function (<code>RANK</code>, <code>SUM</code>, <code>LAG</code>...) and an <code>OVER (...)</code> that defines which rows it sees. Inside <code>OVER</code> you can put <code>ORDER BY</code> (sequence), <code>PARTITION BY</code> (groups), or both. Master those two words and the whole family opens up.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The table-wide total on every row<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>SUM(price) OVER ()</code> with an empty window sums across the whole table and puts that total on every row - handy for "this price as a share of the catalog total" without a subquery.</p>
+        <div class="sqlbox" data-caption="Empty OVER () = the whole table. Every row shows the same catalog total.">
+          <pre class="sql-src">SELECT name, price,
+       SUM(price) OVER () AS catalog_total
+FROM products;</pre>
+        </div>
+        <p>This is the window twin of the scalar subquery you saw in b6 - same result, and it reads more naturally once the window habit sets in.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: RANKING FAMILY ============ -->
+  <section class="section" id="ranking-family">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers Mode Advanced "SQL Window Functions", SQLZoo "Window function"</span>
+      <h2>The ranking family + PARTITION BY <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">Three ranking functions, one small but important difference. <code>ROW_NUMBER</code> gives a unique number to every row (1,2,3,4). <code>RANK</code> gives ties the same number then skips (1,1,3). <code>DENSE_RANK</code> gives ties the same number without skipping (1,1,2). And <code>PARTITION BY</code> restarts the ranking within each group - "rank customers within each plan", "top product per category".</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Rank customers by total spend<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A CTE from b6 does the heavy lifting - <code>spend</code> sums each customer's completed revenue. Then <code>RANK() OVER (ORDER BY s.total DESC)</code> ranks them. Run it: Noah Park (232) is rank 1, Ava Chen (222) rank 2, Ethan Ruiz (177) rank 3. The window did the ranking; the rows stayed intact.</p>
+        <div class="sqlbox" data-caption="Try DENSE_RANK or ROW_NUMBER in place of RANK and compare the numbers.">
+          <pre class="sql-src">WITH spend AS (
+  SELECT o.customer_id, SUM(oi.quantity*oi.unit_price) AS total
+  FROM orders o
+  JOIN order_items oi ON o.order_id=oi.order_id
+  WHERE o.status='completed'
+  GROUP BY o.customer_id
+)
+SELECT c.name, ROUND(s.total,2) AS total,
+       RANK() OVER (ORDER BY s.total DESC) AS rnk
+FROM spend s
+JOIN customers c ON c.customer_id=s.customer_id
+LIMIT 5;</pre>
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>Top-N-per-group, the interview classic.</strong> "Give me the top 2 customers in each plan" is a question that ties people in knots with subqueries - but it is one <code>RANK() OVER (PARTITION BY plan ORDER BY total DESC)</code> plus a <code>WHERE rnk &lt;= 2</code> wrapper. Once you have this pattern, a whole category of "hardest" SQL questions becomes routine.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>ROW_NUMBER vs RANK vs DENSE_RANK<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Rank products by price and watch how the three functions handle ties differently. If two products share a price, <code>ROW_NUMBER</code> still gives them distinct numbers, <code>RANK</code> ties them and skips the next, <code>DENSE_RANK</code> ties them and does not skip.</p>
+        <div class="sqlbox" data-caption="Compare the three columns side by side - the difference shows up wherever prices tie.">
+          <pre class="sql-src">SELECT name, price,
+       ROW_NUMBER() OVER (ORDER BY price DESC) AS row_num,
+       RANK()       OVER (ORDER BY price DESC) AS rnk,
+       DENSE_RANK() OVER (ORDER BY price DESC) AS dense
+FROM products;</pre>
+        </div>
+        <p>Pick by intent: <code>ROW_NUMBER</code> when you need a unique sequence, <code>RANK</code> when gaps after ties are meaningful (like leaderboard places), <code>DENSE_RANK</code> when you want consecutive tiers.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: OFFSETS AND RUNNING TOTALS ============ -->
+  <section class="section" id="offsets-running">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers Mode Advanced "SQL Window Functions", Kaggle "Analytic Functions"</span>
+      <h2>Offsets and running totals: LAG/LEAD and SUM() OVER <span class="tag concept">8 min live</span></h2>
+    </div>
+    <p class="lede">The last two tools are the ones analysts reach for weekly. <code>SUM(x) OVER (ORDER BY ...)</code> builds a <strong>running total</strong> - each row adds itself to everything before it. <code>LAG(x)</code> reaches back to the <strong>previous row's</strong> value (and <code>LEAD</code> forward), which is exactly what month-over-month change needs: this month minus last month.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Running monthly revenue<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>First a CTE builds monthly revenue with <code>substr(order_date,1,7)</code> as the month key (<code>YYYY-MM</code>). Then <code>SUM(rev) OVER (ORDER BY mo)</code> accumulates it - January stands alone, February adds January, and so on. Run it and watch the <code>running</code> column climb.</p>
+        <div class="sqlbox" data-caption="running = this month plus all earlier months. Compare running to rev row by row.">
+          <pre class="sql-src">WITH m AS (
+  SELECT substr(o.order_date,1,7) AS mo,
+         SUM(oi.quantity*oi.unit_price) AS rev
+  FROM orders o
+  JOIN order_items oi ON o.order_id=oi.order_id
+  WHERE o.status='completed'
+  GROUP BY mo
+)
+SELECT mo, rev,
+       SUM(rev) OVER (ORDER BY mo) AS running
+FROM m
+ORDER BY mo;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>ORDER BY inside OVER is the sequence</strong>
+          For a running total, the <code>ORDER BY</code> inside <code>OVER</code> defines the order rows accumulate in. Change it and you change what "running" means. It is separate from the query's outer <code>ORDER BY</code>, which only sorts the final display.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Month-over-month change with LAG<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>LAG(rev) OVER (ORDER BY mo)</code> pulls the previous month's revenue onto the current row, so <code>rev - LAG(rev)</code> is the month-over-month change. Run it: January's change is blank (no prior month), and you will spot a clear dip when March drops from February.</p>
+        <div class="sqlbox" data-caption="change = this month minus last month. Watch the March row - the dip sets up b9.">
+          <pre class="sql-src">WITH m AS (
+  SELECT substr(o.order_date,1,7) AS mo,
+         SUM(oi.quantity*oi.unit_price) AS rev
+  FROM orders o
+  JOIN order_items oi ON o.order_id=oi.order_id
+  WHERE o.status='completed'
+  GROUP BY mo
+)
+SELECT mo, rev,
+       rev - LAG(rev) OVER (ORDER BY mo) AS change
+FROM m
+ORDER BY mo;</pre>
+        </div>
+        <p>January's <code>change</code> is <code>NULL</code> because there is no earlier row for <code>LAG</code> to reach - the expected, correct behavior at the edge of a window.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO: BUILD-ALONG ============ -->
+  <section class="section" id="demo">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Read the running total and spot the March dip <span class="tag demo">★ 16 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">Let us put the two Part 3 queries side by side and actually read them like an analyst. The verified monthly completed revenue is Jan 209, Feb 271, Mar 150, Apr 239, May 183, Jun 168. Your job: run both, then narrate what the <code>change</code> column is telling you - because that March dip is the mystery session b9 investigates end to end.</p>
+
+    <div class="steps">
+      <div class="step"><p>Run the running-total query. Confirm the <code>running</code> column only ever climbs - a running total never goes down when revenue is positive.</p></div>
+      <div class="step"><p>Run the LAG query. Line up the <code>change</code> column against the monthly numbers in your head: Feb is +62 over Jan, then March swings hard negative.</p></div>
+      <div class="step"><p>Find the biggest drop: February 271 to March 150 is a change of -121 - the largest single-month fall in the whole series.</p></div>
+      <div class="step"><p>Ask the b9 question: is that a real business event (a bad month) or a data artifact (refunds, a channel outage)? Window functions found the dip; b9 explains it.</p></div>
+    </div>
+
+    <div class="sqlbox" data-caption="Both windows in one query: running total and MoM change together. Read the March row.">
+      <pre class="sql-src">WITH m AS (
+  SELECT substr(o.order_date,1,7) AS mo,
+         SUM(oi.quantity*oi.unit_price) AS rev
+  FROM orders o
+  JOIN order_items oi ON o.order_id=oi.order_id
+  WHERE o.status='completed'
+  GROUP BY mo
+)
+SELECT mo, rev,
+       SUM(rev) OVER (ORDER BY mo) AS running,
+       rev - LAG(rev) OVER (ORDER BY mo) AS change
+FROM m
+ORDER BY mo;</pre>
+    </div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>This is how anomalies get found.</strong> Nobody scrolls a revenue table looking for trouble. They compute a month-over-month <code>change</code> column and let the big negative number jump out. Window functions turn "stare at the data" into "the data tells you where to look" - which is exactly the analyst instinct b9 builds on.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 20-30 min total</span></h2>
+    </div>
+    <ul>
+      <li>Rank products within each category: add <code>PARTITION BY category</code> to <code>RANK() OVER (...)</code> and read how the rank restarts per category.</li>
+      <li>Add a <code>LEAD(rev)</code> column to the monthly query to show <em>next</em> month's revenue next to the current one.</li>
+      <li>Build a running count of orders over time: <code>COUNT(*) OVER (ORDER BY order_date)</code> against the orders table.</li>
+      <li>Wrap the spend-rank query in an outer query and keep only <code>rnk &lt;= 3</code> - your first top-N result powered by a window.</li>
+      <li>Bring the March dip to session b9. You found it with <code>LAG</code>; next you will use joins and filters to explain <em>why</em> it happened.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This session teaches the window-function core of the major free SQL curricula, run on live Daybreak data instead of screenshots. Graded problem sets and certificates stay on the official sites (linked below). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Mode SQL Tutorial - Advanced: SQL Window Functions</span><span class="note">Parts 1-3 · OVER, ranking family, running totals and LAG, run live</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">SQLZoo - Window function</span><span class="note">Parts 1-2 · OVER and the ranking family with PARTITION BY</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Kaggle - Advanced SQL: Analytic Functions</span><span class="note">Part 3 · running totals and LAG/LEAD offsets; Kaggle's exercises stay on Kaggle</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">1 · How does a window function differ from GROUP BY?</p>
+      <button class="qopt" type="button">A · A window keeps every row and adds a computed column; GROUP BY collapses rows into one per group</button>
+      <button class="qopt" type="button">B · They are identical, just different syntax</button>
+      <button class="qopt" type="button">C · A window can only count, never sum</button>
+      <p class="qwhy">GROUP BY collapses many rows into one summary per group. A window function computes a group-level value but keeps every original row, adding the result as a new column.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · What does <code>PARTITION BY</code> do inside <code>OVER (...)</code>?</p>
+      <button class="qopt" type="button">A · Sorts the final result</button>
+      <button class="qopt" type="button">B · Limits how many rows come back</button>
+      <button class="qopt" type="button">C · Restarts the window calculation within each group</button>
+      <p class="qwhy">PARTITION BY splits rows into groups and restarts the window function within each - so a rank counts from 1 again for every category, plan, or customer.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">3 · What does <code>LAG(rev) OVER (ORDER BY mo)</code> give you?</p>
+      <button class="qopt" type="button">A · The running total of revenue</button>
+      <button class="qopt" type="button">B · The previous row's value, perfect for month-over-month change</button>
+      <button class="qopt" type="button">C · The highest revenue in the table</button>
+      <p class="qwhy">LAG reaches back to the prior row's value along the OVER ordering, so rev - LAG(rev) gives the change from the previous month. LEAD reaches forward instead.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 7 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Window function</b><span>A function + OVER (...). Computes across a set of rows but keeps every row on screen.</span></div>
+      <div class="cheat-item"><b>OVER (...)</b><span>Defines the window. Put ORDER BY (sequence), PARTITION BY (groups), or both inside.</span></div>
+      <div class="cheat-item"><b>vs GROUP BY</b><span>GROUP BY collapses to one row per group. A window keeps detail and adds a column.</span></div>
+      <div class="cheat-item"><b>Ranking family</b><span>ROW_NUMBER (unique 1,2,3), RANK (ties skip: 1,1,3), DENSE_RANK (ties, no skip: 1,1,2).</span></div>
+      <div class="cheat-item"><b>PARTITION BY</b><span>Restarts the calculation per group. Top-N-per-group = RANK ... PARTITION BY + WHERE rnk&lt;=N.</span></div>
+      <div class="cheat-item"><b>Running total</b><span>SUM(x) OVER (ORDER BY ...) accumulates each row with everything before it.</span></div>
+      <div class="cheat-item"><b>LAG / LEAD</b><span>LAG(x) = previous row's value, LEAD(x) = next. rev - LAG(rev) = month-over-month change.</span></div>
+      <div class="cheat-item"><b>Next up</b><span>b8 building &amp; changing data; b9 investigates the March revenue dip you just found.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 7 of 10 · learn-sql-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="b8-building-changing-data.html">Next: Building and changing data →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/daybreak-seed.js?v=1"></script>
+<script src="../assets/sql-wasm.js?v=1"></script>
+<script src="../assets/sql-live.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

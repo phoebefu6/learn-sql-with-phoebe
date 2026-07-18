@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leader session 4 · The dashboard behind the dashboard - learn sql with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-sql-with-phoebe</a> / Leader session 4 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe · Leader track · Session 4 of 6</div>
+    <h1>The dashboard <span class="accent">behind the dashboard</span></h1>
+    <p class="sub">A dashboard tile looks like a fact. It is not - it is a saved SQL query that returned one number, wrapped in a nice font. This session teaches you to peel back the tile: see the query underneath, spot the definition choices baked into it, and know why the same word can show two different numbers on two tiles and both be correct.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Leader track</span>
+      <span class="chip audience">C-level · managers · curious non-coders</span>
+      <span class="chip audience">No install · nothing to write</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Recap</span>
+      <span class="a2" style="flex:4">3-21 · Peel back a tile</span>
+      <span class="a3" style="flex:4">21-39 · Cohorts, snapshots &amp; rates</span>
+      <span class="a4" style="flex:1">39-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where we are</h2>
+    </div>
+    <p class="lede">You can read a query and judge a claim. Now we point that skill at the artifact you see most: the dashboard. Every KPI tile - active subscribers, revenue, churn - is a one-line SQL query someone saved months ago and rarely revisits. Understanding that a tile is a query, not a truth, is what lets you ask why two "subscriber" counts disagree and which one belongs in the decision.</p>
+    <div class="legend">
+      <span class="pill solid">Live - discussed in session</span>
+      <span class="pill light">Self-study - read after</span>
+      <span class="pill peach">▶ See it run - a real query, live</span>
+      <span class="pill inkpill">For decision-makers</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      The habit of seeing the query under every tile, the difference between a cohort view and a snapshot, and the one rule that makes a rate trustworthy: its numerator and denominator must describe the same population.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: PEEL BACK A TILE ============ -->
+  <section class="section" id="peel">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · what a tile really is</span>
+      <h2>Peel back a tile <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">A KPI tile is the friendly face on a saved <code>SELECT</code>. The big number, the little label, the trend arrow - all of it is the result of a query the BI tool runs on a schedule. Peel it back and the definition choices become visible: which table, which filter, which grain. That is where the real meaning lives.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A KPI dashboard tile peeled back to reveal the SQL query underneath it">
+        <style>
+          .a4pT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .a4pBig { font: 800 34px Inter, sans-serif; fill: #FFFFFF; }
+          .a4pI { font: 700 14px Inter, sans-serif; fill: #10222E; }
+          .a4pC { font: 600 13px 'Courier New', monospace; fill: #10222E; }
+          .a4pX { font: 400 12px Inter, sans-serif; fill: #526472; }
+          .a4pN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+          .a4pArr { stroke: #F5A623; stroke-width: 2.5; fill: none; marker-end: url(#a4pAh); }
+        </style>
+        <defs>
+          <marker id="a4pAh" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#F5A623" stroke-width="1.6"/>
+          </marker>
+        </defs>
+        <rect x="40" y="40" width="240" height="130" rx="14" fill="#003B57"/>
+        <text class="a4pT" x="62" y="72">Active subscribers</text>
+        <text class="a4pBig" x="62" y="128">8</text>
+        <text class="a4pX" x="62" y="152" fill="#9FCFEE">▲ this month</text>
+        <rect x="470" y="40" width="380" height="130" rx="14" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="a4pI" x="492" y="70">The query underneath</text>
+        <text class="a4pC" x="492" y="100">SELECT COUNT(*)</text>
+        <text class="a4pC" x="492" y="122">FROM subscriptions</text>
+        <text class="a4pC" x="492" y="144">WHERE cancel_date IS NULL;</text>
+        <line class="a4pArr" x1="286" y1="105" x2="464" y2="105"/>
+        <text class="a4pX" x="300" y="96">peel it back</text>
+        <rect x="40" y="222" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="a4pN" x="62" y="234">The tile is a fact-shaped wrapper around a definition choice - here, "active means not cancelled".</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - a KPI tile peeled back to the query that made it</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>The query behind an "active subscribers" tile<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>This is the exact one-liner that a tile like the one above runs. Read it: "count the subscriptions where the cancel date is empty" - because an empty cancel date means the subscription is still live. Run it and you have reproduced the dashboard number yourself.</p>
+        <div class="sqlbox" data-caption="cancel_date IS NULL means 'never cancelled' - the definition of 'active' this tile chose.">
+          <pre class="sql-src">SELECT COUNT(*) AS active_subs
+FROM subscriptions
+WHERE cancel_date IS NULL;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>The peel-back habit</strong>
+          For any tile that drives a decision, ask to see its query - or just its definition in one sentence. A tile you cannot define is a tile you cannot trust.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: AGGREGATION TRAPS ============ -->
+  <section class="section" id="traps">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · same word, two numbers</span>
+      <h2>Aggregation traps: cohort vs snapshot <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">The most common dashboard confusion is one word carrying two definitions. "Subscribers" can mean everyone who ever subscribed, or only those active right now - and a dashboard can show both on different tiles, each true. The trap is a denominator game: the word stays the same while the population underneath quietly changes.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>"Subscribers", version one: active only<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The active definition again - only live subscriptions count. Run it and hold the number in mind.</p>
+        <div class="sqlbox" data-caption="Active subscribers: the ones still live right now.">
+          <pre class="sql-src">SELECT COUNT(*) AS active_subs
+FROM subscriptions
+WHERE cancel_date IS NULL;</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>"Subscribers", version two: all-time<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Same table, drop the filter. Now every subscription ever started counts, including the cancelled ones. Read it: "count all subscriptions." Run it - a larger number, and just as truthful. Same word "subscribers", two numbers, both correct.</p>
+        <div class="sqlbox" data-caption="All-time subscribers: everyone who ever started, cancelled or not.">
+          <pre class="sql-src">SELECT COUNT(*) AS all_subs
+FROM subscriptions;</pre>
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The board that saw two "subscriber" numbers.</strong> Marketing reported all-time subscribers to show reach; finance reported active subscribers to show recurring revenue. Same word on two slides, two different figures, and twenty minutes lost to "whose number is wrong?" Neither was. The lesson: a count means nothing until the population is named. Ask "active now, or all-time?" before you compare.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: READING A RATE ============ -->
+  <section class="section" id="rate">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · numerator over denominator</span>
+      <h2>Reading a rate: the two halves must match <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">A rate is a fraction, and it is only honest when the top and the bottom describe the same population over the same window. Churn rate is the classic offender: churned customers divided by... which customers? All-time? Active at the start of the month? The denominator you choose can move a churn number by a wide margin without a single customer changing.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>A cohort view: new customers per signup month<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>This groups customers into monthly cohorts by their signup month. Read it: "count new customers, per signup month, in date order." <code>substr(signup_date,1,7)</code> just keeps the year and month, like 2026-03. Run it - this is a cohort view, and it tells a different story than a single "total customers" snapshot tile would.</p>
+        <div class="sqlbox" data-caption="A cohort: new customers grouped by the month they joined - not one snapshot number.">
+          <pre class="sql-src">SELECT substr(signup_date, 1, 7) AS cohort,
+       COUNT(*) AS new_customers
+FROM customers
+GROUP BY cohort
+ORDER BY cohort;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>Cohort versus snapshot</strong>
+          A snapshot is "how many right now". A cohort is "how many joined in each period, tracked over time". A growth or churn story needs the cohort; a single tile usually shows the snapshot. Know which one you are looking at.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Three churn-rate definitions, three numbers<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>"Churn was 5%" is not a fact until the denominator is named. Here are three common bottoms, each giving a different rate from the same churned customers:</p>
+        <table class="clean">
+          <thead><tr><th>Denominator</th><th>Churn rate means</th><th>Watch for</th></tr></thead>
+          <tbody>
+            <tr><td>Active at month start</td><td>share of the live base that left</td><td>the standard, but the base shifts monthly</td></tr>
+            <tr><td>All-time subscribers</td><td>share of everyone who ever joined</td><td>flatters the number - big, stable bottom</td></tr>
+            <tr><td>This month's cohort</td><td>early drop-off of new joiners</td><td>a different question entirely</td></tr>
+          </tbody>
+        </table>
+        <p>None is wrong; they answer different questions. The rule that keeps you safe: the numerator and denominator must be defined over the same population. If the churned customers on top are not drawn from the base on the bottom, the rate is meaningless.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DISCUSSION ============ -->
+  <section class="section" id="discussion">
+    <div class="section-kicker">
+      <span class="klabel">Boardroom exercise</span>
+      <h2>Reverse-engineer one of your own tiles <span class="tag demo">★ 12 min · discuss together</span></h2>
+    </div>
+    <p class="lede">Take one KPI from a dashboard you actually use. As a group, write its likely one-line query definition, then name the trap to check. You are not writing production SQL - you are stating the definition precisely enough that an analyst could confirm or correct it.</p>
+
+    <div class="steps">
+      <div class="step"><p><strong>Name the tile and guess the query:</strong> which table, which filter, which grain? Write it as one plain sentence.</p></div>
+      <div class="step"><p><strong>Name the trap:</strong> is it a snapshot pretending to be a trend? A count whose population is ambiguous? A rate with a mismatched denominator?</p></div>
+      <div class="step"><p><strong>Write the question for your analyst:</strong> one sentence that would confirm the definition. That question is the whole deliverable.</p></div>
+    </div>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Model it on the active-subscribers tile<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Use this as your worked example. The tile says "active subscribers"; the one-line definition is "subscriptions where cancel_date is empty"; the trap is "does 'active' mean active now or all-time?" Run it, then repeat the pattern on your own tile.</p>
+        <div class="sqlbox" data-caption="Definition in one line; trap named in one question. Copy the pattern to your own KPI.">
+          <pre class="sql-src">SELECT COUNT(*) AS active_subs
+FROM subscriptions
+WHERE cancel_date IS NULL;</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>A second tile: completed-order volume<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Another worked example. Tile: "orders this period"; definition: "count of orders where status is completed"; trap: "are refunds and cancellations included?" Run it and see how the definition choice sets the number.</p>
+        <div class="sqlbox" data-caption="Definition: completed only. Trap: what about refunded and cancelled orders?">
+          <pre class="sql-src">SELECT COUNT(*) AS completed_orders
+FROM orders
+WHERE status = 'completed';</pre>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Between sessions</span>
+      <h2>Take this back to your desk <span class="tag exercise">◐ 15 min</span></h2>
+    </div>
+    <ul>
+      <li>Pick the single most important tile on your main dashboard. Write its likely one-line query definition, then send your analyst the one-sentence question that would confirm it. Compare their answer to your guess.</li>
+      <li>Find any two tiles that use the same word - "users", "customers", "revenue". Check whether they share a definition. If they differ, you have found a boardroom argument waiting to happen; get ahead of it.</li>
+      <li>For one rate on your dashboard, write down its numerator and denominator explicitly. Confirm they cover the same population and window. If they don't, flag it.</li>
+      <li>Optional: preview session a5, where we turn all of this into a precise data request - asking an analyst for exactly the right cut, the first time.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>What this maps to</h2>
+    </div>
+    <p class="lede">This session connects SQL reading to the BI layer leaders live in every day - dashboards and KPIs - and the definition traps that hide inside them. It covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">BI / dashboard concepts - a tile is a saved query</span><span class="note">Part 1 · peeling a KPI back to its SELECT</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Cohort vs snapshot, denominator games</span><span class="note">Parts 2-3 · same word, two numbers; rates that match populations</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Mode analytics framing - metrics as saved SQL</span><span class="note">Part 1 self-study; full data-request treatment in session a5</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · A dashboard tile is, underneath...</p>
+      <button class="qopt" type="button">A · A figure someone types in by hand each week</button>
+      <button class="qopt" type="button">B · A saved SQL query that returns a number, refreshed on a schedule</button>
+      <button class="qopt" type="button">C · A live phone call to the finance team</button>
+      <p class="qwhy">Every KPI tile is a saved SELECT the BI tool re-runs. The number is real, but so are the definition choices baked into the query - which is what you learn to peel back.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · "Active subscribers" can be two different numbers because...</p>
+      <button class="qopt" type="button">A · The database is broken</button>
+      <button class="qopt" type="button">B · Subscribers are impossible to count</button>
+      <button class="qopt" type="button">C · The definition - e.g. cancel_date IS NULL vs all-time - changes the count</button>
+      <p class="qwhy">Same word, two populations. "Active now" filters to live subscriptions; "all-time" counts everyone who ever joined. Both are true; ask which definition the tile used.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · A rate is trustworthy only when...</p>
+      <button class="qopt" type="button">A · Its numerator and denominator are defined over the same population</button>
+      <button class="qopt" type="button">B · It is shown as a percentage rather than a fraction</button>
+      <button class="qopt" type="button">C · It is larger than last quarter's</button>
+      <p class="qwhy">A rate is top over bottom. If the churned customers on top are not drawn from the base on the bottom, the rate is meaningless - no matter how precise it looks.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Leader session 4 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Every tile is a query</b><span>a saved SELECT returning one number, refreshed on a schedule.</span></div>
+      <div class="cheat-item"><b>Peel it back</b><span>ask for the tile's definition in one sentence - table, filter, grain.</span></div>
+      <div class="cheat-item"><b>Same word, two numbers</b><span>"active" vs "all-time" subscribers - both true, name the population.</span></div>
+      <div class="cheat-item"><b>Cohort vs snapshot</b><span>snapshot = right now; cohort = grouped by period, tracked over time.</span></div>
+      <div class="cheat-item"><b>A rate is top over bottom</b><span>numerator and denominator must cover the same population.</span></div>
+      <div class="cheat-item"><b>Churn depends on its denominator</b><span>active base, all-time, or this month's cohort - three different rates.</span></div>
+      <div class="cheat-item"><b>The deliverable</b><span>one sentence your analyst can confirm - that is a good data question.</span></div>
+      <div class="cheat-item"><b>Next session</b><span>a5 · asking for the right cut - commissioning data precisely.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Leader session 4 of 6 · learn-sql-with-phoebe · by Phoebe Fu</span>
+    <span><a href="a3-judging-a-claim.html">← Previous</a> &nbsp;·&nbsp; <a href="a5-asking-right-cut.html">Next: Asking for the right cut →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/daybreak-seed.js?v=1"></script>
+<script src="../assets/sql-wasm.js?v=1"></script>
+<script src="../assets/sql-live.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

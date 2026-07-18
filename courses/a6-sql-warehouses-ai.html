@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leader session 6 · SQL, warehouses and AI - learn sql with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-sql-with-phoebe</a> / Leader session 6 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe · Leader track · Session 6 of 6</div>
+    <h1>SQL, warehouses <span class="accent">and AI</span></h1>
+    <p class="sub">The final session. You can read a query, question a metric, and brief an analyst - now see where all of that sits in the 2026 stack. Sources feed a warehouse, SQL and a semantic layer turn rows into agreed numbers, dashboards show them. AI now writes the SQL for you, which is exactly why reading it matters more, not less. We close on what a leader should fund - and what to stop chasing.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Leader track</span>
+      <span class="chip audience">C-level · managers · curious non-coders</span>
+      <span class="chip audience">2026 stack · one live box</span>
+      <span class="chip time">Final session</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Recap</span>
+      <span class="a2" style="flex:4">3-21 · The modern data stack</span>
+      <span class="a3" style="flex:4">21-39 · Text-to-SQL &amp; copilots</span>
+      <span class="a4" style="flex:2">39-45 · What to invest in</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Putting the whole track together</h2>
+    </div>
+    <p class="lede">Five sessions taught you to read SQL, spot filters and joins, question a metric, and ask for the right cut. This last one zooms out to the system all of that lives in - the modern data stack - and to the change reshaping it in 2026: AI that writes SQL from plain English. The reflex most people have is "great, now I never need to understand SQL." The truth is the opposite. When a machine writes the query in a second, the scarce skill becomes checking whether it is right.</p>
+    <div class="legend">
+      <span class="pill solid">Live - discussed in session</span>
+      <span class="pill light">Self-study - read after</span>
+      <span class="pill peach">▶ See it run - a real query, live</span>
+      <span class="pill inkpill">For decision-makers</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A clear map of the modern data stack, a working grasp of why AI copilots make reading SQL more valuable, and a short, defensible list of what to fund - governed metric definitions and data quality - versus what to stop chasing - every shiny new tool.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: THE STACK ============ -->
+  <section class="section" id="stack">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · the map</span>
+      <h2>The modern data stack <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">Behind every number you see is the same four-layer pipeline, left to right. <strong>Sources</strong> (the app, payments, ads, support) pour raw data into a <strong>data warehouse</strong> - one big queryable store like Snowflake, BigQuery or Redshift. <strong>SQL plus a semantic layer</strong> turns those raw rows into agreed business metrics. <strong>BI dashboards</strong> draw the picture on top. Knowing the four layers lets you ask, for any number, "which layer did this come from, and who owns it?"</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The modern data stack: sources feed a warehouse, SQL and a semantic layer produce metrics, dashboards display them">
+        <style>
+          .a6sT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .a6sI { font: 700 15px Inter, sans-serif; fill: #10222E; }
+          .a6sX { font: 400 12px Inter, sans-serif; fill: #526472; }
+          .a6sW { font: 400 12px Inter, sans-serif; fill: #AEC4D2; }
+          .a6sN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+          .a6sArr { stroke: #9FCFEE; stroke-width: 2.5; fill: none; marker-end: url(#a6sAh); }
+        </style>
+        <defs>
+          <marker id="a6sAh" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#9FCFEE" stroke-width="1.6"/>
+          </marker>
+        </defs>
+
+        <rect x="24" y="80" width="180" height="96" rx="12" fill="#10222E"/>
+        <text class="a6sT" x="44" y="112">Sources</text>
+        <text class="a6sW" x="44" y="134">app · payments</text>
+        <text class="a6sW" x="44" y="150">ads · support</text>
+
+        <rect x="248" y="80" width="180" height="96" rx="12" fill="#003B57"/>
+        <text class="a6sT" x="268" y="112">Data warehouse</text>
+        <text class="a6sW" x="268" y="134">Snowflake · BigQuery</text>
+        <text class="a6sW" x="268" y="150">Redshift</text>
+
+        <rect x="472" y="80" width="180" height="96" rx="12" fill="#0F80CC"/>
+        <text class="a6sT" x="492" y="106">SQL + semantic</text>
+        <text class="a6sT" x="492" y="124">layer</text>
+        <text class="a6sW" x="492" y="146">rows become</text>
+        <text class="a6sW" x="492" y="162">agreed metrics</text>
+
+        <rect x="696" y="80" width="180" height="96" rx="12" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="a6sI" x="716" y="112">BI dashboards</text>
+        <text class="a6sX" x="716" y="134">Tableau · Looker</text>
+        <text class="a6sX" x="716" y="150">Power BI</text>
+
+        <line class="a6sArr" x1="206" y1="128" x2="244" y2="128"/>
+        <line class="a6sArr" x1="430" y1="128" x2="468" y2="128"/>
+        <line class="a6sArr" x1="654" y1="128" x2="692" y2="128"/>
+
+        <rect x="24" y="240" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="a6sN" x="46" y="252">For any number, ask which layer it came from - and who owns that layer.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - four layers, left to right, sources to dashboard</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>What each layer is for<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You do not run any of these - you need to know what each does so you can place a problem. A wrong number in a dashboard could be a bad source, a broken pipeline into the warehouse, a metric defined differently in the SQL layer, or just a filter set wrong on the tile. Knowing the four layers lets you point at the right one instead of blaming "the data".</p>
+        <ul>
+          <li><strong>Sources:</strong> where data is born - your product, Stripe, ad platforms. Garbage here is garbage everywhere downstream.</li>
+          <li><strong>Warehouse:</strong> the single queryable store. The whole point is that everything lands in one place SQL can reach.</li>
+          <li><strong>SQL + semantic layer:</strong> where raw rows become "revenue" and "active customer" - the definitions the whole company should share.</li>
+          <li><strong>BI dashboards:</strong> the display. Every tile is a saved SQL query underneath, as you saw in session a4.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>"The data is wrong" - which layer?</strong> A CFO flagged that revenue on the exec dashboard dropped overnight. It was not the source, the warehouse, or the definition. A pipeline job had failed at 2am, so one day of orders never loaded. Because the leadership team could name the layers, they diagnosed it in an hour instead of a war room. The number was fine; the plumbing had a leak.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Why the warehouse changed everything<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Before cloud warehouses, data lived in a dozen disconnected systems and answering a cross-team question meant a project. The modern warehouse put everything in one place that SQL can query at speed, which is why the whole stack rearranged around it. It is also why SQL, a 50-year-old language, is more central than ever: the warehouse speaks SQL, so SQL is how you get anything out. Every layer above the warehouse - semantic layers, BI tools, AI copilots - ultimately emits SQL for the warehouse to run.</p>
+        <ul>
+          <li><strong>One store, one language:</strong> consolidation is what made self-serve analytics possible at all.</li>
+          <li><strong>Separation of storage and compute:</strong> the cloud-warehouse trick that made querying huge data affordable.</li>
+          <li><strong>SQL as the universal interface:</strong> whatever tool sits on top, the warehouse still runs SQL underneath.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: TEXT-TO-SQL ============ -->
+  <section class="section" id="ai">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · the 2026 shift</span>
+      <h2>Text-to-SQL and AI copilots <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">In 2026, tools across the stack write SQL from plain English. You type "top 5 customers by revenue" and a copilot returns a query and a number in seconds. This is genuinely useful - and it is exactly why reading SQL is now a leadership skill, not a nice-to-have. The copilot is fast and confident, and it can quietly get a definition wrong. Someone has to verify the query before the number reaches a decision. That someone is you.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Verify what the copilot wrote<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Below is the kind of query an AI copilot might generate for "top 5 customers by revenue". You do not have to write it - you have to read it and answer one question: <strong>did it remember to exclude refunds?</strong> Read the WHERE line. It says <code>status = 'completed'</code> - so refunded and cancelled orders are left out, which is what "revenue" should mean. Run it to see the ranked list. The copilot got this one right; your job was to check, and now you can say so with confidence.</p>
+        <div class="sqlbox" data-caption="Read the WHERE line first. Did the AI remember status = 'completed'? Yes - so trust it.">
+          <pre class="sql-src">SELECT c.name, ROUND(SUM(oi.quantity*oi.unit_price),2) AS spend
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+JOIN order_items oi ON o.order_id = oi.order_id
+WHERE o.status = 'completed'
+GROUP BY c.customer_id
+ORDER BY spend DESC
+LIMIT 5;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>The one-line verification</strong>
+          When a copilot hands you a number, find the WHERE line and read it aloud. Most quietly-wrong AI numbers come from a missing or wrong filter - refunds left in, test accounts not excluded, the wrong date window. If the filter is right, the number usually is too.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Why "the AI wrote it" is not an answer<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A copilot writes fluent SQL that runs cleanly and returns a plausible number - and can still answer the wrong question. It does not know your business meant "completed revenue" unless the definition is written down somewhere it can read. When a board asks "how did we get this number?", "the AI wrote it" is not a defensible answer; "it sums completed order revenue, refunds excluded, and here is the query" is. The skill this whole track built - reading a query and questioning a metric - is precisely the skill that lets you stand behind an AI-generated number, or catch it before it costs you.</p>
+        <ul>
+          <li><strong>Fluent is not correct:</strong> a query that runs is not a query that is right for your definition.</li>
+          <li><strong>The AI inherits your ambiguity:</strong> if "active" was never defined, the copilot invents one - and may not tell you.</li>
+          <li><strong>Verification is the human's job:</strong> the faster machines write SQL, the more valuable the person who can read it becomes.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: WHAT TO INVEST IN ============ -->
+  <section class="section" id="invest">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · the leadership call</span>
+      <h2>Governance, trust, and what to invest in <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">With AI writing queries at will, the risk is not too little SQL - it is a hundred slightly different definitions of "revenue" flying around, each fluent, each wrong in its own way. The antidote is governance: one source of truth, certified metrics, a semantic layer that pins each definition once. As a leader, your money and attention should fund the boring, durable things - definitions and data quality - not chase every new tool that promises to write SQL a little faster.</p>
+
+    <div class="steps">
+      <div class="step"><p><strong>One source of truth.</strong> Every core metric - revenue, active customer, churn - defined once, in a governed catalog everyone and every tool reads from. This is the highest-leverage thing you can fund.</p></div>
+      <div class="step"><p><strong>A semantic layer.</strong> The place a definition lives so the dashboard, the copilot, and the analyst all compute "revenue" the same way. It turns your session-5 definitions into enforced ones.</p></div>
+      <div class="step"><p><strong>Data quality.</strong> Fresh, complete, correct data feeding the warehouse. The fanciest AI on bad data just produces confident, wrong answers faster.</p></div>
+    </div>
+
+    <table class="clean">
+      <thead>
+        <tr><th>Fund this (durable)</th><th>Do not chase this</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Governed, certified metric definitions</td><td>A new BI tool every year</td></tr>
+        <tr><td>A semantic layer as the single source of truth</td><td>The latest text-to-SQL widget as a silver bullet</td></tr>
+        <tr><td>Data quality and pipeline reliability</td><td>Dashboards nobody has agreed the numbers on</td></tr>
+        <tr><td>People who can read and verify SQL</td><td>"The AI will handle it" as a strategy</td></tr>
+      </tbody>
+    </table>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>What a semantic layer actually buys you<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A semantic layer is where "revenue" is defined once, in one place, and every tool - the dashboard, the copilot, the analyst's ad-hoc query - is required to use that definition. It is the technical form of the discipline you learned in session 5: pin the metric so two people get the same number, then enforce it so a thousand queries get the same number too. Without it, AI copilots multiply your definitions; with it, they safely reuse the one you certified. When you ask your data team what to build next, this is often the answer that pays back for years.</p>
+        <ul>
+          <li><strong>Define once, reuse everywhere:</strong> the copilot pulls the certified "revenue", not its own guess.</li>
+          <li><strong>Trust becomes the default:</strong> when every tool reports the same number, arguments about whose figure is right disappear.</li>
+          <li><strong>It scales AI safely:</strong> governed definitions are what let you say yes to text-to-SQL without chaos.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Between sessions</span>
+      <h2>Take this back to your desk <span class="tag exercise">◐ 15 min</span></h2>
+    </div>
+    <ul>
+      <li>Ask your data team one question: "do we have a semantic layer or a certified-metrics catalog, and where is 'revenue' officially defined?" The answer tells you how much governance you actually have.</li>
+      <li>Next time a copilot or dashboard hands you a number, find the WHERE line and read it aloud before you trust it. Practise the one-line verification until it is a reflex.</li>
+      <li>Draw the four-layer stack for your own company on one page - name the real tools in each layer. Note which layer you would blame first when a number looks wrong.</li>
+      <li>Decide one thing to fund next quarter from the "fund this" column - a metric catalog, a semantic layer, or a data-quality fix - and one tool-chasing habit to stop.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>What this maps to</h2>
+    </div>
+    <p class="lede">This closing session distills where SQL sits in the 2026 data landscape and what that means for leadership investment. It covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">The modern data stack · sources → warehouse → SQL → BI</span><span class="note">Part 1 · the four-layer map</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Text-to-SQL &amp; AI copilot landscape (2026)</span><span class="note">Part 2 · why reading SQL matters more, and verification</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Data governance &amp; semantic layer concepts</span><span class="note">Part 3 · one source of truth, certified metrics, what to fund</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · Why does reading SQL matter MORE in the AI era, not less?</p>
+      <button class="qopt" type="button">A · Because AI cannot write SQL yet</button>
+      <button class="qopt" type="button">B · Because AI writes queries fast but can quietly get a definition wrong, so a human must verify before trusting the number</button>
+      <button class="qopt" type="button">C · Because SQL is being replaced and you should learn it while you can</button>
+      <p class="qwhy">Copilots produce fluent, confident SQL that can still answer the wrong question. The scarce skill becomes reading the query and checking the filter before the number drives a decision.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · What does a semantic layer or certified metric give you?</p>
+      <button class="qopt" type="button">A · Faster dashboards</button>
+      <button class="qopt" type="button">B · A backup of your database</button>
+      <button class="qopt" type="button">C · One agreed definition of a metric, so every tool and person reports the same number</button>
+      <p class="qwhy">Define "revenue" once, enforce it everywhere. The dashboard, the copilot, and the analyst all pull the same certified definition - so the arguments about whose number is right disappear.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · What is the best leadership investment in the 2026 data stack?</p>
+      <button class="qopt" type="button">A · Governed metric definitions and data quality, not chasing every new tool</button>
+      <button class="qopt" type="button">B · The newest text-to-SQL tool, replaced yearly</button>
+      <button class="qopt" type="button">C · More dashboards, faster</button>
+      <p class="qwhy">Definitions and data quality are the durable, high-leverage investments. Tools change; a governed source of truth pays back for years and is what lets you adopt AI safely.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Leader session 6 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The four layers</b><span>sources → warehouse → SQL + semantic layer → BI dashboards.</span></div>
+      <div class="cheat-item"><b>Warehouse</b><span>one queryable store - Snowflake, BigQuery, Redshift - that speaks SQL.</span></div>
+      <div class="cheat-item"><b>Text-to-SQL</b><span>AI writes queries from plain English - fast, confident, sometimes quietly wrong.</span></div>
+      <div class="cheat-item"><b>Reading matters more</b><span>the faster machines write SQL, the more valuable the human who verifies it.</span></div>
+      <div class="cheat-item"><b>One-line verification</b><span>find the WHERE line, read it aloud. Most wrong AI numbers are a bad filter.</span></div>
+      <div class="cheat-item"><b>Semantic layer</b><span>one agreed definition of a metric, enforced across every tool and person.</span></div>
+      <div class="cheat-item"><b>Fund this</b><span>governed definitions and data quality - not every new tool that writes SQL.</span></div>
+      <div class="cheat-item"><b>You finished</b><span>read a query · question a metric · brief an analyst · verify the AI. That is the leader's SQL.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Leader session 6 of 6 · learn-sql-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="../index.html">Leader track complete - back to all sessions →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/daybreak-seed.js?v=1"></script>
+<script src="../assets/sql-wasm.js?v=1"></script>
+<script src="../assets/sql-live.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

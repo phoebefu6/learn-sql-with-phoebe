@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leader session 5 · Asking for the right cut - learn sql with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-sql-with-phoebe</a> / Leader session 5 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe · Leader track · Session 5 of 6</div>
+    <h1>Asking for the <span class="accent">right cut</span></h1>
+    <p class="sub">You will not write the query - but the quality of the number you get back is decided before anyone touches SQL. It is decided by how you ask. This session gives you a five-field template for a data request, a way to define a metric so two people compute the same number, and the etiquette that keeps your data team fast and friendly. Ask well once, and you stop the endless back-and-forth.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Leader track</span>
+      <span class="chip audience">C-level · managers · curious non-coders</span>
+      <span class="chip audience">Framework-heavy · one live box</span>
+      <span class="chip time">Session 5 of 6</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Recap</span>
+      <span class="a2" style="flex:4">3-21 · Anatomy of a good request</span>
+      <span class="a3" style="flex:4">21-39 · Define the metric</span>
+      <span class="a4" style="flex:2">39-45 · Self-serve &amp; etiquette</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where the number really comes from</h2>
+    </div>
+    <p class="lede">By now you can read a query, spot a filter, and question a metric. This session is about the moment before any of that: the request you send to your analyst. Most "the data is wrong" pain is really "the ask was fuzzy" pain. A vague request gets a plausible-looking number that answers a slightly different question than the one in your head - and you find out in the board meeting. The fix is a shared shape for how you ask.</p>
+    <div class="legend">
+      <span class="pill solid">Live - discussed in session</span>
+      <span class="pill light">Self-study - read after</span>
+      <span class="pill peach">▶ See it run - a real query, live</span>
+      <span class="pill inkpill">For decision-makers</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A five-field template you can paste into any data request, a habit of defining the metric before you ask for it, and a clear sense of what you can answer yourself in a BI tool versus what genuinely needs an analyst. Ask well, get the right number the first time.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: ANATOMY ============ -->
+  <section class="section" id="anatomy">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · the template</span>
+      <h2>The anatomy of a good data request <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">Every answerable data request carries the same five fields. Leave one out and the analyst has to guess - or come back to ask, which costs you a day. Name all five and the query almost writes itself: <strong>metric</strong> (what number), <strong>grain</strong> (per what), <strong>filter</strong> (which rows count), <strong>timeframe</strong> (over what window), and <strong>comparison</strong> (against what).</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A data request template card with five fields filled in for a worked example">
+        <style>
+          .a5aT { font: 700 16px Inter, sans-serif; fill: #FFFFFF; }
+          .a5aL { font: 700 13px Inter, sans-serif; fill: #0F80CC; }
+          .a5aV { font: 400 13.5px Inter, sans-serif; fill: #10222E; }
+          .a5aX { font: 400 12px Inter, sans-serif; fill: #526472; }
+          .a5aN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+        </style>
+        <rect x="30" y="24" width="820" height="46" rx="10" fill="#003B57"/>
+        <text class="a5aT" x="52" y="53">Data request · "weekly completed revenue by country, last 6 months, vs prior period"</text>
+
+        <rect x="30" y="86" width="820" height="42" rx="8" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="a5aL" x="52" y="106">METRIC</text>
+        <text class="a5aX" x="52" y="121">what number</text>
+        <text class="a5aV" x="300" y="113">completed revenue (quantity × unit price, refunds excluded)</text>
+
+        <rect x="30" y="136" width="820" height="42" rx="8" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="a5aL" x="52" y="156">GRAIN</text>
+        <text class="a5aX" x="52" y="171">per what</text>
+        <text class="a5aV" x="300" y="163">one row per country, per week</text>
+
+        <rect x="30" y="186" width="820" height="42" rx="8" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="a5aL" x="52" y="206">FILTER</text>
+        <text class="a5aX" x="52" y="221">which rows count</text>
+        <text class="a5aV" x="300" y="213">status = completed only (no refunded, no cancelled)</text>
+
+        <rect x="30" y="236" width="820" height="42" rx="8" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="a5aL" x="52" y="256">TIMEFRAME</text>
+        <text class="a5aX" x="52" y="271">over what window</text>
+        <text class="a5aV" x="300" y="263">the last 6 months (Jan-Jun 2026)</text>
+
+        <rect x="30" y="286" width="820" height="42" rx="8" fill="#9FCFEE"/>
+        <text class="a5aL" x="52" y="306" fill="#003B57">COMPARISON</text>
+        <text class="a5aX" x="52" y="321" fill="#10222E">against what</text>
+        <text class="a5aV" x="300" y="313">vs the prior 6-month period, same countries</text>
+
+        <rect x="30" y="340" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="a5aN" x="52" y="352">All five named = no follow-up questions, no guessing, right number first time.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the five-field request template, filled in</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Walking the five fields<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Each field closes a door the analyst would otherwise have to guess through. Miss the grain and you get one total when you wanted a trend. Miss the filter and refunds sneak into your revenue. Miss the comparison and you get a number with no context - "$412k" tells a board nothing until it sits next to last period.</p>
+        <ul>
+          <li><strong>Metric:</strong> the number itself, defined - "completed revenue", not just "revenue". This is the field people skip and regret.</li>
+          <li><strong>Grain:</strong> per what. Per customer? Per week? Per country? The grain decides whether you get a single figure or a table you can chart.</li>
+          <li><strong>Filter:</strong> which rows are allowed in. Completed orders only? A single plan? Excluding test accounts? Say it.</li>
+          <li><strong>Timeframe:</strong> the window. "Last 6 months", "Q2", "since launch". Without it, an analyst picks one and you may not agree.</li>
+          <li><strong>Comparison:</strong> against what. Prior period, target, or another segment. A number alone is not an insight.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The request that came back three times.</strong> "Can you pull our revenue by country?" bounced twice - first the analyst included refunds, then used calendar months instead of the fiscal weeks the exec had in mind. The third version, sent as five explicit fields, was right in twenty minutes. The fields did not slow the ask down. They removed two full days of rework.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Why the comparison field is the one leaders forget<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Metric, grain, filter and timeframe get you a correct number. The comparison is what turns it into a decision. "$412k in completed revenue" is data; "$412k, up 9% on the prior period but down in two of five countries" is a conversation. Analysts often leave comparison out because you did not ask for it - so ask. Naming the baseline up front also prevents the subtle trap of comparing against a cherry-picked period after the fact.</p>
+        <ul>
+          <li><strong>Prior period:</strong> the honest default - same length window, immediately before.</li>
+          <li><strong>Target or plan:</strong> when there is a budget or forecast to measure against.</li>
+          <li><strong>Peer segment:</strong> this country versus that, this plan versus that - context from within the same pull.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: DEFINE THE METRIC ============ -->
+  <section class="section" id="define">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · the discipline</span>
+      <h2>Define the metric so two people get the same number <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">A metric is not defined until two people, working separately, would compute it the same way. "Active customer" feels obvious until you try to pin it: active in the last 30 days, or ever? By any order, or a paying one? On any plan, or Pro only? Each choice is a different query and a different number. The leader's job is to make the choice explicit before the query is written, not to discover it in a disagreement later.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Even "how many customers" needs a definition<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Watch how quickly a simple count forks. The query below counts every row in the customer table, split by plan. Read it: "give me plan and a count of customers, from customers, grouped by plan." Run it and you will see two groups, Basic and Pro. But now ask the real question: when the board says "how many customers do we have", do they mean all 15 signups here - or only the paying ones, or only those who ordered recently? The number changes with the definition, and the query has to change with it.</p>
+        <div class="sqlbox" data-caption="A count is never just a count. 'How many customers' hides a definition you must pin down.">
+          <pre class="sql-src">SELECT plan, COUNT(*) AS customers
+FROM customers
+GROUP BY plan;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>The two-people test</strong>
+          Before you accept a metric, ask: "if I gave this definition to two analysts in separate rooms, would they return the same number?" If the answer is no, the metric is not defined yet - it is a word everyone fills in differently.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Pinning "active customer" in one sentence<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Here is how you take an ambiguous term and make it queryable. "Active customer" becomes: <em>a customer with at least one completed order in the last 90 days.</em> Every fuzzy word is now a concrete rule an analyst can write - "completed" is a status filter, "90 days" is a timeframe, "at least one order" is the grain. You did not write SQL. You removed every guess the person who does write it would have had to make.</p>
+        <table class="clean">
+          <thead>
+            <tr><th>Fuzzy word</th><th>Pinned to a rule</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>"active"</td><td>has at least one completed order</td></tr>
+            <tr><td>"recently"</td><td>in the last 90 days</td></tr>
+            <tr><td>"customer"</td><td>any plan, but a real (non-test) account</td></tr>
+            <tr><td>the number</td><td>count of distinct customers meeting all three</td></tr>
+          </tbody>
+        </table>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>Two dashboards, two "active" counts.</strong> Marketing reported 11,000 active customers; finance reported 6,400. Neither was wrong. Marketing counted anyone who logged in during the quarter; finance counted anyone with a paid order in 30 days. The company had never written the definition down, so both teams invented one. A single sentence in a metrics catalog would have saved a quarter of arguments.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: SELF-SERVE & ETIQUETTE ============ -->
+  <section class="section" id="etiquette">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · working with your data team</span>
+      <h2>Self-serve versus analyst work, and request etiquette <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">Not every question needs an analyst. Filtering a dashboard, changing a date range, or reading a certified metric is self-serve - you can do it in the BI tool in seconds. Net-new logic, a metric that does not exist yet, or a one-off deep dive needs an analyst. Knowing which is which - and how to ask when it is the second kind - is what keeps a data team fast and willing.</p>
+
+    <div class="steps">
+      <div class="step"><p><strong>Try self-serve first.</strong> If the number is a filter or date change on an existing dashboard, do it yourself. It is faster for you and it protects analyst time for real questions.</p></div>
+      <div class="step"><p><strong>Batch and give lead time.</strong> Send five questions together with a real deadline, not five pings across a morning marked urgent. Context-switching is the hidden tax on a data team.</p></div>
+      <div class="step"><p><strong>Bring the definition, not just the ask.</strong> "Just pull the numbers" makes the analyst guess your intent. The five-field request removes the guessing and gets you the right cut first time.</p></div>
+    </div>
+
+    <table class="clean">
+      <thead>
+        <tr><th>Vague request</th><th>Good request</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>"Can you pull our revenue?"</td><td>"Completed revenue (refunds excluded), per country per week, last 6 months, vs prior period."</td></tr>
+        <tr><td>"How many active customers do we have?"</td><td>"Count of customers with a completed order in the last 90 days, by plan."</td></tr>
+        <tr><td>"Need this ASAP" (at 4pm)</td><td>"Not urgent - by Thursday is fine. Here are three related questions in one go."</td></tr>
+        <tr><td>"The dashboard looks wrong"</td><td>"The country tile shows $412k but I expected ~$450k - which filter or status is it using?"</td></tr>
+      </tbody>
+    </table>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The "just pull the numbers" trap<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>"Just pull the numbers" sounds efficient and is the opposite. It hands the analyst all the hard decisions - which metric, which filter, which window - while making it sound like clerical work. The analyst either guesses (and you get a wrong-shaped answer) or comes back with questions (and you lose a day). Treat a data request like a brief to any skilled professional: say what you want, why, and how it will be used. The five fields are that brief.</p>
+        <ul>
+          <li><strong>Say how it will be used:</strong> "for the board" versus "quick gut-check" changes how much rigor is worth.</li>
+          <li><strong>Flag the decision it feeds:</strong> analysts prioritize better when they know what hangs on the number.</li>
+          <li><strong>Respect the queue:</strong> not every ask is a fire. Marking everything urgent means nothing is.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Between sessions</span>
+      <h2>Take this back to your desk <span class="tag exercise">◐ 15 min</span></h2>
+    </div>
+    <ul>
+      <li>Find one real data request you sent recently - a Slack message or email to your analyst. Rewrite it using the five-field template: metric, grain, filter, timeframe, comparison. Notice how many fields you originally left the analyst to guess.</li>
+      <li>Pick one metric your team uses often - "active user", "churn", "revenue" - and write its definition in one sentence precise enough to pass the two-people test.</li>
+      <li>Before your next ask, decide honestly: is this self-serve in the BI tool, or does it genuinely need an analyst? Do the self-serve ones yourself.</li>
+      <li>Optional: skim the builder track's session on filtering and grouping to see how your five fields turn into real WHERE and GROUP BY clauses.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>What this maps to</h2>
+    </div>
+    <p class="lede">This session distills how effective data leaders commission work - the decision-intelligence and analyst-collaboration practice that sits above SQL syntax. It covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Decision intelligence · framing a request before pulling data</span><span class="note">Part 1 · the five-field template</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Analyst-collaboration best practice · batching, lead time, briefs</span><span class="note">Part 3 · self-serve versus analyst work, etiquette</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Metric-definition discipline · the two-people test</span><span class="note">Part 2 · pinning ambiguous terms; catalog groundwork for session a6</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">1 · What are the five parts of a good data request?</p>
+      <button class="qopt" type="button">A · Metric, chart type, colour, owner, deadline</button>
+      <button class="qopt" type="button">B · Table, column, join, index, sort</button>
+      <button class="qopt" type="button">C · Metric, grain, filter, timeframe, comparison</button>
+      <p class="qwhy">Metric (what number), grain (per what), filter (which rows), timeframe (what window), comparison (against what). Name all five and the analyst never has to guess.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">2 · Why should you define a metric precisely before asking for it?</p>
+      <button class="qopt" type="button">A · So the query runs faster</button>
+      <button class="qopt" type="button">B · So two people computing it independently would get the same number</button>
+      <button class="qopt" type="button">C · So the chart looks more professional</button>
+      <p class="qwhy">A metric is only defined when two analysts in separate rooms would return the same figure. Until then it is a word everyone fills in differently.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · What is the fastest way to annoy your data team?</p>
+      <button class="qopt" type="button">A · Vague, urgent, unbatched "just pull the numbers" asks with no definition</button>
+      <button class="qopt" type="button">B · Sending a request with all five fields spelled out</button>
+      <button class="qopt" type="button">C · Doing simple filters yourself in the BI tool</button>
+      <p class="qwhy">"Just pull the numbers" hands the analyst every hard decision while marking it urgent. Batched, defined, lead-time requests are what keep a data team fast and willing.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Leader session 5 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The five fields</b><span>metric · grain · filter · timeframe · comparison. Name all five, every time.</span></div>
+      <div class="cheat-item"><b>Metric</b><span>the number, defined - "completed revenue", not just "revenue".</span></div>
+      <div class="cheat-item"><b>Grain</b><span>per what - per customer, per week, per country. Decides trend versus total.</span></div>
+      <div class="cheat-item"><b>The two-people test</b><span>a metric is defined only if two analysts, apart, would compute it the same.</span></div>
+      <div class="cheat-item"><b>Comparison</b><span>a number alone is data; next to a baseline it becomes a decision.</span></div>
+      <div class="cheat-item"><b>Self-serve first</b><span>filter or date change on a dashboard? Do it yourself. Save analysts for real questions.</span></div>
+      <div class="cheat-item"><b>Batch &amp; lead time</b><span>five questions together with a real deadline beats five urgent pings.</span></div>
+      <div class="cheat-item"><b>Next session</b><span>a6 · where SQL sits in the 2026 stack, AI copilots, and what to invest in.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Leader session 5 of 6 · learn-sql-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="a6-sql-warehouses-ai.html">Next: SQL, warehouses and AI →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/daybreak-seed.js?v=1"></script>
+<script src="../assets/sql-wasm.js?v=1"></script>
+<script src="../assets/sql-live.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

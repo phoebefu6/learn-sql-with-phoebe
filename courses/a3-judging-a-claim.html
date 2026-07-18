@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leader session 3 · Judging a data claim - learn sql with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-sql-with-phoebe</a> / Leader session 3 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe · Leader track · Session 3 of 6</div>
+    <h1>Judging a <span class="accent">data claim</span></h1>
+    <p class="sub">Most misleading numbers are not lies - they are honest queries that quietly answered a narrower question than the slide implies. This session trains the reflex that separates a sharp leader from a nodding one: when someone says "the data shows", you can ask exactly what the query counted, per what, and what it left out. Read the query, spot the trap, then decide.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Leader track</span>
+      <span class="chip audience">C-level · managers · curious non-coders</span>
+      <span class="chip audience">No install · nothing to write</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Recap</span>
+      <span class="a2" style="flex:4">3-21 · Granularity &amp; summaries</span>
+      <span class="a3" style="flex:4">21-39 · Where numbers mislead</span>
+      <span class="a4" style="flex:1">39-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where we are</h2>
+    </div>
+    <p class="lede">You can now read a query and say what it asks for. This session puts that reading to work as judgment. A single number - an average, a total, a rate - is a lossy summary of a richer table, and the way it was computed decides whether it deserves your trust. We will look at real Daybreak numbers that are each true and each quietly misleading, and practice the three questions that expose the gap.</p>
+    <div class="legend">
+      <span class="pill solid">Live - discussed in session</span>
+      <span class="pill light">Self-study - read after</span>
+      <span class="pill peach">▶ See it run - a real query, live</span>
+      <span class="pill inkpill">For decision-makers</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A gut feel for hidden granularity ("per what?"), the knowledge that count, sum and average tell different stories from the same data, and the three questions to ask of any metric before it drives a decision.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: GRANULARITY ============ -->
+  <section class="section" id="granularity">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · the hidden 'per what'</span>
+      <h2>GROUP BY = per what: the hidden granularity <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">Every metric is secretly "per something". "We have customers" becomes a very different statement once you ask "per country". The <code>GROUP BY</code> clause is where that granularity is decided, and it is the first thing to locate when you judge a claim. Change what you group by and the same table tells a different story.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Customers, per country<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Read it first: "count of customers, per country, biggest first." The <code>GROUP BY country</code> is the granularity; the <code>ORDER BY ... DESC</code> just sorts the summary. Run it, then ask: would a headline of "we serve five countries" have told you the same thing? It would have hidden that the count is lopsided.</p>
+        <div class="sqlbox" data-caption="GROUP BY country sets the granularity: one row per country, its own count.">
+          <pre class="sql-src">SELECT country, COUNT(*) AS customers
+FROM customers
+GROUP BY country
+ORDER BY customers DESC;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>The first question for any metric</strong>
+          "Per what?" A total with no granularity hides how it is distributed. Finding the GROUP BY - or noticing there isn't one - is step one of judging a claim.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Why "per what" is the root of most disputes<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>When two teams argue about a number, they are usually grouping at different grains without realizing it. Sales counts revenue per deal; finance counts it per invoice; the product team counts it per active account. All three are "revenue", none agree, and none is lying. The fix is not a better database - it is naming the grain out loud.</p>
+        <ul>
+          <li><strong>Per order</strong> vs <strong>per customer</strong>: a customer with five orders is one row in one view and five in the other.</li>
+          <li><strong>Per month</strong> vs <strong>per cohort</strong>: the same signups look like growth or churn depending on which you group by.</li>
+          <li><strong>The leader's habit:</strong> before debating a number, agree on its grain. Half of data disputes dissolve right there.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: COUNT VS SUM VS AVG ============ -->
+  <section class="section" id="summaries">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · one table, many stories</span>
+      <h2>Count, sum and average tell different stories <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">From one column you can compute several summaries, and each answers a different question. Count tells you how many, sum tells you the total, average tells you the typical - and average is the one that most often hides trouble. A single number is always a lossy compression of the rows behind it.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Three summaries of the same price column<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Read it: "how many products, the average price rounded to cents, and the highest price." Run it. The catalog has coffee bags around $15-22 and one Cold Brew Kit at $34. Watch how the average lands in the middle and says nothing about that top-end outlier - a leader who only saw "average price" would never guess a $34 item existed.</p>
+        <div class="sqlbox" data-caption="COUNT, AVG and MAX from one column - three different truths.">
+          <pre class="sql-src">SELECT COUNT(*) AS products,
+       ROUND(AVG(price), 2) AS avg_price,
+       MAX(price) AS priciest
+FROM products;</pre>
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The average that hid the outlier.</strong> A pricing review anchored on "our average product is about $20" and set a discount policy around it. The equipment line - a handful of items at $28 and $34 - was where the margin actually lived, and the average had erased it from the conversation. The single number was correct and misleading at once. Asking to see the max and the spread, not just the average, would have caught it.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>When each summary is the honest one<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>None of these is better; each fits a different question. Match the summary to the decision.</p>
+        <table class="clean">
+          <thead><tr><th>Summary</th><th>Answers</th><th>Hides</th></tr></thead>
+          <tbody>
+            <tr><td><code>COUNT</code></td><td>how many rows?</td><td>the size or value of each</td></tr>
+            <tr><td><code>SUM</code></td><td>what is the total?</td><td>how it splits across rows</td></tr>
+            <tr><td><code>AVG</code></td><td>what is typical?</td><td>outliers and the shape of the spread</td></tr>
+          </tbody>
+        </table>
+        <p>When you are handed an average, the follow-up is almost always "and what does the spread look like?" A median, a max, or a simple range often changes the story.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: WHERE NUMBERS MISLEAD ============ -->
+  <section class="section" id="mislead">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · the common traps</span>
+      <h2>Where numbers mislead <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">Three traps account for most misleading metrics: the refund trap (a total that silently includes or excludes reversed transactions), the average that hides a lopsided distribution, and the mismatched denominator. The same dataset can support two opposite conclusions depending on which trap you fall into.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="One dataset producing two different conclusions depending on the metric chosen">
+        <style>
+          .a3mT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .a3mI { font: 700 14px Inter, sans-serif; fill: #10222E; }
+          .a3mX { font: 400 12px Inter, sans-serif; fill: #526472; }
+          .a3mN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+          .a3mArr { stroke: #9FCFEE; stroke-width: 2.5; fill: none; marker-end: url(#a3mAh); }
+        </style>
+        <defs>
+          <marker id="a3mAh" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#9FCFEE" stroke-width="1.6"/>
+          </marker>
+        </defs>
+        <rect x="330" y="30" width="220" height="70" rx="12" fill="#10222E"/>
+        <text class="a3mT" x="352" y="60">One dataset</text>
+        <text class="a3mX" x="352" y="82" fill="#CDE7F5">the same 33 orders</text>
+        <rect x="30" y="150" width="330" height="70" rx="12" fill="#0F80CC"/>
+        <text class="a3mT" x="52" y="180">Count all rows</text>
+        <text class="a3mX" x="52" y="202" fill="#CDE7F5">"33 orders - great quarter"</text>
+        <rect x="520" y="150" width="330" height="70" rx="12" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="a3mI" x="542" y="180">Count completed only</text>
+        <text class="a3mX" x="542" y="202">"fewer once refunds drop out"</text>
+        <line class="a3mArr" x1="380" y1="100" x2="230" y2="146"/>
+        <line class="a3mArr" x1="500" y1="100" x2="650" y2="146"/>
+        <rect x="30" y="234" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="a3mN" x="52" y="246">Same data, two conclusions. The metric you pick is the argument you make.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - one dataset, two honest but different conclusions</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Orders per status - the ambiguity, exposed<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Read it: "count of orders, per status." Run it and you will see the completed, refunded and cancelled buckets side by side. This is the whole point: "we had 33 orders" is ambiguous until you say which of these statuses were meant to count. The refund trap lives right here.</p>
+        <div class="sqlbox" data-caption="Break the total down by status and the ambiguity in 'number of orders' becomes visible.">
+          <pre class="sql-src">SELECT status, COUNT(*) AS n
+FROM orders
+GROUP BY status;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>The refund trap</strong>
+          A headline "orders" or "revenue" number is only meaningful once you know whether refunded and cancelled rows were kept or dropped. Always ask which statuses the total includes.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The denominator trap<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Rates and percentages mislead through their denominator - the number on the bottom. "Conversion is up" means nothing until you know conversion out of what. A rate is only trustworthy when its top and bottom describe the same population over the same window.</p>
+        <ul>
+          <li><strong>Mismatched populations:</strong> numerator counts all signups, denominator counts only paying accounts - the rate is meaningless.</li>
+          <li><strong>Shrinking denominator:</strong> a "churn rate improved" can simply mean the base you divided by got smaller.</li>
+          <li><strong>The leader's move:</strong> for any rate, ask "top over bottom - are they the same group, same period?" Session a4 goes deep on this.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DISCUSSION ============ -->
+  <section class="section" id="discussion">
+    <div class="section-kicker">
+      <span class="klabel">Boardroom exercise</span>
+      <h2>Interrogate one claim as a group <span class="tag demo">★ 12 min · discuss together</span></h2>
+    </div>
+    <p class="lede">Take the claim "our average order is healthy." Before running anything, the group writes down the three questions a leader should ask about how that number was computed. Then use the live queries to check whether the claim survives them.</p>
+
+    <div class="steps">
+      <div class="step"><p><strong>Question 1 - what did it count?</strong> Did "order" mean every row, or completed orders only? Refunds in or out?</p></div>
+      <div class="step"><p><strong>Question 2 - per what?</strong> Average per order line, per order, or per customer? Each gives a different "average".</p></div>
+      <div class="step"><p><strong>Question 3 - what did it exclude, and what is the spread?</strong> Does one big outlier carry the average? Show the max, not just the mean.</p></div>
+    </div>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Check A · what statuses are we averaging over<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Before you can trust an "average order", you have to know which orders count. Run this to see the status breakdown, then decide which rows the claim should have used.</p>
+        <div class="sqlbox" data-caption="You can't average orders until you agree which statuses are 'orders'.">
+          <pre class="sql-src">SELECT status, COUNT(*) AS n
+FROM orders
+GROUP BY status;</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Check B · average versus the outlier<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Run this to see the average price sitting next to the max. If the two are far apart, an outlier is shaping the "healthy average" - and the claim needs the spread shown, not just the mean.</p>
+        <div class="sqlbox" data-caption="Average next to max: if they diverge, one outlier is bending the story.">
+          <pre class="sql-src">SELECT ROUND(AVG(price), 2) AS avg_price,
+       MAX(price) AS priciest,
+       MIN(price) AS cheapest
+FROM products;</pre>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Between sessions</span>
+      <h2>Take this back to your desk <span class="tag exercise">◐ 15 min</span></h2>
+    </div>
+    <ul>
+      <li>Find one average in a report you receive. Ask your analyst to show you the spread behind it - a max and a min, or a median. Notice whether the average was hiding something.</li>
+      <li>Pick one total on a dashboard - revenue, orders, users - and ask which statuses or states it includes. Refunds in or out? Trials counted? Write the answer next to the number.</li>
+      <li>Next time you see a rate, say the denominator out loud: "X out of what?" If nobody can answer cleanly, the rate is not ready to drive a decision.</li>
+      <li>Optional: bring one metric whose definition surprised you to session a4 - we will trace it back to the exact query that produces it.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>What this maps to</h2>
+    </div>
+    <p class="lede">This session takes the aggregate-functions material from the standard curriculum and reframes it as judgment - how a summary can mislead - rather than syntax to memorize. It covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Mode SQL Tutorial - aggregate functions (conceptual level)</span><span class="note">Parts 1-2 · COUNT / SUM / AVG / MAX and GROUP BY granularity</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Averages, outliers and denominators as failure modes</span><span class="note">Parts 2-3 · why a true number can still mislead</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Decision-intelligence framing (Cassie Kozyrkov style)</span><span class="note">Part 3 · the three questions to ask of any metric</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · "Our average price is $X" can mislead because...</p>
+      <button class="qopt" type="button">A · Averages are always wrong</button>
+      <button class="qopt" type="button">B · An average hides outliers and the shape of the distribution behind it</button>
+      <button class="qopt" type="button">C · The price column can never be trusted</button>
+      <p class="qwhy">An average is a lossy summary. A single $34 item can sit invisibly inside a "typical $20" number. Ask for the spread - a max, a min, a median - alongside any average.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · "We had 33 orders" is ambiguous because...</p>
+      <button class="qopt" type="button">A · The number 33 is too small to be meaningful</button>
+      <button class="qopt" type="button">B · Orders are never counted correctly</button>
+      <button class="qopt" type="button">C · It may or may not include refunded and cancelled orders</button>
+      <p class="qwhy">An order count is only meaningful once you know which statuses it includes. Completed only? Refunds in? The refund trap lives exactly here - ask which rows counted.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · The leader's core question about any metric is...</p>
+      <button class="qopt" type="button">A · What did the query count, per what, and what did it exclude?</button>
+      <button class="qopt" type="button">B · Which analyst wrote it?</button>
+      <button class="qopt" type="button">C · How long did the query take to run?</button>
+      <p class="qwhy">Three parts: what was counted, at what grain, and what was left out. Those questions turn a number you are shown into a number you can actually judge.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Leader session 3 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Every metric is "per something"</b><span>find the GROUP BY, or notice there isn't one.</span></div>
+      <div class="cheat-item"><b>COUNT vs SUM vs AVG</b><span>how many, the total, the typical - three different truths.</span></div>
+      <div class="cheat-item"><b>Average hides the spread</b><span>always ask for a max, a min, or a median beside it.</span></div>
+      <div class="cheat-item"><b>The refund trap</b><span>a total is meaningless until you know which statuses it counts.</span></div>
+      <div class="cheat-item"><b>The denominator trap</b><span>a rate is "X out of what?" - top and bottom must match.</span></div>
+      <div class="cheat-item"><b>Same data, two stories</b><span>the metric you pick is the argument you make.</span></div>
+      <div class="cheat-item"><b>The three questions</b><span>what did it count, per what, and what did it exclude?</span></div>
+      <div class="cheat-item"><b>Next session</b><span>a4 · the dashboard behind the dashboard - every tile is a query.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Leader session 3 of 6 · learn-sql-with-phoebe · by Phoebe Fu</span>
+    <span><a href="a2-reading-a-query.html">← Previous</a> &nbsp;·&nbsp; <a href="a4-dashboard-behind.html">Next: The dashboard behind the dashboard →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/daybreak-seed.js?v=1"></script>
+<script src="../assets/sql-wasm.js?v=1"></script>
+<script src="../assets/sql-live.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

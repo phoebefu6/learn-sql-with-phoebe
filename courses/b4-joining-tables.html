@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 4 · Joining tables - learn sql with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-sql-with-phoebe</a> / Builder session 4 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe · Builder track · Session 4 of 10</div>
+    <h1>Joining <span class="accent">tables</span></h1>
+    <p class="sub">So far every query has lived inside one table. But the real answers - who spent the most, which customers never ordered, revenue by product name - need two or three tables stitched together. That is what a JOIN does: it lines rows up on a shared id and hands you one wider row. This is the session where Daybreak's six tables stop being islands and start being a database.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Builder track</span>
+      <span class="chip audience">Practitioners: analysts · DE · DS · PMs</span>
+      <span class="chip audience">Runs in your browser · SQLite</span>
+      <span class="chip time">Builds on b1-b3</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:4">3-20 · The join idea + INNER/LEFT</span>
+      <span class="a3" style="flex:5">20-42 · Build-along: join Daybreak</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ PART 1: WHAT A JOIN IS ============ -->
+  <section class="section" id="what-join-is">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers Mode "Intermediate Joins", SQLZoo "JOIN"</span>
+      <h2>What a join is <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">An <code>orders</code> row tells you <code>customer_id = 3</code> placed the order - but not their name. The name lives over in <code>customers</code>. A <strong>JOIN</strong> follows that shared id: for each order it finds the matching customer row and glues the two together into one wider row. You pick which columns you want from either side; SQLite does the matching.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two tables sharing a customer_id key combine into one wider joined row">
+        <style>
+          .joinHdr { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .joinCell { font: 400 12px Inter, sans-serif; fill: #10222E; }
+          .joinKey { font: 700 12px Inter, sans-serif; fill: #0F80CC; }
+          .joinLbl { font: 600 12.5px Inter, sans-serif; fill: #526472; }
+          .joinNote { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+          .joinArrow { stroke: #3DA0E3; stroke-width: 2.5; fill: none; marker-end: url(#joinTip); }
+        </style>
+        <defs>
+          <marker id="joinTip" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 Z" fill="#3DA0E3"/>
+          </marker>
+        </defs>
+        <!-- orders table -->
+        <text class="joinLbl" x="40" y="30">orders</text>
+        <rect x="40" y="40" width="230" height="26" rx="5" fill="#003B57"/>
+        <text class="joinHdr" x="52" y="57">order_id</text>
+        <text class="joinHdr" x="150" y="57">customer_id</text>
+        <rect x="40" y="66" width="230" height="26" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="joinCell" x="52" y="83">1001</text>
+        <text class="joinKey" x="150" y="83">3</text>
+        <rect x="40" y="92" width="230" height="26" fill="#FFFFFF" stroke="#9FCFEE"/>
+        <text class="joinCell" x="52" y="109">1002</text>
+        <text class="joinKey" x="150" y="109">7</text>
+        <!-- customers table -->
+        <text class="joinLbl" x="40" y="168">customers</text>
+        <rect x="40" y="178" width="230" height="26" rx="5" fill="#003B57"/>
+        <text class="joinHdr" x="52" y="195">customer_id</text>
+        <text class="joinHdr" x="160" y="195">name</text>
+        <rect x="40" y="204" width="230" height="26" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="joinKey" x="52" y="221">3</text>
+        <text class="joinCell" x="160" y="221">Ava Chen</text>
+        <rect x="40" y="230" width="230" height="26" fill="#FFFFFF" stroke="#9FCFEE"/>
+        <text class="joinKey" x="52" y="247">7</text>
+        <text class="joinCell" x="160" y="247">Noah Park</text>
+        <!-- match arrows -->
+        <path class="joinArrow" d="M175,88 C330,88 330,205 175,214"/>
+        <!-- result -->
+        <text class="joinLbl" x="470" y="30">joined result: one wider row per match</text>
+        <rect x="470" y="40" width="370" height="26" rx="5" fill="#0F80CC"/>
+        <text class="joinHdr" x="482" y="57">order_id</text>
+        <text class="joinHdr" x="580" y="57">customer_id</text>
+        <text class="joinHdr" x="710" y="57">name</text>
+        <rect x="470" y="66" width="370" height="26" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="joinCell" x="482" y="83">1001</text>
+        <text class="joinKey" x="580" y="83">3</text>
+        <text class="joinCell" x="710" y="83">Ava Chen</text>
+        <rect x="470" y="92" width="370" height="26" fill="#FFFFFF" stroke="#9FCFEE"/>
+        <text class="joinCell" x="482" y="109">1002</text>
+        <text class="joinKey" x="580" y="109">7</text>
+        <text class="joinCell" x="710" y="109">Noah Park</text>
+        <text class="joinLbl" x="470" y="170">ON orders.customer_id = customers.customer_id</text>
+        <text class="joinLbl" x="470" y="192">The shared key column is the hinge the two tables swing on.</text>
+        <rect x="470" y="270" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="joinNote" x="494" y="282">INNER JOIN keeps a row only when both sides have a match on the key.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - one shared id turns two tables into one answer</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Your first join - orders with customer names<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Below, <code>orders</code> gets an alias <code>o</code> and <code>customers</code> gets <code>c</code> - short nicknames so you can write <code>o.order_id</code> and <code>c.name</code> without typing the full table name each time. The <code>ON</code> clause names the shared key. Press <strong>▶ Run</strong> and watch order rows arrive with a real name attached.</p>
+        <div class="sqlbox" data-caption="Aliases o and c keep it short. Try adding o.status to the SELECT.">
+          <pre class="sql-src">SELECT o.order_id, c.name, o.order_date
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+LIMIT 10;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>JOIN means INNER JOIN</strong>
+          Writing <code>JOIN</code> on its own is exactly the same as <code>INNER JOIN</code> - SQLite fills in the <code>INNER</code> for you. It keeps only rows where the key matches on both sides. An order with no matching customer would simply not appear.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Why alias tables at all?<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Aliases feel optional on a two-table join and become essential the moment you have three tables or two columns with the same name (both <code>orders</code> and <code>customers</code> have a <code>customer_id</code>). Prefixing every column with its table - <code>o.customer_id</code> vs <code>c.customer_id</code> - removes all ambiguity and makes the query readable at a glance.</p>
+        <ul>
+          <li><strong>Disambiguate:</strong> when two tables share a column name, an unqualified name is an error. <code>o.customer_id</code> says exactly which one.</li>
+          <li><strong>Readability:</strong> <code>c.name</code> reads faster than <code>customers.name</code>, especially across three joins.</li>
+          <li><strong>Convention:</strong> a one- or two-letter alias near the table name (<code>o</code> for orders, <code>oi</code> for order_items) is standard across every SQL shop.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: INNER VS LEFT ============ -->
+  <section class="section" id="inner-vs-left">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers Mode "LEFT/RIGHT JOIN", SQLZoo "More JOIN operations"</span>
+      <h2>Which join: INNER vs LEFT <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">The join you pick decides which rows survive. <code>INNER JOIN</code> keeps only rows that match on both sides. <code>LEFT JOIN</code> keeps <strong>every</strong> row from the left table, and fills the right side with <code>NULL</code> when there is no match. That difference is exactly how you find customers who have never ordered.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="INNER JOIN keeps only overlap; LEFT JOIN keeps all left rows and fills NULL where there is no match">
+        <style>
+          .ljTitle { font: 700 14px Inter, sans-serif; fill: #10222E; }
+          .ljLbl { font: 600 12.5px Inter, sans-serif; fill: #526472; }
+          .ljTag { font: 700 12px Inter, sans-serif; fill: #FFFFFF; }
+          .ljNull { font: 700 12px Inter, sans-serif; fill: #4A2E00; }
+          .ljNote { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+        </style>
+        <!-- INNER -->
+        <text class="ljTitle" x="40" y="34">INNER JOIN</text>
+        <circle cx="150" cy="120" r="60" fill="#9FCFEE" opacity="0.55"/>
+        <circle cx="230" cy="120" r="60" fill="#3DA0E3" opacity="0.55"/>
+        <path d="M190,72 A60 60 0 0 1 190,168 A60 60 0 0 1 190,72 Z" fill="#0F80CC"/>
+        <text class="ljLbl" x="95" y="210">customers</text>
+        <text class="ljLbl" x="205" y="210">orders</text>
+        <rect x="150" y="115" width="80" height="20" rx="4" fill="#003B57"/>
+        <text class="ljTag" x="160" y="130">kept</text>
+        <text class="ljLbl" x="40" y="236">Only customers who have at least one order.</text>
+        <!-- LEFT -->
+        <text class="ljTitle" x="500" y="34">LEFT JOIN</text>
+        <circle cx="610" cy="120" r="60" fill="#0F80CC"/>
+        <circle cx="690" cy="120" r="60" fill="#3DA0E3" opacity="0.55"/>
+        <path d="M650,72 A60 60 0 0 1 650,168 A60 60 0 0 1 650,72 Z" fill="#0F80CC"/>
+        <text class="ljLbl" x="555" y="210">customers (all)</text>
+        <text class="ljLbl" x="665" y="210">orders</text>
+        <rect x="540" y="110" width="80" height="20" rx="4" fill="#F5A623"/>
+        <text class="ljNull" x="550" y="125">NULL side</text>
+        <text class="ljLbl" x="500" y="236">Every customer stays; no-order ones get NULL orders.</text>
+        <rect x="40" y="246" width="0" height="0"/>
+      </svg>
+      <figcaption>🔍 Click to zoom - INNER keeps the overlap, LEFT keeps all of the left table</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>LEFT JOIN - count orders per customer, including zero<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Here is the payoff. A <code>LEFT JOIN</code> from <code>customers</code> keeps every customer even if they have no orders. <code>COUNT(o.order_id)</code> counts only real order rows - so a customer with no match counts as <code>0</code>. Sort ascending and the quiet, never-ordered customers float to the top.</p>
+        <div class="sqlbox" data-caption="Swap LEFT JOIN for JOIN and watch the zero-order customers vanish.">
+          <pre class="sql-src">SELECT c.name, COUNT(o.order_id) AS orders
+FROM customers c
+LEFT JOIN orders o ON c.customer_id = o.customer_id
+GROUP BY c.customer_id
+ORDER BY orders;</pre>
+        </div>
+        <div class="callout win">
+          <strong>★ The classic "who is missing" query</strong>
+          A <code>LEFT JOIN</code> plus <code>COUNT</code> of the right-side key is how analysts find customers with no orders, products never sold, or accounts with no activity. Change one word - <code>LEFT</code> to <code>INNER</code> - and those rows disappear. Choosing the join is choosing the question.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>RIGHT and FULL OUTER JOIN<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>SQLite also supports <code>RIGHT JOIN</code> and <code>FULL OUTER JOIN</code> (added in SQLite 3.39). A <code>RIGHT JOIN</code> is just a <code>LEFT JOIN</code> with the tables flipped - it keeps every row from the right table. A <code>FULL OUTER JOIN</code> keeps every row from <strong>both</strong> sides, filling <code>NULL</code> wherever either side has no match.</p>
+        <ul>
+          <li><strong>RIGHT JOIN:</strong> rarely needed - most people just reorder the tables and use <code>LEFT</code>. Same result, easier to read top to bottom.</li>
+          <li><strong>FULL OUTER JOIN:</strong> useful for reconciliation - "show me every customer and every order, matched where possible, gaps on both sides shown as NULL".</li>
+          <li><strong>In practice:</strong> INNER and LEFT cover the overwhelming majority of real work. Know RIGHT and FULL exist; reach for them when a reconciliation actually calls for them.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: CHAINING JOINS + SELF-JOINS ============ -->
+  <section class="section" id="chaining-joins">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers Mode "multiple joins", SQLZoo self-join</span>
+      <h2>Chaining joins and self-joins <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">Nothing stops you at two tables. To get revenue per customer you need three: <code>customers</code> for the name, <code>orders</code> to reach that customer's orders, and <code>order_items</code> for the money. You chain them by adding a second <code>JOIN ... ON ...</code>, each link naming its own key. This is the exact query behind Daybreak's top-customer list.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Three-table join - revenue per customer<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Read the joins as a path: <code>customers</code> → <code>orders</code> (on <code>customer_id</code>) → <code>order_items</code> (on <code>order_id</code>). Line revenue is <code>quantity * unit_price</code>; <code>SUM</code> rolls it up per customer. We filter to <code>status = 'completed'</code> so refunds and cancels do not inflate the numbers.</p>
+        <div class="sqlbox" data-caption="This matches Daybreak's verified top spenders. Try removing the WHERE to see the difference.">
+          <pre class="sql-src">SELECT c.name, ROUND(SUM(oi.quantity*oi.unit_price),2) AS spent
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+JOIN order_items oi ON o.order_id = oi.order_id
+WHERE o.status='completed'
+GROUP BY c.customer_id
+ORDER BY spent DESC
+LIMIT 5;</pre>
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>Your answer should read: Noah Park 232, Ava Chen 222, Ethan Ruiz 177, Jack Lee 135, Zoe Tan 119.</strong> That is the founder's "who are our best customers" question answered in one query - three tables, a filter, a sum, a sort. Most revenue and cohort reports are this same skeleton with different columns bolted on.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Self-joins - a table joined to itself<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A self-join is a table joined to a second copy of itself, using two different aliases. It answers "which rows relate to other rows in the same table" - here, pairs of customers who live in the same city. Give <code>customers</code> two aliases (<code>a</code> and <code>b</code>) and match them on <code>city</code>.</p>
+        <div class="sqlbox" data-caption="a.customer_id &lt; b.customer_id avoids duplicate pairs and self-matches.">
+          <pre class="sql-src">SELECT a.name AS customer_a, b.name AS customer_b, a.city
+FROM customers a
+JOIN customers b ON a.city = b.city AND a.customer_id &lt; b.customer_id
+ORDER BY a.city;</pre>
+        </div>
+        <p>The <code>a.customer_id &lt; b.customer_id</code> condition keeps each pair once and stops a row from matching itself. Self-joins power "friends in the same region", "duplicate detection", and org-chart "who reports to whom" style questions.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO: BUILD-ALONG ============ -->
+  <section class="section" id="demo-build">
+    <div class="section-kicker">
+      <span class="klabel">Build-along · everyone types</span>
+      <h2>Revenue by product name <span class="tag demo">★ 12 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">The <code>order_items</code> table knows <code>product_id</code> and money, but not the product's name - that lives in <code>products</code>. Join the two and you can rank the catalog by revenue. Let us build it one clause at a time, then run it.</p>
+
+    <div class="steps">
+      <div class="step"><p>Start with the money table: <code>SELECT * FROM order_items LIMIT 5;</code> - see quantity and unit_price, but only a bare product_id.</p></div>
+      <div class="step"><p>Add the join: <code>JOIN products p ON oi.product_id = p.product_id</code> so each line gets a real product name.</p></div>
+      <div class="step"><p>Sum the money: <code>SUM(oi.quantity*oi.unit_price) AS revenue</code>, grouped by product.</p></div>
+      <div class="step"><p>Sort it: <code>ORDER BY revenue DESC</code> so the best sellers land on top.</p></div>
+    </div>
+
+    <div class="sqlbox" data-caption="The finished build-along. Try GROUP BY p.category instead to roll up by category.">
+      <pre class="sql-src">SELECT p.name, SUM(oi.quantity*oi.unit_price) AS revenue
+FROM order_items oi
+JOIN products p ON oi.product_id = p.product_id
+GROUP BY p.product_id
+ORDER BY revenue DESC;</pre>
+    </div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>This is the shape of every "top products / top X by revenue" report.</strong> A fact table with ids and amounts (<code>order_items</code>), joined to a dimension table with human labels (<code>products</code>), summed and sorted. Swap <code>products</code> for <code>customers</code> or a date table and you have built most of a BI dashboard's back end.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 20-30 min total</span></h2>
+    </div>
+    <ul>
+      <li>List every order with its customer's name and country by joining <code>orders</code> to <code>customers</code>.</li>
+      <li>Use a <code>LEFT JOIN</code> to find every customer who has never placed an order (hint: <code>COUNT(o.order_id) = 0</code>, or the order side is <code>NULL</code>).</li>
+      <li>Build revenue per customer again, but this time only for orders placed on the <code>web</code> channel.</li>
+      <li>Join <code>order_items</code> to <code>products</code> and total revenue by <code>category</code> instead of by product name.</li>
+      <li>Bring one three-table question about Daybreak you cannot yet answer to session b5 - odds are it needs <code>CASE</code> or a reshape, which is exactly what b5 delivers.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This session teaches the working core of the major free SQL curricula's join material, run on live Daybreak data instead of screenshots. Certificates, graded problem sets, and video lectures stay on the official sites (linked below). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Mode SQL Tutorial - Intermediate: Joins</span><span class="note">Parts 1-3 · INNER, LEFT/RIGHT, FULL OUTER, self-joins, multiple keys, run live</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">SQLZoo - JOIN &amp; More JOIN operations</span><span class="note">Parts 1-3 · multi-table joins and self-joins, editable here</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Kaggle Intro to SQL - Joining Data</span><span class="note">Parts 1-2 · INNER/LEFT foundations; Kaggle's notebooks stay on Kaggle</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">1 · What is the difference between INNER JOIN and LEFT JOIN?</p>
+      <button class="qopt" type="button">A · They are identical; LEFT is just an older spelling</button>
+      <button class="qopt" type="button">B · INNER keeps all left-table rows; LEFT keeps only matches</button>
+      <button class="qopt" type="button">C · INNER keeps only rows that match on both sides; LEFT keeps all left-table rows, filling NULL where there is no match</button>
+      <p class="qwhy">INNER keeps only matching rows. LEFT keeps every row from the left table and puts NULL on the right side when nothing matches - that is how you find customers with no orders.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">2 · What does the ON clause do in a join?</p>
+      <button class="qopt" type="button">A · Names the key columns the two tables match on</button>
+      <button class="qopt" type="button">B · Turns the join on, as opposed to OFF</button>
+      <button class="qopt" type="button">C · Sorts the joined rows</button>
+      <p class="qwhy">ON tells SQLite which columns to match rows on - usually a shared id like o.customer_id = c.customer_id. It is the hinge the two tables swing on.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">3 · How do you get total revenue per customer?</p>
+      <button class="qopt" type="button">A · SELECT SUM(price) FROM products grouped by customer</button>
+      <button class="qopt" type="button">B · Join customers → orders → order_items, then SUM(quantity*unit_price) grouped by customer</button>
+      <button class="qopt" type="button">C · A single query on the orders table, no joins needed</button>
+      <p class="qwhy">The money lives in order_items and the name in customers, linked through orders. Chain the three joins, then SUM quantity*unit_price per customer.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 4 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>A join is</b><span>rows from two tables lined up on a shared key, glued into one wider row.</span></div>
+      <div class="cheat-item"><b>The pattern</b><span>FROM a JOIN b ON a.key = b.key. Alias tables (o, c, oi) to keep it short.</span></div>
+      <div class="cheat-item"><b>INNER JOIN</b><span>Keeps only rows that match on both sides. Plain JOIN means INNER.</span></div>
+      <div class="cheat-item"><b>LEFT JOIN</b><span>Keeps every left-table row, NULL on the right where no match. Finds the "missing".</span></div>
+      <div class="cheat-item"><b>RIGHT / FULL</b><span>SQLite supports both. RIGHT = flipped LEFT; FULL keeps every row on both sides.</span></div>
+      <div class="cheat-item"><b>ON clause</b><span>Names the key columns to match: ON o.customer_id = c.customer_id.</span></div>
+      <div class="cheat-item"><b>Chaining joins</b><span>Add a second JOIN ... ON ... per table. customers → orders → order_items = revenue per customer.</span></div>
+      <div class="cheat-item"><b>Self-join</b><span>Join a table to itself with two aliases (a, b) to relate rows in the same table.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 4 of 10 · learn-sql-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="b5-combining-reshaping.html">Next: Combining and reshaping →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/daybreak-seed.js?v=1"></script>
+<script src="../assets/sql-wasm.js?v=1"></script>
+<script src="../assets/sql-live.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

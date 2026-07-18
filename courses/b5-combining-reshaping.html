@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 5 · Combining and reshaping - learn sql with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-sql-with-phoebe</a> / Builder session 5 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe · Builder track · Session 5 of 10</div>
+    <h1>Combining and <span class="accent">reshaping</span></h1>
+    <p class="sub">You can now filter, aggregate, and join. This session is about shaping the output - turning raw values into labelled buckets with CASE, cleaning up columns with functions and aliases, and stacking two result sets on top of each other with UNION. These are the moves that turn a correct query into a report someone can actually read.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Builder track</span>
+      <span class="chip audience">Practitioners: analysts · DE · DS · PMs</span>
+      <span class="chip audience">Runs in your browser · SQLite</span>
+      <span class="chip time">Builds on b1-b4</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-24 · CASE, functions, UNION</span>
+      <span class="a3" style="flex:4">24-42 · Build-along: monthly counts</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ PART 1: CASE ============ -->
+  <section class="section" id="case-buckets">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers Mode "Advanced: CASE"</span>
+      <h2>CASE: if/then buckets <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">Real reports rarely want raw numbers - they want labels. Is this product premium, standard, or value? <code>CASE</code> is SQL's if/then: it checks conditions in order, top to bottom, and returns the value for the first one that is true. It is how you turn a continuous price into a tidy tier a human reads at a glance.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A price value flows through CASE branches into premium, standard, and value buckets">
+        <style>
+          .caseVal { font: 700 14px Inter, sans-serif; fill: #10222E; }
+          .caseCond { font: 600 12.5px "SF Mono", Menlo, monospace; fill: #526472; }
+          .caseTag { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .caseLbl { font: 600 12.5px Inter, sans-serif; fill: #526472; }
+          .caseNote { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+          .caseFlow { stroke: #3DA0E3; stroke-width: 2.5; fill: none; marker-end: url(#caseTip); }
+        </style>
+        <defs>
+          <marker id="caseTip" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 Z" fill="#3DA0E3"/>
+          </marker>
+        </defs>
+        <!-- input value -->
+        <rect x="40" y="118" width="120" height="44" rx="8" fill="#003B57"/>
+        <text class="caseTag" x="60" y="145">price = 24</text>
+        <text class="caseLbl" x="52" y="182">one product</text>
+        <!-- branch checks -->
+        <path class="caseFlow" d="M160,140 L300,80"/>
+        <path class="caseFlow" d="M160,140 L300,140"/>
+        <path class="caseFlow" d="M160,140 L300,200"/>
+        <rect x="300" y="60" width="250" height="40" rx="6" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="caseCond" x="314" y="85">WHEN price &gt;= 20  → premium</text>
+        <rect x="300" y="120" width="250" height="40" rx="6" fill="#FFFFFF" stroke="#9FCFEE"/>
+        <text class="caseCond" x="314" y="145">WHEN price &gt;= 15  → standard</text>
+        <rect x="300" y="180" width="250" height="40" rx="6" fill="#FFFFFF" stroke="#9FCFEE"/>
+        <text class="caseCond" x="314" y="205">ELSE                     → value</text>
+        <!-- result bucket -->
+        <path class="caseFlow" d="M550,80 L690,120"/>
+        <rect x="690" y="100" width="150" height="44" rx="8" fill="#0F80CC"/>
+        <text class="caseTag" x="712" y="127">'premium'</text>
+        <text class="caseLbl" x="690" y="164">first true wins</text>
+        <rect x="40" y="250" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="caseNote" x="64" y="262">CASE checks top to bottom and stops at the first match. Order your conditions from strictest down.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - a value falls through CASE branches into the first bucket that fits</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Bucket products into price tiers<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The <code>CASE</code> below reads top to bottom and returns the first branch whose condition is true. A $24 product hits <code>&gt;= 20</code> first and gets <code>premium</code>; a $16 one skips that and lands on <code>standard</code>. Press <strong>▶ Run</strong>, then change the thresholds and watch the tiers shift.</p>
+        <div class="sqlbox" data-caption="Order matters: strictest condition first. Try flipping 20 and 15 to see it break.">
+          <pre class="sql-src">SELECT name, price,
+  CASE
+    WHEN price &gt;= 20 THEN 'premium'
+    WHEN price &gt;= 15 THEN 'standard'
+    ELSE 'value'
+  END AS tier
+FROM products;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>ELSE is your safety net</strong>
+          Without an <code>ELSE</code>, any row that matches no condition returns <code>NULL</code>. Adding <code>ELSE 'value'</code> guarantees every row gets a label. When in doubt, always give <code>CASE</code> an <code>ELSE</code>.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>CASE inside SUM - counting by condition<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A favourite trick: put <code>CASE</code> inside an aggregate to count or sum only the rows that meet a condition, all in one pass. <code>SUM(CASE WHEN status='completed' THEN 1 ELSE 0 END)</code> counts completed orders while other columns still see every row. This "conditional aggregate" is how you build side-by-side comparison columns.</p>
+        <ul>
+          <li><strong>Conditional count:</strong> <code>SUM(CASE WHEN ... THEN 1 ELSE 0 END)</code> counts matches without a separate query.</li>
+          <li><strong>Conditional sum:</strong> swap the <code>1</code> for a real amount to total only qualifying rows.</li>
+          <li><strong>Why it matters:</strong> it turns rows into columns - the foundation of pivot-style reports you will see again in b8.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: FUNCTIONS + ALIASES ============ -->
+  <section class="section" id="functions">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers Mode "Advanced: string &amp; date functions"</span>
+      <h2>Aliases, expressions, string and date functions <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">Columns rarely arrive in exactly the shape a report wants. Functions reshape them in place: <code>UPPER</code> and <code>LENGTH</code> on text, <code>substr</code> to slice a date down to a month. An <code>AS</code> alias then gives the computed column a clean, human name. This is the polish layer of every query.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>String functions and aliases<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>UPPER(name)</code> shouts the product name; <code>LENGTH(name)</code> counts its characters. Neither touches the stored data - they compute a fresh value per row. The <code>AS</code> keyword renames each computed column so the output header reads cleanly instead of showing the raw expression.</p>
+        <div class="sqlbox" data-caption="Try LOWER instead of UPPER, or add substr(name,1,4) AS short.">
+          <pre class="sql-src">SELECT UPPER(name) AS shout, LENGTH(name) AS len
+FROM products
+LIMIT 5;</pre>
+        </div>
+        <p>Every expression can take an alias, not just plain columns. A calculation like <code>price * 1.1</code> is far more useful labelled <code>AS price_with_tax</code> than shown as its raw formula.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Pull the month out of a date<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Daybreak dates are stored as text like <code>2026-03-14</code>. To group by month you only want the first seven characters, <code>2026-03</code>. <code>substr(order_date, 1, 7)</code> takes a 7-character slice starting at position 1 - a clean year-month key. Run it and you have the building block for every monthly trend.</p>
+        <div class="sqlbox" data-caption="substr(text, start, length). Position 1 is the first character.">
+          <pre class="sql-src">SELECT order_id, substr(order_date,1,7) AS month
+FROM orders
+LIMIT 8;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>Dialects differ on dates</strong>
+          SQLite also offers <code>strftime('%Y-%m', order_date)</code> for the same year-month, and it is the more portable idea. Date and time functions vary a lot between engines - Postgres uses <code>to_char</code>, BigQuery uses <code>FORMAT_DATE</code>. The <code>substr</code> trick works anywhere dates are stored as ISO text, which is why it is handy to know.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: UNION ============ -->
+  <section class="section" id="union">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers Mode "SQL UNION"</span>
+      <h2>UNION and UNION ALL: stacking result sets <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">A <code>JOIN</code> glues tables side by side, adding columns. <code>UNION</code> does the opposite - it stacks result sets on top of each other, adding rows. As long as both queries return the same number of columns in the same order, <code>UNION</code> pours the second result under the first into one combined list.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Stack customers and products into one list<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Each half selects a name plus a literal label - <code>'customer'</code> or <code>'product'</code> - so the combined list stays self-describing. Both halves return two columns in the same order, which is the one rule <code>UNION</code> enforces. Press <strong>▶ Run</strong> to see the two tables poured into one column set.</p>
+        <div class="sqlbox" data-caption="Both SELECTs must return the same columns, same order. The labels tell rows apart.">
+          <pre class="sql-src">SELECT name, 'customer' AS kind FROM customers
+UNION ALL
+SELECT name, 'product' AS kind FROM products
+LIMIT 12;</pre>
+        </div>
+        <div class="callout win">
+          <strong>★ UNION vs UNION ALL</strong>
+          <code>UNION</code> removes duplicate rows - it does the extra work of de-duplicating. <code>UNION ALL</code> keeps every row, including duplicates, and is faster because it skips that check. When you know the halves cannot overlap (customers and products never share a row), reach for <code>UNION ALL</code>.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>When to stack vs when to join<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The two combine operations answer different questions. Reach for a <code>JOIN</code> when you want to enrich each row with related columns from another table. Reach for <code>UNION</code> when two queries produce the same shape of row and you want them in one list.</p>
+        <ul>
+          <li><strong>JOIN (wider):</strong> "attach each order's customer name" - more columns, matched by key.</li>
+          <li><strong>UNION (taller):</strong> "list this year's events and last year's events together" - more rows, same columns.</li>
+          <li><strong>Column rule:</strong> UNION needs identical column count and order in both halves; column names come from the first SELECT.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO: BUILD-ALONG ============ -->
+  <section class="section" id="demo-build">
+    <div class="section-kicker">
+      <span class="klabel">Build-along · everyone types</span>
+      <h2>Monthly order counts <span class="tag demo">★ 12 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">Here is a query you will reuse in later sessions: how many orders did Daybreak get each month? It combines two things you just learned - slicing the date to a month with <code>substr</code>, then counting rows per group. This is the setup for the trend and growth work in b8.</p>
+
+    <div class="steps">
+      <div class="step"><p>Make the month key: <code>substr(order_date,1,7) AS month</code> turns a full date into <code>2026-03</code>.</p></div>
+      <div class="step"><p>Count the rows: add <code>COUNT(*) AS orders</code> to count orders in each group.</p></div>
+      <div class="step"><p>Group by the key: <code>GROUP BY month</code> so counting happens once per month.</p></div>
+      <div class="step"><p>Order chronologically: <code>ORDER BY month</code> puts January first, so the trend reads left to right.</p></div>
+    </div>
+
+    <div class="sqlbox" data-caption="The finished build-along. Add a CASE to flag months above a threshold as busy.">
+      <pre class="sql-src">SELECT substr(order_date,1,7) AS month, COUNT(*) AS orders
+FROM orders
+GROUP BY month
+ORDER BY month;</pre>
+    </div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>This one query is the spine of most dashboards.</strong> A time bucket, a count, grouped and ordered - that is the "orders over time" line chart every founder wants on day one. Swap <code>COUNT(*)</code> for <code>SUM(...)</code> and it becomes monthly revenue; add a <code>WHERE</code> and it becomes a segment trend. You will lean on this shape all the way through b10.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 20-30 min total</span></h2>
+    </div>
+    <ul>
+      <li>Add a <code>CASE</code> to the products query that labels each row <code>coffee</code> or <code>not coffee</code> based on <code>category</code>.</li>
+      <li>Write a query that shows each customer's name in <code>UPPER</code> case alongside the length of their name.</li>
+      <li>Get monthly order counts, then change <code>COUNT(*)</code> to only count <code>completed</code> orders using a <code>CASE</code> inside <code>SUM</code>.</li>
+      <li>Use <code>UNION ALL</code> to build one list of all customer cities and all product categories, each tagged with its source.</li>
+      <li>Bring one "this number should be a label" question to session b6 - subqueries and CTEs let you stack these reshapes into bigger answers.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This session teaches the working core of the major free SQL curricula's reshaping material, run on live Daybreak data instead of screenshots. Certificates, graded problem sets, and video lectures stay on the official sites (linked below). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Mode SQL Tutorial - Advanced: CASE, string &amp; date functions</span><span class="note">Parts 1-2 · CASE buckets, string functions, date formatting, run live</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Mode SQL Tutorial - SQL UNION</span><span class="note">Part 3 · UNION vs UNION ALL, stacking result sets, editable here</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">W3Schools - SQL CASE, UNION, Aliases</span><span class="note">Parts 1-3 · reference for CASE/UNION/AS; W3Schools reference stays linked</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · What does CASE do in a query?</p>
+      <button class="qopt" type="button">A · Sorts rows into alphabetical order</button>
+      <button class="qopt" type="button">B · Returns different values based on conditions, like an if/then</button>
+      <button class="qopt" type="button">C · Joins two tables on a shared key</button>
+      <p class="qwhy">CASE checks conditions top to bottom and returns the value for the first true one - SQL's if/then. It is how you turn raw values into labelled buckets like premium / standard / value.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">2 · What is the difference between UNION and UNION ALL?</p>
+      <button class="qopt" type="button">A · UNION removes duplicate rows; UNION ALL keeps them all and is faster</button>
+      <button class="qopt" type="button">B · UNION keeps duplicates; UNION ALL removes them</button>
+      <button class="qopt" type="button">C · They are identical in every way</button>
+      <p class="qwhy">UNION does extra work to de-duplicate rows. UNION ALL keeps every row, duplicates included, and skips that check - so it is faster when you know the halves cannot overlap.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">3 · How do you get the year-month (like 2026-03) from a date in SQLite?</p>
+      <button class="qopt" type="button">A · There is no way to do it in SQLite</button>
+      <button class="qopt" type="button">B · UPPER(order_date)</button>
+      <button class="qopt" type="button">C · substr(order_date,1,7) or strftime('%Y-%m', order_date)</button>
+      <p class="qwhy">substr(order_date,1,7) slices the first seven characters of an ISO date into a year-month key. strftime('%Y-%m', order_date) does the same and is more portable across engines.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 5 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>CASE</b><span>SQL's if/then. Checks conditions top to bottom, returns the first true branch. Give it an ELSE.</span></div>
+      <div class="cheat-item"><b>Tier pattern</b><span>CASE WHEN price &gt;= 20 THEN 'premium' ... ELSE 'value' END AS tier. Strictest condition first.</span></div>
+      <div class="cheat-item"><b>CASE in SUM</b><span>SUM(CASE WHEN ... THEN 1 ELSE 0 END) counts by condition in one pass.</span></div>
+      <div class="cheat-item"><b>String functions</b><span>UPPER, LOWER, LENGTH, substr reshape text per row. None change stored data.</span></div>
+      <div class="cheat-item"><b>Aliases</b><span>AS renames any column or expression. price*1.1 AS price_with_tax reads far better.</span></div>
+      <div class="cheat-item"><b>Year-month</b><span>substr(order_date,1,7) or strftime('%Y-%m', order_date). Date funcs vary by dialect.</span></div>
+      <div class="cheat-item"><b>UNION</b><span>Stacks result sets (more rows). Removes duplicates. Both halves need same columns, same order.</span></div>
+      <div class="cheat-item"><b>UNION ALL</b><span>Keeps every row including duplicates, and is faster. Use when halves cannot overlap.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 5 of 10 · learn-sql-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="b6-subqueries-ctes.html">Next: Subqueries and CTEs →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/daybreak-seed.js?v=1"></script>
+<script src="../assets/sql-wasm.js?v=1"></script>
+<script src="../assets/sql-live.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

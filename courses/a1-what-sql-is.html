@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leader session 1 · What SQL actually is - learn sql with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-sql-with-phoebe</a> / Leader session 1 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe · Leader track · Session 1 of 6</div>
+    <h1>What SQL <span class="accent">actually is</span></h1>
+    <p class="sub">You will never write production SQL - and you do not need to. But every dashboard, every metric, and every "the data says" claim in your company is a SQL query underneath. This track teaches you to read one, question it, and brief the people who write it. Six sessions, no code you have to memorize, run entirely on your own judgment.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Leader track</span>
+      <span class="chip audience">C-level · managers · curious non-coders</span>
+      <span class="chip audience">No install · nothing to write</span>
+      <span class="chip time">Start here</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-24 · What SQL is &amp; why it lasts</span>
+      <span class="a3" style="flex:4">24-42 · Read a real query</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>How this track works</h2>
+    </div>
+    <p class="lede">Six sessions that turn "SQL" from a black box your data team owns into something you can reason about. You will not write queries for a living - you will learn to <strong>read</strong> them, spot when a number is being computed in a misleading way, and ask an analyst for exactly the right cut of data. The examples all run against one small database, <strong>Daybreak</strong>, a coffee-subscription brand - and yes, a few live queries appear so you can see with your own eyes that SQL is less mysterious than it looks.</p>
+    <div class="legend">
+      <span class="pill solid">Live - discussed in session</span>
+      <span class="pill light">Self-study - read after</span>
+      <span class="pill peach">▶ See it run - a real query, live</span>
+      <span class="pill inkpill">For decision-makers</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A plain-English grasp of what a database and SQL are, the confidence to read a simple query and say what it returns, and the single most useful reframe in this whole track: every metric on every dashboard is a question someone wrote in SQL - and questions can be asked well or badly.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: WHAT IT IS ============ -->
+  <section class="section" id="what-it-is">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · the mental model</span>
+      <h2>A database is just organized tables <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">Strip away the jargon and a database is a set of <strong>tables</strong> - spreadsheets with discipline. One table for customers, one for orders, one for products. SQL (Structured Query Language) is the plain-ish way people ask those tables questions: "which columns, from which table, matching which rules". That is the entire idea, and it has run the business world for 50 years.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A question in English becomes a SQL query becomes a table of answers">
+        <style>
+          .a1fT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .a1fI { font: 700 15px Inter, sans-serif; fill: #10222E; }
+          .a1fX { font: 400 12.5px Inter, sans-serif; fill: #526472; }
+          .a1fN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+          .a1fArr { stroke: #9FCFEE; stroke-width: 2.5; fill: none; marker-end: url(#a1fAh); }
+        </style>
+        <defs>
+          <marker id="a1fAh" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#9FCFEE" stroke-width="1.6"/>
+          </marker>
+        </defs>
+        <rect x="30" y="70" width="220" height="80" rx="12" fill="#003B57"/>
+        <text class="a1fT" x="52" y="104">The business question</text>
+        <text class="a1fX" x="52" y="126" fill="#CDE7F5">"Who are our top customers?"</text>
+        <rect x="330" y="70" width="220" height="80" rx="12" fill="#0F80CC"/>
+        <text class="a1fT" x="352" y="104">The SQL query</text>
+        <text class="a1fX" x="352" y="126" fill="#CDE7F5">SELECT ... ORDER BY ...</text>
+        <rect x="630" y="70" width="220" height="80" rx="12" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="a1fI" x="652" y="104">A table of answers</text>
+        <text class="a1fX" x="652" y="126">names + numbers, ranked</text>
+        <line class="a1fArr" x1="252" y1="110" x2="326" y2="110"/>
+        <line class="a1fArr" x1="552" y1="110" x2="626" y2="110"/>
+        <text class="a1fX" x="330" y="185">The query is where judgment lives - and where numbers can quietly go wrong.</text>
+        <rect x="30" y="218" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="a1fN" x="52" y="230">Your job as a leader: read the middle box well enough to trust - or challenge - the right box.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - question in, query in the middle, answers out</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why every leader keeps meeting SQL<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You do not have to seek SQL out - it arrives on its own. The revenue figure in your board deck, the churn number in the QBR, the "active users" on the exec dashboard: each is the output of a SQL query an analyst wrote. When two reports disagree, the reason is almost always that two queries defined the same word - "active", "revenue", "customer" - differently. Being able to ask "how was this actually computed?" is a leadership superpower, and it starts with reading SQL.</p>
+        <ul>
+          <li><strong>SQL is the shared language of data teams:</strong> analysts, engineers, and scientists all speak it. Learning to read it is learning to sit in the room.</li>
+          <li><strong>It has outlasted every trend:</strong> through big data, the cloud, and now AI, SQL is still how the numbers get made. AI copilots write SQL for you - which makes reading it more valuable, not less.</li>
+          <li><strong>You are not learning to build:</strong> you are learning to read, judge, and commission. Different skill, enormous leverage.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The two "revenue" numbers.</strong> A leadership team spent a tense hour arguing about a $400k gap between finance's revenue and the product dashboard's. The cause was one line of SQL: one query counted refunded orders, the other excluded them. Neither was wrong - they answered different questions. The executive who spotted it was not a coder. She just knew to ask what the query counted.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Where SQL sits in the modern data stack<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A quick map, so the vocabulary stops being intimidating. Your company's data usually flows: <strong>sources</strong> (the app, payments, ads) → a <strong>data warehouse</strong> (one big queryable store - Snowflake, BigQuery, Redshift) → <strong>SQL</strong> pulls and shapes the data → a <strong>BI tool</strong> (Tableau, Looker, Power BI) draws the chart. SQL is the layer in the middle that turns stored rows into the numbers everyone downstream trusts.</p>
+        <ul>
+          <li><strong>Warehouse:</strong> where all the data lives, ready to be queried. Session a6 goes deeper.</li>
+          <li><strong>SQL:</strong> the question-asking layer. This is what your analysts spend their day writing.</li>
+          <li><strong>BI / dashboard:</strong> the friendly face on top - but every tile is a saved SQL query underneath (session a4).</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: READING A QUERY ============ -->
+  <section class="section" id="reading">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · the one skill this session builds</span>
+      <h2>Reading a query, left to right <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">Here is the good news: a simple SQL query reads almost like English if you know the three anchor words. <code>SELECT</code> = "give me these columns". <code>FROM</code> = "from this table". <code>ORDER BY</code> = "sorted this way". You do not need to write it - you need to look at one and say, out loud, what it asks for.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>See a real query run - and read it back<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Below is a live query against Daybreak's customer table. Read it first: "give me name, city and plan, from customers, at most five." Now press <strong>▶ Run</strong> and watch the answer appear. You just read SQL and predicted its output - that is the whole skill of this session.</p>
+        <div class="sqlbox" data-caption="You are reading, not writing. Press Run to confirm your reading was right.">
+          <pre class="sql-src">SELECT name, city, plan
+FROM customers
+LIMIT 5;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>The read-aloud test</strong>
+          If you can say what a query returns before running it, you can review it in a meeting. That is the bar for a leader - not writing it, reading it with confidence.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The same skill on a slightly bigger query<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>This one sorts the products from most to least expensive. Read it: "give me name and price, from products, sorted by price high to low." Run it and check. The word <code>DESC</code> is the only new thing - it means descending, high to low.</p>
+        <div class="sqlbox" data-caption="DESC = high-to-low. Remove it and re-run to see low-to-high.">
+          <pre class="sql-src">SELECT name, price
+FROM products
+ORDER BY price DESC;</pre>
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>Why this matters in a review.</strong> When an analyst presents "top products by revenue", a leader who can read the query notices whether it sorted by revenue or by units, whether it filtered to completed orders, and what "top" was capped at. Those three questions catch most misleading charts before they reach the board.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DISCUSSION ============ -->
+  <section class="section" id="discussion">
+    <div class="section-kicker">
+      <span class="klabel">Boardroom exercise</span>
+      <h2>Read three queries as a group <span class="tag demo">★ 12 min · discuss together</span></h2>
+    </div>
+    <p class="lede">No code to write - just read each query aloud, agree on what it returns, then run it to check. The goal is fluency at reading, and catching the small words that change the meaning.</p>
+
+    <div class="steps">
+      <div class="step"><p><strong>Query A:</strong> read it, predict the output in one sentence, then run. Did the group agree before running?</p></div>
+      <div class="step"><p><strong>Query B:</strong> same, but notice the one word that changed versus Query A. What did it change in the result?</p></div>
+      <div class="step"><p><strong>The leadership question:</strong> for each, ask "what business question does this answer, and what does it quietly leave out?"</p></div>
+    </div>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Query A · newest customers first<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="sqlbox" data-caption="Read: name and signup date, from customers, newest first, top 5.">
+          <pre class="sql-src">SELECT name, signup_date
+FROM customers
+ORDER BY signup_date DESC
+LIMIT 5;</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Query B · the whole product catalog<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The <code>*</code> means "every column". Read it, run it, and notice which products show <code>NULL</code> for roast - equipment has no roast, and the database says so honestly.</p>
+        <div class="sqlbox" data-caption="* = all columns. NULL means 'no value here', a concept leaders should know by name.">
+          <pre class="sql-src">SELECT *
+FROM products;</pre>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Between sessions</span>
+      <h2>Take this back to your desk <span class="tag exercise">◐ 15 min</span></h2>
+    </div>
+    <ul>
+      <li>Open one dashboard you actually use. Pick one number on it and ask your analyst: "what does this query count, and what does it leave out?" Notice how the answer sharpens the metric.</li>
+      <li>Come back to this page and run the three queries again until reading them feels boring. Boring is the goal - it means fluent.</li>
+      <li>Write down one metric in your business whose definition you are not 100% sure of. Session a3 is about pinning exactly those down.</li>
+      <li>Optional: skim the builder track's session b1 to see the same tables from the practitioner's side. You will recognize everything.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>What this maps to</h2>
+    </div>
+    <p class="lede">The leader track distills the conceptual half of the major SQL curricula - the "what it is and why it matters" - without the syntax drills practitioners need. This session covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Mode SQL Tutorial - "Intro to SQL" framing</span><span class="note">Part 1 · what SQL and databases are, in decision-maker terms</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">SQLBolt / Khan - SELECT, FROM, ORDER BY (reading level)</span><span class="note">Part 2 · reading a query, not writing it</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">The modern data stack (warehouse → SQL → BI)</span><span class="note">Part 1 self-study; full treatment in session a6</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · When two company reports disagree on "revenue", the most common cause is...</p>
+      <button class="qopt" type="button">A · One team used a better database</button>
+      <button class="qopt" type="button">B · The two SQL queries defined "revenue" differently - e.g. one counted refunds, one did not</button>
+      <button class="qopt" type="button">C · A calculation error in Excel</button>
+      <p class="qwhy">Same word, two definitions in two queries. The leader's move is to ask what each query actually counted - not to assume one is simply wrong.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · What does a leader most need to be able to do with SQL?</p>
+      <button class="qopt" type="button">A · Write complex queries from scratch</button>
+      <button class="qopt" type="button">B · Optimize database performance</button>
+      <button class="qopt" type="button">C · Read a query, say what it returns, and question how a metric was computed</button>
+      <p class="qwhy">Reading and questioning, not writing. That is the leverage: catching a misleading metric before it drives a decision.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · Every tile on a BI dashboard is, underneath...</p>
+      <button class="qopt" type="button">A · A saved SQL query returning a table of numbers</button>
+      <button class="qopt" type="button">B · A manually typed figure</button>
+      <button class="qopt" type="button">C · An AI guess</button>
+      <p class="qwhy">Dashboards are friendly faces on SQL. Knowing that is what lets you ask the right question about any chart you are shown (session a4).</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Leader session 1 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>A database is</b><span>organized tables - customers, orders, products - with linked id columns.</span></div>
+      <div class="cheat-item"><b>SQL is</b><span>the plain-ish language for asking tables questions. 50 years old and still the default.</span></div>
+      <div class="cheat-item"><b>Read the 3 anchors</b><span>SELECT = which columns · FROM = which table · ORDER BY = sorted how.</span></div>
+      <div class="cheat-item"><b>The leader move</b><span>Ask "what does this query count, and what does it leave out?"</span></div>
+      <div class="cheat-item"><b>Every dashboard tile</b><span>is a saved SQL query. The chart is just the friendly face.</span></div>
+      <div class="cheat-item"><b>NULL</b><span>means "no value here" - not zero, not blank. Worth knowing by name.</span></div>
+      <div class="cheat-item"><b>Where SQL sits</b><span>sources → warehouse → SQL → BI dashboard. The middle is where judgment lives.</span></div>
+      <div class="cheat-item"><b>Next session</b><span>a2 · reading a query with a WHERE filter and a JOIN, without fear.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Leader session 1 of 6 · learn-sql-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="a2-reading-a-query.html">Next: Reading a query without fear →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/daybreak-seed.js?v=1"></script>
+<script src="../assets/sql-wasm.js?v=1"></script>
+<script src="../assets/sql-live.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

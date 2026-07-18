@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 6 · Subqueries and CTEs - learn sql with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-sql-with-phoebe</a> / Builder session 6 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe · Builder track · Session 6 of 10</div>
+    <h1>Subqueries and <span class="accent">CTEs</span></h1>
+    <p class="sub">You already write queries that answer one question. Tonight you learn to feed one query into another - a query inside a query - and then to name those steps so a complicated question reads top-to-bottom like a recipe instead of inside-out like a puzzle. Same Daybreak database, two moves that change how much SQL you can hold in your head.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Builder track</span>
+      <span class="chip audience">Practitioners: analysts · DE · DS · PMs</span>
+      <span class="chip audience">Runs in your browser · SQLite</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-24 · Subqueries &amp; WITH</span>
+      <span class="a3" style="flex:4">24-42 · Build-along</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where this session fits</h2>
+    </div>
+    <p class="lede">By now you can filter, aggregate, and join. But some questions need an <strong>answer to compute the answer</strong> - "which products cost more than average?" needs the average first, then the comparison. That is a <strong>subquery</strong>: a query nested inside another. And when you stack several such steps, a <strong>CTE</strong> (Common Table Expression, written with <code>WITH</code>) lets you name each step so the whole thing stays readable. Both run against the same six Daybreak tables you already know.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">▶ Live SQL - editable &amp; runnable</span>
+      <span class="pill inkpill">Official sources covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A scalar subquery you can drop into any <code>WHERE</code>, the <code>IN (SELECT ...)</code> pattern for "matches a list from another table", and the <code>WITH</code> habit that turns a scary nested query into a clean staircase of named steps - the single biggest readability upgrade in SQL.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: SCALAR SUBQUERY ============ -->
+  <section class="section" id="scalar-subquery">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers Mode Advanced "Writing Subqueries", SQLZoo "SELECT within SELECT"</span>
+      <h2>Scalar subquery: a query inside a query <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">A <strong>scalar subquery</strong> is a query that returns exactly one value - one number, one date, one name - which you then use anywhere a single value is allowed. The classic case: compare each row against an aggregate of the whole table, like "price above the average price". SQLite runs the inner query first, gets one number, then runs the outer query using it.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A scalar subquery runs the inner query first to get one value, then the outer query uses it">
+        <style>
+          .scaT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .scaI { font: 700 15px Inter, sans-serif; fill: #10222E; }
+          .scaX { font: 400 12.5px Inter, sans-serif; fill: #526472; }
+          .scaCode { font: 700 15px "SF Mono", Menlo, monospace; fill: #10222E; }
+          .scaN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+          .scaFlow { stroke: #3DA0E3; stroke-width: 2.5; fill: none; marker-end: url(#scaArrow); }
+        </style>
+        <defs>
+          <marker id="scaArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L8,3 L0,6 Z" fill="#3DA0E3"/>
+          </marker>
+        </defs>
+        <rect x="360" y="30" width="330" height="44" rx="8" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="scaCode" x="378" y="58">SELECT AVG(price) FROM products</text>
+        <rect x="360" y="20" width="120" height="20" rx="5" fill="#0F80CC"/>
+        <text class="scaT" x="372" y="35">inner runs first</text>
+        <path class="scaFlow" d="M525,74 L525,118"/>
+        <rect x="470" y="120" width="110" height="30" rx="6" fill="#F5A623"/>
+        <text class="scaI" x="490" y="140">one value: 18.6</text>
+        <path class="scaFlow" d="M470,135 L300,135"/>
+        <rect x="40" y="118" width="260" height="44" rx="8" fill="#003B57"/>
+        <text class="scaT" x="58" y="146">... WHERE price &gt; 18.6</text>
+        <text class="scaX" x="40" y="196">The inner query hands one number up to the outer query, which uses it like a typed-in constant.</text>
+        <rect x="40" y="212" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="scaN" x="64" y="224">Scalar = one value. If the inner query could return many rows, use IN instead (Part 2).</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - a scalar subquery: inner query first, one value, then the outer comparison</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Products priced above the average<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You cannot write <code>WHERE price &gt; AVG(price)</code> directly - an aggregate is not allowed in <code>WHERE</code>. So you compute the average in a subquery, wrapped in parentheses, and compare against that single value. Run it, then change <code>&gt;</code> to <code>&lt;</code> to flip to below-average.</p>
+        <div class="sqlbox" data-caption="The parentheses run first and return one number. Try changing &gt; to &lt;.">
+          <pre class="sql-src">SELECT name, price
+FROM products
+WHERE price &gt; (SELECT AVG(price) FROM products)
+ORDER BY price DESC;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>Why the parentheses matter</strong>
+          The subquery must return a single value here, so it goes in parentheses and SQLite evaluates it once. If you accidentally write a subquery that returns many rows in a spot expecting one, you get an error - that is the engine protecting you.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Subqueries can go in SELECT too<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A scalar subquery is legal anywhere a single value is: in <code>WHERE</code>, in <code>SELECT</code>, even in <code>HAVING</code>. Putting one in the <code>SELECT</code> list lets you show a per-row value next to a whole-table figure - handy for "this price vs the average" side by side.</p>
+        <div class="sqlbox" data-caption="The subquery in SELECT shows the table-wide average on every row for comparison.">
+          <pre class="sql-src">SELECT name, price,
+       (SELECT ROUND(AVG(price),2) FROM products) AS avg_price
+FROM products
+ORDER BY price DESC;</pre>
+        </div>
+        <p>Every row shows the same <code>avg_price</code> - because the subquery is computed once over the whole table, not per row.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: SUBQUERIES WITH IN ============ -->
+  <section class="section" id="subquery-in">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers SQLZoo "SELECT within SELECT", Kaggle "As &amp; With"</span>
+      <h2>Subqueries with IN: matching a list <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">The other everyday shape: a subquery that returns <strong>many values</strong>, which you match against with <code>IN</code>. Instead of "is this price above one number", it is "is this customer in the set of customers who ever had a refund". The inner query builds the list; the outer query keeps rows whose value appears in it.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Customers who have ever been refunded<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The inner query collects every <code>customer_id</code> that appears on a refunded order. The outer query then lists the customers whose id is <code>IN</code> that set. No join needed - a subquery reads cleanly when you only want to filter, not to pull columns from the other table.</p>
+        <div class="sqlbox" data-caption="Inner query builds the id list; IN keeps matching customers. Try status='cancelled'.">
+          <pre class="sql-src">SELECT name
+FROM customers
+WHERE customer_id IN (SELECT customer_id FROM orders WHERE status='refunded');</pre>
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The "has ever done X" question.</strong> Support and growth teams ask this constantly: customers who ever churned, ever opened a ticket, ever bought equipment. The <code>IN (SELECT ...)</code> pattern answers all of them with the same shape - build the id list in the subquery, filter the main table against it. Swap the inner table and condition, keep the skeleton.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>NOT IN for the opposite set<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Flip <code>IN</code> to <code>NOT IN</code> and you get the complement - here, customers who have <em>never</em> been refunded. It is the fastest way to ask "who is missing from this list?" without a join.</p>
+        <div class="sqlbox" data-caption="NOT IN returns everyone whose id is absent from the refunded set.">
+          <pre class="sql-src">SELECT name
+FROM customers
+WHERE customer_id NOT IN (SELECT customer_id FROM orders WHERE status='refunded')
+ORDER BY name;</pre>
+        </div>
+        <p>One caution for later warehouses: if the inner list can contain <code>NULL</code>, <code>NOT IN</code> behaves oddly. Daybreak's ids are never null, so it is safe here - but keep it in mind when you move to production data.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: CTEs WITH WITH ============ -->
+  <section class="section" id="ctes">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers Mode Advanced "Writing Subqueries", Kaggle "As &amp; With"</span>
+      <h2>CTEs with WITH: naming your steps <span class="tag concept">8 min live</span></h2>
+    </div>
+    <p class="lede">Subqueries are powerful, but stack a few and they nest inward - you read a big query from the deepest parentheses outward, which is exactly backwards from how you think. A <strong>CTE</strong> fixes this. <code>WITH name AS (query)</code> lets you name an intermediate result, then use that name like a table in the query below. The whole thing reads top-to-bottom.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A messy nested subquery read inside-out versus a clean named CTE staircase read top to bottom">
+        <style>
+          .cteT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .cteL { font: 700 13px Inter, sans-serif; fill: #10222E; }
+          .cteX { font: 400 12px Inter, sans-serif; fill: #526472; }
+          .cteC { font: 600 12.5px "SF Mono", Menlo, monospace; fill: #10222E; }
+          .cteN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+        </style>
+        <!-- left: messy nested -->
+        <rect x="30" y="24" width="150" height="22" rx="5" fill="#526472"/>
+        <text class="cteT" x="44" y="40">Nested subquery</text>
+        <rect x="30" y="56" width="360" height="40" rx="6" fill="#E9F4FB" stroke="#AEC4D2"/>
+        <rect x="60" y="66" width="300" height="40" rx="6" fill="#E9F4FB" stroke="#AEC4D2"/>
+        <rect x="90" y="76" width="240" height="40" rx="6" fill="#E9F4FB" stroke="#AEC4D2"/>
+        <rect x="120" y="86" width="180" height="34" rx="6" fill="#9FCFEE" stroke="#0F80CC"/>
+        <text class="cteC" x="134" y="108">innermost query</text>
+        <text class="cteX" x="30" y="150">Read from the deepest parentheses</text>
+        <text class="cteX" x="30" y="168">outward - inside-out, backwards.</text>
+        <!-- right: clean CTE staircase -->
+        <rect x="470" y="24" width="150" height="22" rx="5" fill="#003B57"/>
+        <text class="cteT" x="484" y="40">Named CTE steps</text>
+        <rect x="470" y="56" width="230" height="30" rx="6" fill="#E9F4FB" stroke="#0F80CC"/>
+        <text class="cteC" x="484" y="76">WITH spend AS (...)</text>
+        <rect x="500" y="96" width="230" height="30" rx="6" fill="#E9F4FB" stroke="#0F80CC"/>
+        <text class="cteC" x="514" y="116">, ranked AS (...)</text>
+        <rect x="530" y="136" width="230" height="30" rx="6" fill="#3DA0E3"/>
+        <text class="cteL" x="544" y="156" fill="#FFFFFF">SELECT ... FROM ranked</text>
+        <text class="cteX" x="470" y="196">Each step named, read top-to-bottom,</text>
+        <text class="cteX" x="470" y="214">like a recipe. This is the upgrade.</text>
+        <rect x="30" y="262" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="cteN" x="54" y="274">Same result either way. The CTE version is the one your teammate (and future you) can actually read.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - nested subquery read inside-out vs a named CTE staircase read top-to-bottom</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Top 5 customers by spend, with a CTE<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Here <code>WITH spend AS (...)</code> computes each customer's completed revenue once and names it <code>spend</code>. The query below then joins that named result to <code>customers</code> for readable names. Run it - you should see Noah Park on top around 232.</p>
+        <div class="sqlbox" data-caption="spend is a named step; the SELECT below reads it like a table. Try LIMIT 10.">
+          <pre class="sql-src">WITH spend AS (
+  SELECT o.customer_id, SUM(oi.quantity*oi.unit_price) AS total
+  FROM orders o
+  JOIN order_items oi ON o.order_id = oi.order_id
+  WHERE o.status='completed'
+  GROUP BY o.customer_id
+)
+SELECT c.name, ROUND(s.total,2) AS total
+FROM spend s
+JOIN customers c ON c.customer_id = s.customer_id
+ORDER BY s.total DESC
+LIMIT 5;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>Reading a CTE</strong>
+          Read <code>WITH spend AS (...)</code> as "let <code>spend</code> mean the result of this query". Everything after can use <code>spend</code> as if it were a real table. You can chain several with commas - each can reference the ones above it.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Why CTEs beat repeating a subquery<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Beyond readability, a CTE lets you reference the same intermediate result more than once without copy-pasting the subquery. Name it once, use it twice. It also makes debugging easy: comment out the final <code>SELECT</code>, run just the CTE by itself, and check the intermediate rows.</p>
+        <ul>
+          <li><strong>Readable:</strong> steps have names, so the query reads like prose.</li>
+          <li><strong>Reusable:</strong> reference the named result multiple times, no duplication.</li>
+          <li><strong>Debuggable:</strong> test each step in isolation before wiring them together.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO: BUILD-ALONG ============ -->
+  <section class="section" id="demo">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Rewrite a nested subquery as a clean CTE <span class="tag demo">★ 16 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">Same answer as Part 1 - products priced above the average - but let us feel the difference between the nested form and the CTE form. You will see the identical result, and you will read the second one far more easily. This is the habit that pays off every day you write SQL.</p>
+
+    <div class="steps">
+      <div class="step"><p>Start from the nested version: the average lives inside the <code>WHERE</code> as a subquery. It works, but the "what is the average" step is buried in the condition.</p></div>
+      <div class="step"><p>Pull that step out: write <code>WITH avg_p AS (SELECT AVG(price) AS a FROM products)</code> to give the average a name.</p></div>
+      <div class="step"><p>Reference the named step: the main query joins nothing - it just compares <code>price</code> to <code>avg_p.a</code>, read from a clearly named source.</p></div>
+      <div class="step"><p>Read both out loud. The CTE version says "let avg_p be the average price; now show products above it" - top-to-bottom, no backwards nesting.</p></div>
+    </div>
+
+    <div class="sqlbox" data-caption="The CTE version. Same rows as Part 1, but the average has a name and reads first.">
+      <pre class="sql-src">WITH avg_p AS (
+  SELECT AVG(price) AS a FROM products
+)
+SELECT p.name, p.price
+FROM products p, avg_p
+WHERE p.price &gt; avg_p.a
+ORDER BY p.price DESC;</pre>
+    </div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>The senior-analyst tell.</strong> When a reviewer opens a 40-line query, the first thing they judge is whether they can follow it. A wall of nested parentheses gets a "please refactor"; a stack of named CTE steps gets approved. Same result, very different reception - CTEs are how you write SQL that other people trust and reuse.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 20-30 min total</span></h2>
+    </div>
+    <ul>
+      <li>Write a scalar subquery that lists customers who signed up before the earliest order date. (Hint: <code>(SELECT MIN(order_date) FROM orders)</code>.)</li>
+      <li>Use <code>IN</code> to find every customer who has an active subscription. (Hint: the inner query pulls <code>customer_id</code> from <code>subscriptions WHERE cancel_date IS NULL</code>.)</li>
+      <li>Take any two-step query you wrote in b3-b5 and rewrite it with a <code>WITH</code> CTE. Read both versions - notice which one you would rather hand to a teammate.</li>
+      <li>Chain two CTEs: one that sums spend per customer, a second that keeps only those above 100, then select their names.</li>
+      <li>Bring one question that needs "the value above/below an aggregate" to session b7 - window functions will let you compute per-group ranks without a subquery at all.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This session teaches the subquery and CTE core of the major free SQL curricula, run on live Daybreak data instead of screenshots. Graded problem sets and certificates stay on the official sites (linked below). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Mode SQL Tutorial - Advanced: Writing Subqueries in SQL</span><span class="note">Parts 1-3 · scalar subqueries, IN, and the WITH refactor, run live</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">SQLZoo - SELECT within SELECT</span><span class="note">Parts 1-2 · scalar and IN subqueries against a related table</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Kaggle - Intro to SQL: As &amp; With</span><span class="note">Part 3 · naming intermediate results with CTEs; Kaggle's exercises stay on Kaggle</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · What does a scalar subquery return?</p>
+      <button class="qopt" type="button">A · A whole table of rows and columns</button>
+      <button class="qopt" type="button">B · A single value you can use in a comparison</button>
+      <button class="qopt" type="button">C · Nothing - it only filters</button>
+      <p class="qwhy">A scalar subquery returns exactly one value, which you can drop anywhere a single value is allowed - like the right side of a WHERE comparison.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · Why reach for a CTE (WITH) instead of nesting subqueries?</p>
+      <button class="qopt" type="button">A · It runs faster in every database</button>
+      <button class="qopt" type="button">B · It is the only way to use aggregates</button>
+      <button class="qopt" type="button">C · It names each intermediate result so a multi-step query reads top-to-bottom instead of inside-out</button>
+      <p class="qwhy">CTEs give intermediate results names, so a complex query reads like a recipe from the top down rather than from the deepest parentheses outward.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · What does <code>WHERE price &gt; (SELECT AVG(price) FROM products)</code> do?</p>
+      <button class="qopt" type="button">A · Keeps only products priced above the average price</button>
+      <button class="qopt" type="button">B · Averages the prices and shows one row</button>
+      <button class="qopt" type="button">C · Sorts products by price</button>
+      <p class="qwhy">The subquery computes the average once, then the outer query keeps every product whose price is greater than that single number.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 6 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Subquery</b><span>A query inside another, wrapped in parentheses. Inner runs first, outer uses its result.</span></div>
+      <div class="cheat-item"><b>Scalar subquery</b><span>Returns one value. Legal in WHERE, SELECT, HAVING. e.g. (SELECT AVG(price) FROM products).</span></div>
+      <div class="cheat-item"><b>IN (SELECT ...)</b><span>Match against a list from another table. "has ever done X" questions.</span></div>
+      <div class="cheat-item"><b>NOT IN</b><span>The complement - who is missing from the list. Watch NULLs in production data.</span></div>
+      <div class="cheat-item"><b>CTE / WITH</b><span>WITH name AS (query) names an intermediate result you use below like a table.</span></div>
+      <div class="cheat-item"><b>Chain CTEs</b><span>Separate with commas; each can reference the ones above it. Reads top-to-bottom.</span></div>
+      <div class="cheat-item"><b>Debug a CTE</b><span>Run just the WITH block by itself to check intermediate rows before wiring the final SELECT.</span></div>
+      <div class="cheat-item"><b>Next up</b><span>b7 window functions: per-group ranks and running totals without a subquery at all.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 6 of 10 · learn-sql-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="b7-window-functions.html">Next: Window functions →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/daybreak-seed.js?v=1"></script>
+<script src="../assets/sql-wasm.js?v=1"></script>
+<script src="../assets/sql-live.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

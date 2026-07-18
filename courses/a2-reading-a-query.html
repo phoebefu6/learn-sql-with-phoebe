@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leader session 2 · Reading a query - learn sql with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-sql-with-phoebe</a> / Leader session 2 of 6</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe · Leader track · Session 2 of 6</div>
+    <h1>Reading a query <span class="accent">without fear</span></h1>
+    <p class="sub">A query looks like a wall of keywords until you learn the four anchor words and what each one does to the answer. In this session you build reading fluency: look at a query, say the business question it asks, predict the result, then run it to confirm. No writing, no memorizing - just the calm confidence to read what your data team hands you.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Leader track</span>
+      <span class="chip audience">C-level · managers · curious non-coders</span>
+      <span class="chip audience">No install · nothing to write</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Recap</span>
+      <span class="a2" style="flex:4">3-21 · The anatomy of a query</span>
+      <span class="a3" style="flex:4">21-39 · Filters &amp; joins</span>
+      <span class="a4" style="flex:1">39-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where we are</h2>
+    </div>
+    <p class="lede">Last session you learned that a database is just organized tables and that every metric is a SQL query underneath. Today we slow down and read. By the end you will be able to look at any simple query and say - out loud, in a meeting - which facts it asks for, from which list, filtered how, and summarized per what. That is the reading fluency that lets you challenge a number instead of nodding at it.</p>
+    <div class="legend">
+      <span class="pill solid">Live - discussed in session</span>
+      <span class="pill light">Self-study - read after</span>
+      <span class="pill peach">▶ See it run - a real query, live</span>
+      <span class="pill inkpill">For decision-makers</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      The four anchor clauses of a query in plain English, the instinct that a filter turns one metric into a completely different metric, and a working feel for what a JOIN does - so "we stitched orders to customers" stops sounding like magic.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: ANATOMY ============ -->
+  <section class="section" id="anatomy">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · the mental model</span>
+      <h2>The anatomy, in business terms <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">A query is built from clauses, and each clause answers one plain-English question. Learn these four and you can read most of what crosses your desk: <code>SELECT</code> = which facts, <code>FROM</code> = which list, <code>WHERE</code> = filtered how, <code>GROUP BY</code> = summarized per what. Read them in that order and the query tells you its own story.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A SQL query with each clause labelled in plain English underneath">
+        <style>
+          .a2aT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .a2aK { font: 700 18px 'Courier New', monospace; fill: #FFFFFF; }
+          .a2aL { font: 700 13px Inter, sans-serif; fill: #10222E; }
+          .a2aX { font: 400 12px Inter, sans-serif; fill: #526472; }
+          .a2aN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+        </style>
+        <rect x="30" y="30" width="820" height="60" rx="10" fill="#10222E"/>
+        <text class="a2aK" x="52" y="68">SELECT</text>
+        <text class="a2aK" x="150" y="68" fill="#9FCFEE">name</text>
+        <text class="a2aK" x="255" y="68">FROM</text>
+        <text class="a2aK" x="340" y="68" fill="#9FCFEE">customers</text>
+        <text class="a2aK" x="510" y="68">WHERE</text>
+        <text class="a2aK" x="610" y="68" fill="#9FCFEE">country</text>
+        <rect x="40" y="130" width="180" height="86" rx="10" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="a2aL" x="58" y="156">Which facts</text>
+        <text class="a2aX" x="58" y="178">the columns you</text>
+        <text class="a2aX" x="58" y="194">want back</text>
+        <rect x="240" y="130" width="180" height="86" rx="10" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="a2aL" x="258" y="156">Which list</text>
+        <text class="a2aX" x="258" y="178">the table you</text>
+        <text class="a2aX" x="258" y="194">pull from</text>
+        <rect x="440" y="130" width="180" height="86" rx="10" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="a2aL" x="458" y="156">Filtered how</text>
+        <text class="a2aX" x="458" y="178">the rows that</text>
+        <text class="a2aX" x="458" y="194">qualify</text>
+        <rect x="640" y="130" width="180" height="86" rx="10" fill="#0F80CC"/>
+        <text class="a2aT" x="658" y="156">Summarized</text>
+        <text class="a2aT" x="658" y="174">per what</text>
+        <text class="a2aX" x="658" y="196" fill="#CDE7F5">GROUP BY, when present</text>
+        <rect x="30" y="244" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="a2aN" x="52" y="256">Read a query in this order and it narrates its own business question.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the four clauses, each a plain-English question</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Read this one aloud, then run it<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Before you press Run, say it as a sentence: "give me the name and city, from the customers list, filtered to the ones in the USA." That is the whole query in English. Now run it and confirm the answer matches what you just said - only US customers, only two columns.</p>
+        <div class="sqlbox" data-caption="Say the sentence first. Then run and check your reading was right.">
+          <pre class="sql-src">SELECT name, city
+FROM customers
+WHERE country = 'USA';</pre>
+        </div>
+        <div class="callout tip">
+          <strong>The read-aloud test</strong>
+          If you can turn a query into one plain sentence before running it, you can review it in a meeting. That is the leader's bar - not writing the query, reading it with confidence.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The four anchor words, in one table<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Keep this close for your first few query reviews. Four words carry most of the meaning; everything else is detail.</p>
+        <table class="clean">
+          <thead><tr><th>Clause</th><th>In business terms</th><th>Question it answers</th></tr></thead>
+          <tbody>
+            <tr><td><code>SELECT</code></td><td>which facts</td><td>what columns do I get back?</td></tr>
+            <tr><td><code>FROM</code></td><td>which list</td><td>which table are we pulling from?</td></tr>
+            <tr><td><code>WHERE</code></td><td>filtered how</td><td>which rows qualify?</td></tr>
+            <tr><td><code>GROUP BY</code></td><td>summarized per what</td><td>one row per country? per month?</td></tr>
+          </tbody>
+        </table>
+        <p>Notice that <code>GROUP BY</code> is the one that quietly changes a number into an "average per" or "count per" - the source of most metric confusion, which is exactly what session a3 unpacks.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: FILTER CHANGES THE NUMBER ============ -->
+  <section class="section" id="filter">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · why one word matters</span>
+      <h2>What a filter does to a number <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">Here is the single most useful thing a leader can internalize about SQL: the same table, filtered, is a different metric. "How many orders do we have?" has more than one true answer, and the <code>WHERE</code> clause is what decides which one you are looking at. Watch two legitimate "order counts" come out of the same table.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>All orders - the raw count<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>COUNT(*)</code> means "count the rows". This one counts every order in the table, no matter its status. Read it: "count all rows in orders." Run it and note the number.</p>
+        <div class="sqlbox" data-caption="Every row counts here - completed, refunded, cancelled, all of it.">
+          <pre class="sql-src">SELECT COUNT(*) AS all_orders
+FROM orders;</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Completed orders - a filtered count<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Same table, one line added. The <code>WHERE</code> clause keeps only the rows whose status is completed. Read it: "count the rows in orders where the status is completed." Run it - the number is smaller, because the refunded and cancelled orders dropped out.</p>
+        <div class="sqlbox" data-caption="One WHERE line turns 'all orders' into 'completed orders' - a different metric.">
+          <pre class="sql-src">SELECT COUNT(*) AS completed_orders
+FROM orders
+WHERE status = 'completed';</pre>
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>Which one belongs in the board deck?</strong> Both counts are honest. "All orders" is right for operations volume; "completed orders" is right for revenue-linked reporting. The mistake is putting one on a slide labelled simply "orders" and letting the room assume the other. When someone shows you an order count, the leader's reflex is one question: which statuses did this include?</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: JOIN ============ -->
+  <section class="section" id="join">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · combining two lists</span>
+      <h2>What a JOIN means <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">Your orders table stores a <code>customer_id</code>, not a name - just a number pointing at the customers list. A <strong>JOIN</strong> is how SQL stitches the two lists together on that shared id, so you can see the order and the human who placed it in one row. You never need to write a join. You do need to know that this is what "we joined orders to customers" means.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Stitch each order to its customer<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Read past the punctuation to the idea: "give me the order id and the customer name, from orders joined to customers on the shared customer id, first six." The <code>o</code> and <code>c</code> are just short nicknames for the two tables. Run it and watch order numbers line up with real names.</p>
+        <div class="sqlbox" data-caption="JOIN ... ON customer_id = customer_id: stitch the two lists on their shared id.">
+          <pre class="sql-src">SELECT o.order_id, c.name
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+LIMIT 6;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>The one-line read of any JOIN</strong>
+          "This stitches each order to the customer who placed it." If you can say which two lists are being joined and on what shared id, you have read the join well enough to question it.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Why joins are where reports quietly break<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Joins are powerful and also where subtle errors creep in. Two are worth knowing by name, so you can ask about them:</p>
+        <ul>
+          <li><strong>Dropped rows:</strong> if an order points at a customer id that no longer exists, a plain join can silently drop that order - and your total quietly shrinks. Ask: "did anything fall out of the join?"</li>
+          <li><strong>Doubled rows:</strong> if a customer matches many rows, a join can multiply a count. This is the classic cause of a number that looks suspiciously too big. Ask: "could this join have duplicated anything?"</li>
+        </ul>
+        <p>You are not debugging the join. You are the person in the room who knows those two questions exist - which is often the difference between a caught error and a bad decision.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DISCUSSION ============ -->
+  <section class="section" id="discussion">
+    <div class="section-kicker">
+      <span class="klabel">Boardroom exercise</span>
+      <h2>Read three queries as a group <span class="tag demo">★ 12 min · discuss together</span></h2>
+    </div>
+    <p class="lede">No code to write. For each query, state the business question it answers <em>before</em> anyone runs it. Only then press Run and check whether the group read it right. The muscle you are building is turning keywords into a plain sentence, fast.</p>
+
+    <div class="steps">
+      <div class="step"><p><strong>Query A:</strong> what business question does it answer? Predict the shape of the result, then run.</p></div>
+      <div class="step"><p><strong>Query B:</strong> which clause makes this a "per something" summary? Say the "per what" out loud before running.</p></div>
+      <div class="step"><p><strong>Query C:</strong> which two lists does this join, and on what shared id? Name them, then run.</p></div>
+    </div>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Query A · who signed up on the Pro plan<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="sqlbox" data-caption="Read: name and country, from customers, filtered to the Pro plan.">
+          <pre class="sql-src">SELECT name, country
+FROM customers
+WHERE plan = 'Pro';</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Query B · customers summarized per country<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The <code>GROUP BY</code> is the tell: this is not a list of customers, it is a count <em>per country</em>. Say the "per what" before running.</p>
+        <div class="sqlbox" data-caption="GROUP BY country = one row per country, with its own count.">
+          <pre class="sql-src">SELECT country, COUNT(*) AS customers
+FROM customers
+GROUP BY country;</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Query C · orders with their customer's city<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Name the two lists and the shared id before you run. This stitches each order to the city of the customer who placed it.</p>
+        <div class="sqlbox" data-caption="Two lists (orders, customers) joined on the shared customer_id.">
+          <pre class="sql-src">SELECT o.order_id, c.city
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+LIMIT 6;</pre>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Between sessions</span>
+      <h2>Take this back to your desk <span class="tag exercise">◐ 15 min</span></h2>
+    </div>
+    <ul>
+      <li>Pick one metric from a report you receive weekly. Ask your analyst to say it as a sentence in the four-anchor form: which facts, from which list, filtered how, per what. Notice how much sharper the metric becomes once it is stated that way.</li>
+      <li>Come back and run the "all orders" versus "completed orders" pair again until the idea that a filter changes the metric feels obvious. Obvious is the goal.</li>
+      <li>Next time someone says "we joined the data", ask which two lists and on what shared id. You now know that is a fair, answerable question.</li>
+      <li>Optional: skim the builder track's session on WHERE and JOIN to see the same ideas from the writer's side. You will recognize every concept.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>What this maps to</h2>
+    </div>
+    <p class="lede">This session distills the reading half of the standard SQL curriculum - understanding a query's structure - without the drills a practitioner needs to write one. It covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Mode SQL Tutorial - Basic &amp; Intermediate (reading level)</span><span class="note">Parts 1-3 · SELECT / FROM / WHERE / GROUP BY / JOIN, read not written</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Filters change the metric - counts with and without WHERE</span><span class="note">Part 2 · the same table filtered is a different number</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Khan Academy - Intro to SQL (reading a JOIN conceptually)</span><span class="note">Part 3 · combining two lists on a shared id, in business language</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · When a query has a GROUP BY, it is a signal that...</p>
+      <button class="qopt" type="button">A · The query has an error and will not run</button>
+      <button class="qopt" type="button">B · The number is summarized "per" something - per country, per month, per plan</button>
+      <button class="qopt" type="button">C · The result will always be a single number</button>
+      <p class="qwhy">GROUP BY turns a list into a "per what" summary. Reading it means asking: one row per country? per month? That "per" is where most metric confusion lives.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">2 · Two different "order counts" come out of the same table because...</p>
+      <button class="qopt" type="button">A · One query filtered on status (e.g. completed only) and the other did not</button>
+      <button class="qopt" type="button">B · The database changed between the two queries</button>
+      <button class="qopt" type="button">C · One of them is simply wrong</button>
+      <p class="qwhy">The same table, filtered, is a different metric. A WHERE clause on status turns "all orders" into "completed orders". Both are true; they answer different questions.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">3 · A JOIN, in business terms, does what?</p>
+      <button class="qopt" type="button">A · Deletes duplicate rows from a table</button>
+      <button class="qopt" type="button">B · Sorts a table from high to low</button>
+      <button class="qopt" type="button">C · Combines two lists by a shared id - e.g. orders with their customers</button>
+      <p class="qwhy">A join stitches two lists together on a shared id, so an order can show the name of the customer who placed it. You read joins; you do not need to write them.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Leader session 2 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>SELECT</b><span>which facts - the columns you want back.</span></div>
+      <div class="cheat-item"><b>FROM</b><span>which list - the table you pull from.</span></div>
+      <div class="cheat-item"><b>WHERE</b><span>filtered how - which rows qualify. This changes the metric.</span></div>
+      <div class="cheat-item"><b>GROUP BY</b><span>summarized per what - per country, per month. Watch this one.</span></div>
+      <div class="cheat-item"><b>A filter is a metric</b><span>"all orders" vs "completed orders" are two true, different numbers.</span></div>
+      <div class="cheat-item"><b>A JOIN</b><span>stitches two lists on a shared id - orders to the customer who placed them.</span></div>
+      <div class="cheat-item"><b>Join risks to ask about</b><span>could rows have dropped out, or duplicated and inflated a count?</span></div>
+      <div class="cheat-item"><b>Next session</b><span>a3 · judging a data claim - when a number quietly misleads.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Leader session 2 of 6 · learn-sql-with-phoebe · by Phoebe Fu</span>
+    <span><a href="a1-what-sql-is.html">← Previous</a> &nbsp;·&nbsp; <a href="a3-judging-a-claim.html">Next: Judging a data claim →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/daybreak-seed.js?v=1"></script>
+<script src="../assets/sql-wasm.js?v=1"></script>
+<script src="../assets/sql-live.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

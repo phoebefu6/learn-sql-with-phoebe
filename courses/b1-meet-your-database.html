@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 1 · Meet your database - learn sql with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-sql-with-phoebe</a> / Builder session 1 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe · Builder track · Session 1 of 10</div>
+    <h1>Meet your <span class="accent">database</span></h1>
+    <p class="sub">The fastest way to stop fearing SQL: run a real query in your browser in the next two minutes. This whole track lives inside one small database - Daybreak, a coffee-subscription brand - and every page has a live editor that runs actual SQLite. No install, no login, no server. Type, hit Run, see rows.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Builder track</span>
+      <span class="chip audience">Practitioners: analysts · DE · DS · PMs</span>
+      <span class="chip audience">Runs in your browser · SQLite</span>
+      <span class="chip time">Start here</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:4">3-18 · Tables &amp; SELECT</span>
+      <span class="a3" style="flex:5">18-42 · Build-along: query Daybreak</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>How this track works</h2>
+    </div>
+    <p class="lede">Ten sessions, one database: <strong>Daybreak</strong>, a direct-to-consumer coffee-subscription brand with customers, products, orders, and subscriptions. You will query it tonight with a plain <code>SELECT</code>, and by session b10 you will be ranking customers with window functions, investigating a real revenue drop, and tuning queries for a warehouse. Same six tables the whole way up - so every new idea lands on data you already know.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">▶ Live SQL - editable &amp; runnable</span>
+      <span class="pill inkpill">Official sources covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A mental picture of what a relational database actually is, the three-word core of every query (<code>SELECT ... FROM ...</code>), the full Daybreak schema in your head, and a browser tab where you can run SQL against real data any time - no setup, ever.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: WHAT A DATABASE IS ============ -->
+  <section class="section" id="what-db-is">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers Mode "Intro", Khan "SQL basics", W3Schools "SQL Intro"</span>
+      <h2>What a relational database actually is <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">Forget servers and daemons for a minute. A relational database is just a set of <strong>tables</strong> - spreadsheets with rules. Each table holds one kind of thing (customers, orders). Each <strong>row</strong> is one item; each <strong>column</strong> is one attribute. Tables link to each other through shared id columns - that is the "relational" part, and it is the whole game.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Daybreak schema: six tables linked by id columns">
+        <style>
+          .schT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .schC { font: 400 11.5px Inter, sans-serif; fill: #10222E; }
+          .schK { font: 700 11.5px Inter, sans-serif; fill: #0F80CC; }
+          .schX { font: 400 12px Inter, sans-serif; fill: #526472; }
+          .schN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+          .schLink { stroke: #9FCFEE; stroke-width: 2; fill: none; }
+        </style>
+        <!-- customers -->
+        <rect x="40" y="40" width="180" height="24" rx="6" fill="#003B57"/>
+        <text class="schT" x="52" y="57">customers</text>
+        <rect x="40" y="64" width="180" height="76" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="schK" x="52" y="82">customer_id</text>
+        <text class="schC" x="52" y="100">name · city · country</text>
+        <text class="schC" x="52" y="118">signup_date · plan</text>
+        <!-- orders -->
+        <rect x="350" y="40" width="180" height="24" rx="6" fill="#003B57"/>
+        <text class="schT" x="362" y="57">orders</text>
+        <rect x="350" y="64" width="180" height="76" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="schK" x="362" y="82">order_id</text>
+        <text class="schC" x="362" y="100">customer_id → customers</text>
+        <text class="schC" x="362" y="118">order_date · status</text>
+        <!-- order_items -->
+        <rect x="350" y="200" width="180" height="24" rx="6" fill="#003B57"/>
+        <text class="schT" x="362" y="217">order_items</text>
+        <rect x="350" y="224" width="180" height="76" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="schC" x="362" y="242">order_id → orders</text>
+        <text class="schC" x="362" y="260">product_id → products</text>
+        <text class="schC" x="362" y="278">quantity · unit_price</text>
+        <!-- products -->
+        <rect x="660" y="200" width="180" height="24" rx="6" fill="#003B57"/>
+        <text class="schT" x="672" y="217">products</text>
+        <rect x="660" y="224" width="180" height="76" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="schK" x="672" y="242">product_id</text>
+        <text class="schC" x="672" y="260">name · category</text>
+        <text class="schC" x="672" y="278">price · roast</text>
+        <!-- subscriptions -->
+        <rect x="40" y="200" width="180" height="24" rx="6" fill="#0F80CC"/>
+        <text class="schT" x="52" y="217">subscriptions</text>
+        <rect x="40" y="224" width="180" height="76" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="schC" x="52" y="242">customer_id → customers</text>
+        <text class="schC" x="52" y="260">product_id → products</text>
+        <text class="schC" x="52" y="278">start_date · cancel_date</text>
+        <!-- events -->
+        <rect x="660" y="40" width="180" height="24" rx="6" fill="#0F80CC"/>
+        <text class="schT" x="672" y="57">events</text>
+        <rect x="660" y="64" width="180" height="76" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <text class="schC" x="672" y="82">customer_id → customers</text>
+        <text class="schC" x="672" y="100">event_date</text>
+        <text class="schC" x="672" y="118">event_type</text>
+        <!-- links -->
+        <path class="schLink" d="M220,102 L350,102"/>
+        <path class="schLink" d="M440,140 L440,224"/>
+        <path class="schLink" d="M530,262 L660,262"/>
+        <path class="schLink" d="M130,140 L130,200"/>
+        <path class="schLink" d="M220,90 C300,90 580,90 660,90"/>
+        <rect x="40" y="330" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="schN" x="64" y="342">Every arrow is a shared id column. Joining on those arrows (session b4) is how tables become answers.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the Daybreak schema, your home for all ten sessions</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why tables, not one giant spreadsheet<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You could cram every order, customer, and product into one enormous sheet - and teams that do regret it. Splitting into linked tables means each fact is stored <strong>once</strong>: a customer's city lives in one row of <code>customers</code>, not copied onto their 40 orders. Change it once, it is right everywhere. That is why relational databases have outlived nearly every technology built on top of them.</p>
+        <ul>
+          <li><strong>One thing per table:</strong> customers, products, orders. If you find yourself repeating a value, it probably wants its own table.</li>
+          <li><strong>Keys are the glue:</strong> <code>customer_id</code> in <code>orders</code> points at a row in <code>customers</code>. Same value, two tables, one relationship.</li>
+          <li><strong>SQL is how you ask questions of it:</strong> Structured Query Language - a 50-year-old, plain-ish English way to say "give me these columns, from this table, matching these rules".</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The spreadsheet that broke a team.</strong> A growing shop tracked orders in one shared sheet with the customer's address typed onto every row. When a big customer moved, half the rows got updated and half did not - and their "revenue by region" report quietly went wrong for a quarter. A relational database makes that class of bug structurally impossible: the address lives in exactly one place.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>SQLite, Postgres, MySQL - which SQL is this?<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>SQL is a standard, but every database engine speaks a slightly different dialect. This course runs on <strong>SQLite</strong> - a tiny, zero-setup engine that happens to compile to WebAssembly, which is exactly why the editor on this page works with no server. The good news: the core language you will learn - <code>SELECT</code>, <code>WHERE</code>, <code>JOIN</code>, <code>GROUP BY</code>, window functions - is ~90% identical across SQLite, PostgreSQL, MySQL, BigQuery, and Snowflake.</p>
+        <ul>
+          <li><strong>What is universal:</strong> everything in sessions b1-b7. Learn it once, use it everywhere.</li>
+          <li><strong>What differs by dialect:</strong> date functions, string functions, <code>LIMIT</code> vs <code>TOP</code>, some type names. We flag these as they come up, and b10 gives you the full delta table.</li>
+          <li><strong>Why SQLite to learn:</strong> no install, no accounts, instant feedback. The muscle memory transfers straight to your warehouse at work.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: YOUR FIRST QUERY ============ -->
+  <section class="section" id="first-query">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers Mode "SELECT / LIMIT", SQLBolt L1, Khan "Querying the table"</span>
+      <h2>Your first query: SELECT, FROM, LIMIT <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">Every SQL query, no matter how gnarly it gets later, starts with two words: <code>SELECT</code> (which columns you want) and <code>FROM</code> (which table). <code>LIMIT</code> caps how many rows come back so you are not staring at thousands. That is a complete, useful query.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Anatomy of a SELECT query: SELECT columns, FROM table, LIMIT rows">
+        <style>
+          .anT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .anI { font: 700 15px Inter, sans-serif; fill: #10222E; }
+          .anX { font: 400 12.5px Inter, sans-serif; fill: #526472; }
+          .anCode { font: 700 16px "SF Mono", Menlo, monospace; fill: #10222E; }
+          .anN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+        </style>
+        <text class="anCode" x="40" y="60">SELECT</text>
+        <text class="anCode" x="150" y="60">name, city</text>
+        <text class="anCode" x="330" y="60">FROM</text>
+        <text class="anCode" x="410" y="60">customers</text>
+        <text class="anCode" x="580" y="60">LIMIT</text>
+        <text class="anCode" x="670" y="60">5;</text>
+        <rect x="38" y="74" width="92" height="30" rx="6" fill="#003B57"/>
+        <text class="anT" x="52" y="94">verb</text>
+        <rect x="148" y="74" width="164" height="30" rx="6" fill="#0F80CC"/>
+        <text class="anT" x="162" y="94">which columns</text>
+        <rect x="328" y="74" width="72" height="30" rx="6" fill="#003B57"/>
+        <text class="anT" x="342" y="94">source</text>
+        <rect x="408" y="74" width="150" height="30" rx="6" fill="#3DA0E3"/>
+        <text class="anT" x="422" y="94">which table</text>
+        <rect x="578" y="74" width="120" height="30" rx="6" fill="#9FCFEE"/>
+        <text class="anI" x="592" y="94">cap the rows</text>
+        <text class="anX" x="40" y="150">Read it left to right, out loud: "select name and city, from customers, at most five rows."</text>
+        <text class="anX" x="40" y="172">Column order in SELECT is the column order you get back. * means "every column".</text>
+        <rect x="40" y="190" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="anN" x="64" y="202">The semicolon ends the statement. SQLite forgives a missing one; your warehouse may not.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the anatomy of the query you are about to run</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Run it now - your first live query<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Below is a real, editable SQL editor running SQLite in your browser against the Daybreak database. Press <strong>▶ Run</strong>. Then change <code>5</code> to <code>15</code>, or swap <code>name, city</code> for <code>*</code>, and run again. Nothing here can break - each run starts from a fresh copy of the database.</p>
+        <div class="sqlbox" data-caption="Tip: Cmd/Ctrl + Enter runs the query without reaching for the button.">
+          <pre class="sql-src">SELECT name, city, plan
+FROM customers
+LIMIT 5;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>Try these edits</strong>
+          Replace <code>name, city, plan</code> with <code>*</code> to see every column. Change <code>customers</code> to <code>products</code>. Raise <code>LIMIT 5</code> to <code>LIMIT 15</code>. Each is a valid query - run and watch the table change.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>ORDER BY - putting rows in a sensible order<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Rows come back in no guaranteed order unless you ask. <code>ORDER BY</code> sorts them; add <code>DESC</code> for high-to-low. This is the first tool that turns a raw dump into something a human reads - "most expensive products first", "newest customers first".</p>
+        <div class="sqlbox" data-caption="Change price to name, or DESC to ASC, and re-run.">
+          <pre class="sql-src">SELECT name, category, price
+FROM products
+ORDER BY price DESC;</pre>
+        </div>
+        <p>Notice you did not need <code>LIMIT</code> here - there are only eight products, so all of them fit. On a million-row table you would keep the <code>LIMIT</code> while exploring.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: SCHEMA TOUR ============ -->
+  <section class="section" id="schema-tour">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · orientation for every later session</span>
+      <h2>The Daybreak schema, table by table <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">Two minutes now saves you an hour later. Here is every table you will touch across the track. You do not need to memorize columns - you can always run a query to remind yourself - but knowing what lives where is the difference between fluent and frustrated.</p>
+
+    <table class="clean">
+      <thead><tr><th>Table</th><th>One row is...</th><th>Key columns</th></tr></thead>
+      <tbody>
+        <tr><td><strong>customers</strong></td><td>one person who bought from Daybreak</td><td>customer_id, name, city, country, signup_date, plan</td></tr>
+        <tr><td><strong>products</strong></td><td>one item in the catalog</td><td>product_id, name, category, price, roast</td></tr>
+        <tr><td><strong>orders</strong></td><td>one order placed on a date</td><td>order_id, customer_id, order_date, status, channel</td></tr>
+        <tr><td><strong>order_items</strong></td><td>one product line inside an order</td><td>order_id, product_id, quantity, unit_price</td></tr>
+        <tr><td><strong>subscriptions</strong></td><td>one recurring coffee plan</td><td>customer_id, product_id, start_date, cancel_date</td></tr>
+        <tr><td><strong>events</strong></td><td>one thing a customer did (login, ticket)</td><td>customer_id, event_date, event_type</td></tr>
+      </tbody>
+    </table>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Peek at any table yourself<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The fastest way to learn a table is to look at a few rows. Run this, then change <code>orders</code> to <code>order_items</code>, <code>subscriptions</code>, or <code>events</code> to explore each one.</p>
+        <div class="sqlbox" data-caption="Swap the table name and re-run to tour the whole schema.">
+          <pre class="sql-src">SELECT *
+FROM orders
+LIMIT 8;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>Reading NULL</strong>
+          In the <code>products</code> table, Equipment and Add-on rows show <code>NULL</code> for <code>roast</code> - they have no roast. <code>NULL</code> means "no value here", not zero and not blank. It behaves in its own special way, which is the whole of session b2's NULL lesson.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 2</span>
+      <h2>Answer a real question with SELECT <span class="tag demo">★ 12 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">Daybreak's founder asks: "What are our five most expensive coffees?" You have everything you need - <code>SELECT</code>, <code>FROM</code>, <code>ORDER BY</code>, <code>LIMIT</code>. Let us build the answer live, one clause at a time.</p>
+
+    <div class="steps">
+      <div class="step"><p>Start broad: <code>SELECT * FROM products;</code> - eight rows, all columns. Run it and eyeball what is there.</p></div>
+      <div class="step"><p>Trim to what you care about: swap <code>*</code> for <code>name, price</code>. Fewer columns, clearer answer.</p></div>
+      <div class="step"><p>Sort it: add <code>ORDER BY price DESC</code> so the priciest float to the top.</p></div>
+      <div class="step"><p>Cap it: add <code>LIMIT 5</code>. That is the founder's answer, and you built it in four moves.</p></div>
+    </div>
+
+    <div class="sqlbox" data-caption="The finished query. Try adding roast to the SELECT, or filtering later in session b2.">
+      <pre class="sql-src">SELECT name, price
+FROM products
+ORDER BY price DESC
+LIMIT 5;</pre>
+    </div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>This is 60% of analytics.</strong> A huge share of real "data requests" are exactly this shape: pick columns, sort, cap, hand it over. Analysts who look fast are not writing clever SQL - they are writing this simple query instantly and moving on. Fluency at the basics beats cleverness almost every day.</p>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 2</span>
+      <h2>Your turn: three questions, your queries <span class="tag demo">★ 10 min · build your own</span></h2>
+    </div>
+    <p class="lede">No scaffolding this time. Each editor below is empty-ish - write the query that answers the question, run it, fix it, run again. Getting an error is normal and fast to fix; that loop is the entire skill.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Q1 · List every customer's name and signup date, newest first<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="sqlbox" data-caption="Hint: SELECT the two columns FROM customers, then ORDER BY signup_date DESC.">
+          <pre class="sql-src">-- write your query here, then press Run
+SELECT name, signup_date
+FROM customers
+ORDER BY signup_date DESC;</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Q2 · Show the three cheapest coffees (all columns)<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="sqlbox" data-caption="Hint: ORDER BY price ASC (or just price) and LIMIT 3. Category filtering comes in b2 - for now, eyeball it.">
+          <pre class="sql-src">SELECT *
+FROM products
+ORDER BY price
+LIMIT 3;</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Q3 · How many rows are in the orders table?<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A tiny taste of session b3: <code>COUNT(*)</code> counts rows instead of listing them. Run it - one number comes back.</p>
+        <div class="sqlbox" data-caption="COUNT(*) is your first aggregate. Session b3 is entirely about these.">
+          <pre class="sql-src">SELECT COUNT(*) AS total_orders
+FROM orders;</pre>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 20-30 min total</span></h2>
+    </div>
+    <ul>
+      <li>Bookmark this page. It is your SQL scratchpad now - any query you want to test, the editors here run real SQLite in seconds.</li>
+      <li>Write a query that lists all products in the "Coffee" category by name. (You will eyeball the category for now; <code>WHERE</code> makes it exact in b2.)</li>
+      <li>Find Daybreak's three newest customers and their cities.</li>
+      <li>Tour every table with <code>SELECT * FROM &lt;table&gt; LIMIT 5;</code> until the schema diagram feels obvious without looking.</li>
+      <li>Bring one question about Daybreak you cannot yet answer to session b2 - odds are it needs <code>WHERE</code>, which is exactly what b2 delivers.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This track teaches the working core of the major free SQL curricula, run on live data instead of screenshots. Certificates, graded problem sets, and video lectures stay on the official sites (linked in each session). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Mode SQL Tutorial - Basic: SELECT, LIMIT, ORDER BY</span><span class="note">Parts 2-3 · the SELECT/FROM/LIMIT/ORDER BY core, run live</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">SQLBolt Lesson 1 - SELECT queries 101</span><span class="note">Part 2 · same first-query foundation, editable here</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Khan Academy - SQL basics (Unit 1)</span><span class="note">Parts 1-2 · tables/rows/columns + first queries; Khan's projects stay on Khan</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">W3Schools - SQL Intro, Syntax, Select</span><span class="note">Part 1 relational model + Part 2 SELECT; W3Schools reference stays linked</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · In a relational database, what is a "row"?</p>
+      <button class="qopt" type="button">A · A column of one attribute across all records</button>
+      <button class="qopt" type="button">B · One single item - one customer, one order - with all its attributes</button>
+      <button class="qopt" type="button">C · The name of a table</button>
+      <p class="qwhy">A row is one record: one customer, one order, one product. Columns are the attributes; tables hold many rows of one kind of thing.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · Which two words does every SQL query start with?</p>
+      <button class="qopt" type="button">A · ORDER BY</button>
+      <button class="qopt" type="button">B · FROM LIMIT</button>
+      <button class="qopt" type="button">C · SELECT (which columns) ... FROM (which table)</button>
+      <p class="qwhy">SELECT names the columns, FROM names the table. Everything else - WHERE, ORDER BY, JOIN - is refinement layered on that core.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · You see NULL in the roast column for "Cold Brew Kit". It means...</p>
+      <button class="qopt" type="button">A · No value - this product has no roast, which is different from zero or empty</button>
+      <button class="qopt" type="button">B · The value is zero</button>
+      <button class="qopt" type="button">C · There was a loading error</button>
+      <p class="qwhy">NULL means "no value here". It is not zero, not an empty string, and it follows its own rules - the heart of b2's NULL lesson.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 1 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>A database is</b><span>a set of tables. Rows = records, columns = attributes, shared id columns = relationships.</span></div>
+      <div class="cheat-item"><b>The core query</b><span>SELECT name, city FROM customers; - pick columns, name the table. * = all columns.</span></div>
+      <div class="cheat-item"><b>ORDER BY</b><span>Sorts rows. Add DESC for high-to-low. ORDER BY price DESC = most expensive first.</span></div>
+      <div class="cheat-item"><b>LIMIT</b><span>Caps rows returned. LIMIT 5 while exploring big tables so you are not flooded.</span></div>
+      <div class="cheat-item"><b>Daybreak's 6 tables</b><span>customers · products · orders · order_items · subscriptions · events.</span></div>
+      <div class="cheat-item"><b>NULL</b><span>Means "no value" - not zero, not blank. Has its own rules (b2).</span></div>
+      <div class="cheat-item"><b>The dialect</b><span>SQLite here; ~90% transfers to Postgres/MySQL/BigQuery. Deltas flagged in b10.</span></div>
+      <div class="cheat-item"><b>Running project</b><span>You can query Daybreak live. Next: b2 adds WHERE to ask precise questions.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 1 of 10 · learn-sql-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="b2-filtering-rows.html">Next: Filtering rows with WHERE →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/daybreak-seed.js?v=1"></script>
+<script src="../assets/sql-wasm.js?v=1"></script>
+<script src="../assets/sql-live.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

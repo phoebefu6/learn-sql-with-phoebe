@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 8 · Building and changing data - learn sql with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-sql-with-phoebe</a> / Builder session 8 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe · Builder track · Session 8 of 10</div>
+    <h1>Building and <span class="accent">changing</span> data</h1>
+    <p class="sub">For seven sessions you only READ the Daybreak database - SELECT, WHERE, JOIN, GROUP BY, windows. Tonight you get the other half of SQL: you WRITE. You will create a table from scratch, add rows, change them, delete them, and reshape a table's structure. And because every editor on this page runs against a fresh copy of the database, you can INSERT, UPDATE, and DELETE all you like - nothing you do here touches anyone else's data or even the next box on your own screen.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Builder track</span>
+      <span class="chip audience">Practitioners: analysts · DE · DS · PMs</span>
+      <span class="chip audience">Runs in your browser · SQLite</span>
+      <span class="chip time">You WRITE data now</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Read to write</span>
+      <span class="a2" style="flex:4">3-18 · CREATE TABLE &amp; keys</span>
+      <span class="a3" style="flex:5">18-40 · INSERT · UPDATE · DELETE</span>
+      <span class="a4" style="flex:2">40-45 · ALTER &amp; execution order</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>From reading to writing</h2>
+    </div>
+    <p class="lede">Everything so far has been read-only: you asked Daybreak questions and it answered. The commands in this session actually <strong>change</strong> data - they are how the rows got there in the first place. This is where analysts become builders: you can now stand up a table, seed it, correct it, and evolve it. And here is the safety net that makes learning this painless - <strong>every Run in this course starts from a clean, freshly seeded copy of the database</strong>. Your writes are real while the query runs, then they vanish. No box affects another box, and no learner affects another learner.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">▶ Live SQL - editable &amp; runnable</span>
+      <span class="pill inkpill">Official sources covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      The four data-definition and data-modification verbs every builder uses daily - <code>CREATE TABLE</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code> - plus <code>ALTER TABLE</code> and the single most clarifying idea in SQL: the query does not run in the order you wrote it. Once you see the real execution order, half of SQL's "why won't this work" mysteries dissolve.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: CREATE TABLE ============ -->
+  <section class="section" id="create-table">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers SQLBolt L16-17, W3Schools "Create Table / Constraints"</span>
+      <h2>CREATE TABLE, data types, and keys <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">A table is a promise about shape: these columns, these types, these rules. <code>CREATE TABLE</code> writes that promise. Each column gets a <strong>type</strong> (INTEGER, TEXT, REAL), and you can attach <strong>constraints</strong> - <code>PRIMARY KEY</code> to guarantee each row is uniquely identifiable, <code>NOT NULL</code> to forbid missing values, <code>FOREIGN KEY</code> to point at another table's key.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Anatomy of a CREATE TABLE statement: column names, types, and key constraints">
+        <style>
+          .ctT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .ctCode { font: 700 15px "SF Mono", Menlo, monospace; fill: #10222E; }
+          .ctType { font: 700 15px "SF Mono", Menlo, monospace; fill: #0F80CC; }
+          .ctKey { font: 700 15px "SF Mono", Menlo, monospace; fill: #F5A623; }
+          .ctX { font: 400 12.5px Inter, sans-serif; fill: #526472; }
+          .ctN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+        </style>
+        <text class="ctCode" x="40" y="46">CREATE TABLE roasters (</text>
+        <text class="ctCode" x="72" y="76">roaster_id</text>
+        <text class="ctType" x="220" y="76">INTEGER</text>
+        <text class="ctKey" x="330" y="76">PRIMARY KEY</text>
+        <text class="ctCode" x="72" y="104">name</text>
+        <text class="ctType" x="220" y="104">TEXT</text>
+        <text class="ctKey" x="330" y="104">NOT NULL</text>
+        <text class="ctCode" x="72" y="132">country</text>
+        <text class="ctType" x="220" y="132">TEXT</text>
+        <text class="ctCode" x="40" y="160">);</text>
+        <rect x="210" y="180" width="140" height="26" rx="6" fill="#0F80CC"/>
+        <text class="ctT" x="224" y="198">type = shape of value</text>
+        <rect x="360" y="180" width="200" height="26" rx="6" fill="#F5A623"/>
+        <text class="ctT" x="374" y="198">constraint = the rule</text>
+        <text class="ctX" x="40" y="238">PRIMARY KEY: this column uniquely names each row. No two roasters share an id.</text>
+        <text class="ctX" x="40" y="260">NOT NULL: a value is required here - the database rejects a blank name.</text>
+        <text class="ctX" x="40" y="282">FOREIGN KEY (elsewhere): a column that must match a key in another table - the link.</text>
+        <rect x="40" y="298" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="ctN" x="64" y="310">Types and constraints are how a table protects itself from bad data before it ever arrives.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the parts of a CREATE TABLE statement</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Build a table from nothing, then fill it<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>This editor starts from an <strong>empty database</strong> - no Daybreak tables at all - so you can watch a table come into existence. It creates <code>roasters</code>, inserts two rows, then reads them back. Press ▶ Run, then add a third roaster to the INSERT and run again.</p>
+        <div class="sqlbox" data-seed="none" data-caption="This box starts empty (data-seed=none). Add a row like (3,'Blue Ridge','USA') and re-run.">
+          <pre class="sql-src">CREATE TABLE roasters (
+  roaster_id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  country TEXT
+);
+INSERT INTO roasters VALUES (1,'Highland','Kenya'),(2,'Volcanica','Costa Rica');
+SELECT * FROM roasters;</pre>
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>Types catch bugs at the door.</strong> A team once stored prices as TEXT to "keep it simple". Sorting by price then ordered them alphabetically - "100" came before "9" - and a discount script silently mis-ranked the catalog for weeks. Declaring <code>price REAL</code> would have made the data wrong-shaped and loud, not quietly wrong.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>PRIMARY KEY vs FOREIGN KEY, in one breath<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two keys, two jobs. A <strong>PRIMARY KEY</strong> answers "which row is this?" - it is unique and never NULL, so it names each record. A <strong>FOREIGN KEY</strong> answers "which row over there does this point at?" - it holds a value that must exist as a primary key in another table. In Daybreak, <code>customers.customer_id</code> is a primary key; <code>orders.customer_id</code> is the matching foreign key, and that pairing is exactly what every JOIN from b4 rode on.</p>
+        <ul>
+          <li><strong>PRIMARY KEY:</strong> one per table, unique + not null. The row's identity.</li>
+          <li><strong>FOREIGN KEY:</strong> a pointer to another table's key. Keeps relationships honest.</li>
+          <li><strong>Together:</strong> they are why you can store a customer's city once and still attach it to 40 orders - the JOIN follows the key.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: INSERT UPDATE DELETE ============ -->
+  <section class="section" id="dml">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers SQLBolt L13-15, W3Schools "Insert / Update / Delete"</span>
+      <h2>INSERT, UPDATE, DELETE <span class="tag concept">8 min live</span></h2>
+    </div>
+    <p class="lede">Three verbs change rows. <code>INSERT</code> adds them, <code>UPDATE</code> edits values in rows that already exist, <code>DELETE</code> removes rows. Each box below runs on a <strong>fresh seeded copy</strong> of Daybreak, so you can hit real customer and order data safely - do the write, then a <code>SELECT</code> right after to see the effect, then run again knowing the next run resets everything.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>INSERT - add a new customer<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Daybreak signs up a test buyer. We add one row to <code>customers</code>, then read it back to confirm it landed. The SELECT filters to just the new id so you see exactly what changed.</p>
+        <div class="sqlbox" data-caption="Fresh copy every run - this new customer 99 appears, then is gone next run. Try changing the city.">
+          <pre class="sql-src">INSERT INTO customers VALUES (99,'Test Buyer','Oslo','Norway','2026-06-15','Pro');
+SELECT * FROM customers WHERE customer_id = 99;</pre>
+        </div>
+        <p>Values line up with the column order: id, name, city, country, signup_date, plan. Get the order right and every field lands in its place.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>UPDATE - a coffee price bump<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Every coffee goes up by one. <code>UPDATE</code> touches existing rows; the <code>WHERE</code> decides which ones. Here it is every product in the Coffee category - Equipment and Add-ons are left alone.</p>
+        <div class="sqlbox" data-caption="The WHERE is the whole safety story. Drop it and UPDATE hits every row - try it and watch.">
+          <pre class="sql-src">UPDATE products SET price = price + 1 WHERE category='Coffee';
+SELECT name, price FROM products WHERE category='Coffee';</pre>
+        </div>
+        <div class="callout tip">
+          <strong>The most expensive typo in SQL</strong>
+          An <code>UPDATE</code> or <code>DELETE</code> with no <code>WHERE</code> hits <em>every</em> row. On this page that just resets next run - in production it is the classic outage story. Habit to build now: write the <code>WHERE</code> first, then the <code>SET</code>.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>DELETE - clear out cancelled orders<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>DELETE</code> removes whole rows. We drop every cancelled order, then count what remains. Because the copy is fresh each run, the original 33 orders are always back on the next Run.</p>
+        <div class="sqlbox" data-caption="Change 'cancelled' to 'refunded' to see a different remaining count. Nothing is permanent here.">
+          <pre class="sql-src">DELETE FROM orders WHERE status='cancelled';
+SELECT COUNT(*) AS remaining FROM orders;</pre>
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>Soft delete beats hard delete.</strong> Many teams never truly DELETE customer or order rows - they add a <code>status</code> or <code>is_deleted</code> flag and UPDATE it instead, so history stays auditable and mistakes are reversible. Notice Daybreak already does a version of this: cancelled and refunded orders are kept, just marked - so revenue queries can exclude them without losing the record.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: ALTER + EXECUTION ORDER ============ -->
+  <section class="section" id="alter-order">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers W3Schools "Alter Table" + SQLBolt L12 "Order of execution"</span>
+      <h2>ALTER TABLE and the real order of execution <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede"><code>ALTER TABLE</code> changes a table's <strong>structure</strong> after it exists - add a column, rename it, drop it. And then the idea that reorganizes how you read every query you have written: SQL does <strong>not</strong> run top to bottom the way you type it. The engine runs <code>FROM</code> first and <code>SELECT</code> almost last.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SQL logical execution order: FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY, LIMIT">
+        <style>
+          .exStep { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .exNum { font: 700 13px Inter, sans-serif; fill: #10222E; }
+          .exX { font: 400 12px Inter, sans-serif; fill: #526472; }
+          .exN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+          .exArr { stroke: #9FCFEE; stroke-width: 2; fill: none; marker-end: url(#exhead); }
+        </style>
+        <defs>
+          <marker id="exhead" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="#3DA0E3"/>
+          </marker>
+        </defs>
+        <rect x="30" y="50" width="110" height="40" rx="8" fill="#003B57"/>
+        <text class="exStep" x="52" y="75">1 FROM</text>
+        <rect x="170" y="50" width="110" height="40" rx="8" fill="#0F80CC"/>
+        <text class="exStep" x="188" y="75">2 WHERE</text>
+        <rect x="310" y="50" width="120" height="40" rx="8" fill="#0F80CC"/>
+        <text class="exStep" x="322" y="75">3 GROUP BY</text>
+        <rect x="460" y="50" width="110" height="40" rx="8" fill="#3DA0E3"/>
+        <text class="exStep" x="478" y="75">4 HAVING</text>
+        <rect x="600" y="50" width="110" height="40" rx="8" fill="#F5A623"/>
+        <text class="exNum" x="618" y="75">5 SELECT</text>
+        <rect x="740" y="50" width="120" height="40" rx="8" fill="#003B57"/>
+        <text class="exStep" x="752" y="75">6 ORDER BY</text>
+        <path class="exArr" d="M140,70 L168,70"/>
+        <path class="exArr" d="M280,70 L308,70"/>
+        <path class="exArr" d="M430,70 L458,70"/>
+        <path class="exArr" d="M570,70 L598,70"/>
+        <path class="exArr" d="M710,70 L738,70"/>
+        <rect x="740" y="120" width="120" height="40" rx="8" fill="#9FCFEE"/>
+        <text class="exNum" x="770" y="145">7 LIMIT</text>
+        <path class="exArr" d="M800,92 L800,118"/>
+        <text class="exX" x="30" y="200">You WRITE it: SELECT ... FROM ... WHERE ... GROUP BY ... ORDER BY ... LIMIT.</text>
+        <text class="exX" x="30" y="224">The engine RUNS it in the numbered order above - FROM picks the rows, SELECT names columns near the end.</text>
+        <rect x="30" y="248" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="exN" x="54" y="260">This is why a column alias you create in SELECT cannot be used back in WHERE - WHERE ran first.</text>
+        <text class="exN" x="54" y="280">It is also why WHERE filters rows but HAVING filters groups: HAVING runs after GROUP BY.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the order the engine actually runs your clauses</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>ALTER a table - add a column, then use it<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Starts from an <strong>empty database</strong>. We make a bare <code>tmp</code> table with one column, then <code>ALTER</code> it to add a <code>label</code> column, insert a row that uses both, and read it back. Watch the table's shape change without dropping and rebuilding it.</p>
+        <div class="sqlbox" data-seed="none" data-caption="data-seed=none - empty start. Try adding a second ALTER to add a REAL column called score.">
+          <pre class="sql-src">CREATE TABLE tmp (id INTEGER);
+ALTER TABLE tmp ADD COLUMN label TEXT;
+INSERT INTO tmp VALUES (1,'hello');
+SELECT * FROM tmp;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>UPDATE vs ALTER, the one-liner</strong>
+          <code>UPDATE</code> changes the <em>values inside rows</em>. <code>ALTER</code> changes the <em>table's structure</em> - the columns themselves. Editing a customer's city is UPDATE; adding a whole "loyalty_tier" column is ALTER.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Why execution order saves you from bugs<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two classic errors both come from forgetting the real order. First: you alias <code>SUM(quantity*unit_price) AS revenue</code> in SELECT, then try <code>WHERE revenue &gt; 100</code> - and it fails, because WHERE ran before SELECT existed. The fix is <code>HAVING revenue &gt; 100</code>, which runs after grouping. Second: you cannot filter on a window-function result in WHERE for the same reason - windows compute at SELECT time. Once the numbered pipeline is in your head, these stop being surprises and start being predictable.</p>
+        <ul>
+          <li><strong>Filter raw rows?</strong> <code>WHERE</code> - it runs early, before grouping.</li>
+          <li><strong>Filter groups or aggregates?</strong> <code>HAVING</code> - it runs after GROUP BY.</li>
+          <li><strong>Rename for output?</strong> Aliases in SELECT are for ORDER BY and the result, not for WHERE.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Stand up a mini table and evolve it <span class="tag demo">★ 10 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">Put all four verbs together on a fresh, empty database. Create a small <code>promos</code> table, seed it, correct a value, remove a stale row, then reshape it - the full lifecycle a builder runs every week.</p>
+
+    <div class="steps">
+      <div class="step"><p><code>CREATE TABLE promos (code TEXT PRIMARY KEY, pct INTEGER);</code> - a promo code and its discount percent.</p></div>
+      <div class="step"><p><code>INSERT INTO promos VALUES ('SPRING',10),('WELCOME',15);</code> - two live promos.</p></div>
+      <div class="step"><p><code>UPDATE promos SET pct = 20 WHERE code='WELCOME';</code> - bump the welcome offer.</p></div>
+      <div class="step"><p><code>ALTER TABLE promos ADD COLUMN active TEXT;</code> then read it back - the shape evolved.</p></div>
+    </div>
+
+    <div class="sqlbox" data-seed="none" data-caption="Empty start. Run as-is, then add a DELETE for the SPRING promo and re-run.">
+      <pre class="sql-src">CREATE TABLE promos (code TEXT PRIMARY KEY, pct INTEGER);
+INSERT INTO promos VALUES ('SPRING',10),('WELCOME',15);
+UPDATE promos SET pct = 20 WHERE code='WELCOME';
+ALTER TABLE promos ADD COLUMN active TEXT;
+SELECT * FROM promos;</pre>
+    </div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>This is a migration.</strong> When engineers "ship a migration", this is literally what runs: a scripted sequence of CREATE / ALTER / UPDATE against the real database, version-controlled and reviewed. The verbs you just used are the exact same ones powering the schema changes behind every product you use - the difference is only scale and a review step.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 20-30 min total</span></h2>
+    </div>
+    <ul>
+      <li>On a <code>data-seed="none"</code> box, create a <code>suppliers</code> table with an id (PRIMARY KEY), a name (NOT NULL), and a country. Insert three suppliers and read them back.</li>
+      <li>On a fresh seeded box, INSERT a new product into <code>products</code>, then UPDATE its price, then DELETE it - proving to yourself the copy resets each run.</li>
+      <li>Write an UPDATE that gives every "Pro" customer a note - first add a <code>note</code> column with ALTER, then UPDATE it WHERE plan='Pro'.</li>
+      <li>Say out loud, without looking, the seven-step execution order. Then explain why you cannot put a SELECT alias in WHERE.</li>
+      <li>Bring one question to b9: if you were handed Daybreak cold, how would you find out why March revenue dropped? Next session answers exactly that.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This session teaches the data-definition and data-modification core of the major free SQL curricula, run on live data instead of screenshots. Graded problem sets stay on the official sites. This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">SQLBolt Lessons 13-18 - Insert / Update / Delete, Create / Alter / Drop Table</span><span class="note">Parts 1-3 · the full write side, each verb run live</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">W3Schools - SQL Database (Create / Alter / Drop, Constraints, PRIMARY / FOREIGN KEY)</span><span class="note">Part 1 · types and key constraints, W3Schools reference stays linked</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">SQLBolt Lesson 12 - Order of execution</span><span class="note">Part 3 · the logical clause order, with the alias-in-WHERE gotcha</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · You run an INSERT in one editor on this page. What happens to the next editor?</p>
+      <button class="qopt" type="button">A · The new row is there too - all editors share one database</button>
+      <button class="qopt" type="button">B · Nothing - every Run starts from a fresh copy, so your writes are safe and reset each time</button>
+      <button class="qopt" type="button">C · The page has to be reloaded to undo it</button>
+      <p class="qwhy">Each Run executes against a fresh seeded copy. Your INSERT / UPDATE / DELETE is real for that run, then gone - no box or learner affects another.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · What is the difference between UPDATE and ALTER?</p>
+      <button class="qopt" type="button">A · They are the same, ALTER is just the newer keyword</button>
+      <button class="qopt" type="button">B · UPDATE removes rows; ALTER removes tables</button>
+      <button class="qopt" type="button">C · UPDATE changes the values inside rows; ALTER changes the table's structure (its columns)</button>
+      <p class="qwhy">UPDATE edits data in existing rows. ALTER reshapes the table itself - adding, renaming, or dropping columns. Editing a city is UPDATE; adding a whole column is ALTER.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · Does SQL run top-to-bottom in the order you wrote the clauses?</p>
+      <button class="qopt" type="button">A · No - FROM and WHERE run first, SELECT runs near the end, which is why a SELECT alias cannot be used in WHERE</button>
+      <button class="qopt" type="button">B · Yes - it reads exactly like English, line by line</button>
+      <button class="qopt" type="button">C · Only ORDER BY runs out of order</button>
+      <p class="qwhy">The engine runs FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT. Because SELECT runs after WHERE, an alias you make in SELECT does not exist yet when WHERE runs.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 8 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>CREATE TABLE</b><span>Defines a table: columns, types (INTEGER / TEXT / REAL), and constraints. The shape promise.</span></div>
+      <div class="cheat-item"><b>PRIMARY vs FOREIGN KEY</b><span>PRIMARY names each row (unique, not null). FOREIGN points at another table's key - the JOIN link.</span></div>
+      <div class="cheat-item"><b>INSERT</b><span>Adds rows. Values match column order: INSERT INTO customers VALUES (99,'Test Buyer',...).</span></div>
+      <div class="cheat-item"><b>UPDATE ... WHERE</b><span>Edits values in existing rows. Always write the WHERE - no WHERE hits every row.</span></div>
+      <div class="cheat-item"><b>DELETE ... WHERE</b><span>Removes whole rows. Same WHERE discipline. Teams often soft-delete with a flag instead.</span></div>
+      <div class="cheat-item"><b>ALTER TABLE</b><span>Changes structure: ADD / RENAME / DROP COLUMN. Reshapes the table without rebuilding it.</span></div>
+      <div class="cheat-item"><b>Execution order</b><span>FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT. Not the written order.</span></div>
+      <div class="cheat-item"><b>Fresh-copy safety</b><span>Every Run reseeds the database. Write freely - it resets, never touching other boxes or learners.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 8 of 10 · learn-sql-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="b9-analyst-case-study.html">Next: Analyst case study →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/daybreak-seed.js?v=1"></script>
+<script src="../assets/sql-wasm.js?v=1"></script>
+<script src="../assets/sql-live.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

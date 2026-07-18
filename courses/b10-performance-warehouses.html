@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 10 · Performance and real warehouses - learn sql with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-sql-with-phoebe</a> / Builder session 10 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe · Builder track · Session 10 of 10</div>
+    <h1>Performance and real <span class="accent">warehouses</span></h1>
+    <p class="sub">Your queries feel instant - because Daybreak has 33 orders. At work the same query runs on 33 million rows, and suddenly "why is this slow?" is your problem. This final session is the bridge from a browser SQLite tab to production: you will read a query plan, add an index and watch the plan change, and learn exactly which parts of your SQL transfer untouched to PostgreSQL, BigQuery, and Snowflake, and which parts shift at the edges. Same core language, bigger stakes.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Builder track</span>
+      <span class="chip audience">Practitioners: analysts · DE · DS · PMs</span>
+      <span class="chip audience">Runs in your browser · SQLite</span>
+      <span class="chip time">Final session · the bridge out</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:2">0-5 · Why queries slow down</span>
+      <span class="a2" style="flex:4">5-22 · Read a plan · add an index</span>
+      <span class="a3" style="flex:4">22-40 · SQLite to warehouses</span>
+      <span class="a4" style="flex:2">40-45 · Where next</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>The last mile: from correct to fast, and from toy to production</h2>
+    </div>
+    <p class="lede">Nine sessions made you correct. This one makes you production-ready. Two ideas do most of the work. First, performance: a database can answer a query by reading every row (a full scan) or by jumping straight to the rows it needs (an index) - and the difference is invisible at 33 rows and enormous at 33 million. Second, portability: the SQL core you learned is a standard, but each engine speaks a slightly different dialect at the edges. Know the core, flag the edges, and you can walk into any warehouse.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">▶ Live SQL - editable &amp; runnable</span>
+      <span class="pill inkpill">Official sources covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      The ability to read <code>EXPLAIN QUERY PLAN</code> and tell a full scan from an index lookup, an intuition for the index tradeoff (faster reads, slower writes, more storage), and a dialect-delta table you can keep on your desk for the day your SQLite muscle memory meets a real warehouse. That is the whole Builder track, landed.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: WHY SLOW + PLANS ============ -->
+  <section class="section" id="plans">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers Mode "Performance Tuning SQL Queries"</span>
+      <h2>Why queries get slow, and reading a plan <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">A query is a request; the engine decides <em>how</em> to fulfill it, and that plan is where speed lives or dies. The most common slow path is a <strong>full table scan</strong> - reading every single row to find the few you asked for. <code>EXPLAIN QUERY PLAN</code> shows you the engine's chosen strategy before you commit to it.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Full scan versus index lookup: reading every row versus jumping to the right rows">
+        <style>
+          .pfT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .pfL { font: 700 13px Inter, sans-serif; fill: #10222E; }
+          .pfX { font: 400 12px Inter, sans-serif; fill: #526472; }
+          .pfN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+        </style>
+        <text class="pfL" x="40" y="40">Full scan: read all 33 (or 33M) rows</text>
+        <rect x="40" y="52" width="30" height="30" rx="4" fill="#AEC4D2"/>
+        <rect x="76" y="52" width="30" height="30" rx="4" fill="#AEC4D2"/>
+        <rect x="112" y="52" width="30" height="30" rx="4" fill="#AEC4D2"/>
+        <rect x="148" y="52" width="30" height="30" rx="4" fill="#F5A623"/>
+        <rect x="184" y="52" width="30" height="30" rx="4" fill="#AEC4D2"/>
+        <rect x="220" y="52" width="30" height="30" rx="4" fill="#AEC4D2"/>
+        <rect x="256" y="52" width="30" height="30" rx="4" fill="#AEC4D2"/>
+        <rect x="292" y="52" width="30" height="30" rx="4" fill="#AEC4D2"/>
+        <text class="pfX" x="336" y="72">check every box, keep the one orange match</text>
+        <text class="pfL" x="40" y="140">Index lookup: jump straight to the match</text>
+        <rect x="40" y="152" width="30" height="30" rx="4" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <rect x="76" y="152" width="30" height="30" rx="4" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <rect x="112" y="152" width="30" height="30" rx="4" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <rect x="148" y="152" width="30" height="30" rx="4" fill="#F5A623"/>
+        <rect x="184" y="152" width="30" height="30" rx="4" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <path d="M163,120 L163,150" stroke="#0F80CC" stroke-width="2.5" fill="none" marker-end="url(#pfhead)"/>
+        <defs>
+          <marker id="pfhead" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#0F80CC"/>
+          </marker>
+        </defs>
+        <text class="pfX" x="336" y="172">the index points right at it - the other rows are never touched</text>
+        <rect x="40" y="214" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="pfN" x="64" y="226">At 33 rows both feel instant. At 33 million, the scan reads 33M rows and the index reads a handful. That is the gap.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - a full scan checks every row; an index jumps to the match</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Read the plan for a filtered query<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>EXPLAIN QUERY PLAN</code> does not run the query - it tells you how SQLite <em>would</em>. Run this and read the output: with no index on <code>customer_id</code>, it says it will <strong>SCAN</strong> the orders table - read every row to find customer 1's orders.</p>
+        <div class="sqlbox" data-caption="Look for the word SCAN in the output - that is a full table read. In Part 2 we make it say SEARCH ... USING INDEX instead.">
+          <pre class="sql-src">EXPLAIN QUERY PLAN
+SELECT * FROM orders WHERE customer_id = 1;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>SCAN vs SEARCH</strong>
+          In SQLite's plan output, <code>SCAN</code> means "read the whole table" and <code>SEARCH ... USING INDEX</code> means "jump to the rows via an index". Training your eye to spot <code>SCAN</code> on a big, frequently-filtered table is 80% of practical query tuning.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: INDEXES ============ -->
+  <section class="section" id="indexes">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers Kaggle "Writing Efficient Queries"</span>
+      <h2>Indexes: the tradeoff that makes reads fast <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">An <strong>index</strong> is a sorted lookup structure on a column - like the index at the back of a book. Create one on the column you filter or join by, and the engine can find matching rows without scanning. It is the single highest-leverage performance move. But it is a tradeoff, not free magic.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Add an index, then re-read the plan<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>This box runs on a fresh seeded copy, so creating an index here is safe and resets next run. We build an index on <code>orders(customer_id)</code>, then ask for the plan of the same query from Part 1. The output should now say <strong>SEARCH ... USING INDEX</strong> instead of SCAN.</p>
+        <div class="sqlbox" data-caption="Compare this plan output to Part 1. SCAN became SEARCH USING INDEX - the engine now jumps instead of reading all rows.">
+          <pre class="sql-src">CREATE INDEX idx_orders_customer ON orders(customer_id);
+EXPLAIN QUERY PLAN
+SELECT * FROM orders WHERE customer_id = 1;</pre>
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The tradeoff, stated plainly.</strong> An index makes <em>reads</em> on that column faster - sometimes thousands of times faster at scale. In exchange, every <em>write</em> (INSERT / UPDATE / DELETE) gets a little slower because the index has to be kept in sync, and the index itself costs storage. So you index the columns you filter and join on constantly, not every column. On a write-heavy table, too many indexes can hurt more than they help.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Which columns deserve an index?<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You do not index everything - you index where the engine keeps doing expensive lookups. The reliable candidates are the columns that show up in <code>WHERE</code> and <code>JOIN ... ON</code> over and over on large tables. Primary keys are already indexed for you; foreign keys usually should be, because that is what every JOIN filters on.</p>
+        <ul>
+          <li><strong>Index:</strong> foreign keys, columns in frequent WHERE filters, columns you sort large results by.</li>
+          <li><strong>Skip:</strong> tiny tables (a scan is already instant), columns you rarely filter on, write-hot tables where index upkeep dominates.</li>
+          <li><strong>Measure, do not guess:</strong> EXPLAIN QUERY PLAN before and after tells you whether the index is actually used.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: DIALECTS ============ -->
+  <section class="section" id="dialects">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · the bridge to production warehouses</span>
+      <h2>SQLite to real warehouses <span class="tag concept">8 min live</span></h2>
+    </div>
+    <p class="lede">The SQL core you learned - SELECT, WHERE, JOIN, GROUP BY, HAVING, CTEs, window functions - is the same in PostgreSQL, MySQL, BigQuery, and Snowflake. What shifts is the edges: date functions, string functions, how you cap rows, how you match case-insensitively. Here is the delta table to keep on your desk.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="From a laptop running SQLite to a cloud warehouse: same SQL core, different edges">
+        <style>
+          .whT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .whL { font: 700 13px Inter, sans-serif; fill: #10222E; }
+          .whX { font: 400 12px Inter, sans-serif; fill: #526472; }
+          .whN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+          .whArr { stroke: #3DA0E3; stroke-width: 2.5; fill: none; marker-end: url(#whhead); }
+        </style>
+        <defs>
+          <marker id="whhead" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#3DA0E3"/>
+          </marker>
+        </defs>
+        <rect x="40" y="70" width="200" height="90" rx="10" fill="#003B57"/>
+        <text class="whT" x="70" y="110">Laptop · SQLite</text>
+        <text class="whT" x="70" y="134" fill="#9FCFEE">one file, no server</text>
+        <path class="whArr" d="M250,115 L400,115"/>
+        <text class="whL" x="270" y="100">same SQL core</text>
+        <text class="whX" x="262" y="140">different edges</text>
+        <rect x="410" y="55" width="430" height="120" rx="12" fill="#0F80CC"/>
+        <text class="whT" x="440" y="90">Cloud warehouse</text>
+        <text class="whT" x="440" y="116" fill="#E9F4FB">Postgres · MySQL · BigQuery · Snowflake</text>
+        <text class="whT" x="440" y="142" fill="#E9F4FB">many machines · billions of rows</text>
+        <rect x="40" y="196" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="whN" x="64" y="208">At scale, SQL runs across a cluster - the query text barely changes, but date/string functions and row limits differ by engine.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - same SQL core travels; the edges shift by engine</figcaption>
+    </figure>
+
+    <table class="clean">
+      <thead><tr><th>Need</th><th>SQLite</th><th>PostgreSQL</th><th>MySQL</th><th>BigQuery</th><th>Snowflake</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Cap rows</strong></td><td>LIMIT 5</td><td>LIMIT 5</td><td>LIMIT 5</td><td>LIMIT 5</td><td>LIMIT 5 (or TOP 5)</td></tr>
+        <tr><td><strong>Month from date</strong></td><td>substr(d,1,7)</td><td>DATE_TRUNC('month', d)</td><td>DATE_FORMAT(d,'%Y-%m')</td><td>DATE_TRUNC(d, MONTH)</td><td>DATE_TRUNC('month', d)</td></tr>
+        <tr><td><strong>String concat</strong></td><td>a || b</td><td>a || b</td><td>CONCAT(a, b)</td><td>CONCAT(a, b)</td><td>a || b</td></tr>
+        <tr><td><strong>Case-insensitive match</strong></td><td>LIKE (default)</td><td>ILIKE</td><td>LIKE (default)</td><td>LOWER(x) = ...</td><td>ILIKE</td></tr>
+      </tbody>
+    </table>
+    <p class="lede" style="margin-top:14px">Note the old SQL Server <code>TOP 5</code> style still shows up in legacy code - most modern engines standardized on <code>LIMIT</code>. When in doubt, the engine's own docs settle it; the concepts never change, only the spelling.</p>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Where SQL actually runs at scale<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>SQLite runs inside one process reading one file - which is why this whole course fits in a browser tab. A production warehouse like BigQuery or Snowflake spreads one query across many machines, each chewing a slice of a table that may hold billions of rows, then merges the results. You still write the same <code>SELECT ... GROUP BY</code>; the engine handles the parallelism. Your job shifts from "can I express this?" to "will this be cheap and fast?" - which is exactly why plans and indexes (and, in cloud engines, partitioning and clustering) become part of the craft.</p>
+        <ul>
+          <li><strong>What transfers:</strong> the entire language core from b1-b9. Learn it once.</li>
+          <li><strong>What is new at scale:</strong> cost awareness, partitioning, clustering, and reading bigger, engine-specific query plans.</li>
+          <li><strong>The mindset:</strong> correct first, then fast. You now have both halves.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework · the send-off</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 20-30 min total</span></h2>
+    </div>
+    <ul>
+      <li>Take one query you actually run at your job (or a b9 query) and run <code>EXPLAIN QUERY PLAN</code> on the equivalent here. Find the word SCAN or SEARCH and say what it means out loud.</li>
+      <li>On a fresh seeded box, add an index to a scratch column you filter on, re-run EXPLAIN QUERY PLAN, and confirm the plan changed from SCAN to SEARCH USING INDEX.</li>
+      <li>Take the dialect table and rewrite one Daybreak query's "month from date" line as if you were on BigQuery, then on Postgres. Same result, different spelling.</li>
+      <li>Write down, in one sentence each, the index tradeoff and the difference between what transfers and what shifts between SQLite and a warehouse.</li>
+      <li>You finished the Builder track. Pick a real question at work and answer it end to end - confirm, drill, explain, brief - the way you did in b9. That habit is the whole point.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This session teaches the performance and portability core of the major advanced curricula, run on live data instead of screenshots. Deep engine-specific tuning stays on the official docs. This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Mode - Advanced SQL: Performance Tuning SQL Queries</span><span class="note">Parts 1-2 · query plans, full scans, and why queries slow down</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Kaggle - Advanced SQL: Writing Efficient Queries</span><span class="note">Part 2 · indexes and the read/write tradeoff, run live</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Dialect references - PostgreSQL / BigQuery / Snowflake docs</span><span class="note">Part 3 · the delta table; each engine's own docs stay the source of truth</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">1 · What does an index do?</p>
+      <button class="qopt" type="button">A · Speeds up lookups on a column, at the cost of slower writes and more storage</button>
+      <button class="qopt" type="button">B · Makes every query faster with no downside</button>
+      <button class="qopt" type="button">C · Compresses the table to save space</button>
+      <p class="qwhy">An index is a sorted lookup structure: reads on that column get much faster, but every write must keep it in sync and it costs storage. Index the columns you filter and join on.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · What does EXPLAIN QUERY PLAN tell you?</p>
+      <button class="qopt" type="button">A · The exact number of milliseconds the query will take</button>
+      <button class="qopt" type="button">B · Whether the SQL has a syntax error</button>
+      <button class="qopt" type="button">C · How the engine will run the query - a full scan versus an index lookup</button>
+      <p class="qwhy">It shows the engine's strategy without running the query: SCAN means read every row, SEARCH ... USING INDEX means jump to the matches. Spotting SCAN on big tables is most of practical tuning.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">3 · What transfers from SQLite to a production warehouse?</p>
+      <button class="qopt" type="button">A · Nothing - warehouse SQL is a completely different language</button>
+      <button class="qopt" type="button">B · The core language; date/string functions and LIMIT/TOP differ by dialect</button>
+      <button class="qopt" type="button">C · Only the SELECT keyword; everything else is rewritten</button>
+      <p class="qwhy">SELECT, WHERE, JOIN, GROUP BY, HAVING, CTEs, and window functions are the same. The edges - date and string functions, row limits, case-insensitive matching - shift by engine.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 10 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Why queries slow</b><span>A full table scan reads every row. Invisible at 33 rows, brutal at 33 million.</span></div>
+      <div class="cheat-item"><b>EXPLAIN QUERY PLAN</b><span>Shows the engine's strategy without running. Look for SCAN (whole table) vs SEARCH USING INDEX.</span></div>
+      <div class="cheat-item"><b>Index</b><span>Sorted lookup on a column. CREATE INDEX idx ON orders(customer_id). Turns SCAN into SEARCH.</span></div>
+      <div class="cheat-item"><b>The tradeoff</b><span>Faster reads, slower writes, more storage. Index foreign keys and hot filter columns, not everything.</span></div>
+      <div class="cheat-item"><b>What transfers</b><span>SELECT / WHERE / JOIN / GROUP BY / HAVING / CTE / windows - identical across engines.</span></div>
+      <div class="cheat-item"><b>What shifts</b><span>Dates (substr vs DATE_TRUNC vs EXTRACT), concat (|| vs CONCAT), LIMIT vs TOP, ILIKE.</span></div>
+      <div class="cheat-item"><b>At scale</b><span>Warehouses run one query across many machines. Same SQL, plus cost/partitioning awareness.</span></div>
+      <div class="cheat-item"><b>Track complete</b><span>Correct (b1-b9) + fast (b10). Go answer a real question end to end - that is the point.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 10 of 10 · learn-sql-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="../index.html">Builder track complete - back to all sessions →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/daybreak-seed.js?v=1"></script>
+<script src="../assets/sql-wasm.js?v=1"></script>
+<script src="../assets/sql-live.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

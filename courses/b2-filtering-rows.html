@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 2 · Filtering rows with WHERE - learn sql with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-sql-with-phoebe</a> / Builder session 2 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe · Builder track · Session 2 of 10</div>
+    <h1>Filtering rows with <span class="accent">WHERE</span></h1>
+    <p class="sub">Session 1 handed you every row in a table. Real questions almost never want every row - they want the Pro customers, the coffees under $18, the orders from Canada. <code>WHERE</code> is the clause that asks for SOME rows instead of all of them, and it is the single most-used word in day-to-day SQL. Same Daybreak database, same live editor - now you get to be picky.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Builder track</span>
+      <span class="chip audience">Practitioners: analysts · DE · DS · PMs</span>
+      <span class="chip audience">Runs in your browser · SQLite</span>
+      <span class="chip time">~45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:4">3-20 · WHERE &amp; operators</span>
+      <span class="a3" style="flex:5">20-42 · Build-along: filter Daybreak</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where WHERE fits</h2>
+    </div>
+    <p class="lede">In session b1 you ran <code>SELECT ... FROM ...</code> and got the whole table back. That is fine for eight products, hopeless for a million orders. <code>WHERE</code> sits right after <code>FROM</code> and keeps only the rows that pass a test you write - "price under 18", "country is Canada", "plan is Pro". Everything you already know still works; you are just adding one line that does the filtering.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">▶ Live SQL - editable &amp; runnable</span>
+      <span class="pill inkpill">Official sources covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A working <code>WHERE</code> reflex - comparison operators, <code>AND</code>/<code>OR</code>/<code>NOT</code> to combine tests, and the pattern-and-set family (<code>LIKE</code>, <code>IN</code>, <code>BETWEEN</code>, <code>IS NULL</code>). By the end you can carve any precise slice of Daybreak you want and hand it over.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: WHERE + COMPARISON ============ -->
+  <section class="section" id="where-comparison">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers Mode "Basic - WHERE, comparison operators", SQLBolt L2, W3Schools "Where"</span>
+      <h2>WHERE and the comparison operators <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">A <code>WHERE</code> clause is a test applied to every row, one at a time. If the test is true, the row comes back; if false, it is dropped. The tests are built from comparison operators you already know from a calculator: <code>=</code> equals, <code>!=</code> not equal, <code>&gt;</code> greater, <code>&lt;</code> less, <code>&gt;=</code> and <code>&lt;=</code>. Text goes in single quotes; numbers do not.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A funnel: all rows go in, WHERE filters them, only matching rows come out">
+        <style>
+          .funT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .funI { font: 700 14px Inter, sans-serif; fill: #10222E; }
+          .funX { font: 400 12.5px Inter, sans-serif; fill: #526472; }
+          .funCode { font: 700 15px "SF Mono", Menlo, monospace; fill: #10222E; }
+          .funN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+        </style>
+        <!-- all rows in -->
+        <rect x="40" y="50" width="150" height="26" rx="5" fill="#9FCFEE"/>
+        <text class="funI" x="54" y="68">all 8 products</text>
+        <rect x="40" y="82" width="150" height="18" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <rect x="40" y="102" width="150" height="18" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <rect x="40" y="122" width="150" height="18" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <rect x="40" y="142" width="150" height="18" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <rect x="40" y="162" width="150" height="18" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <!-- funnel -->
+        <path d="M250,60 L470,60 L390,170 L330,170 Z" fill="#0F80CC"/>
+        <text class="funT" x="300" y="105">WHERE</text>
+        <text class="funT" x="285" y="128">category</text>
+        <text class="funT" x="292" y="148">= 'Coffee'</text>
+        <!-- matching out -->
+        <rect x="540" y="90" width="150" height="26" rx="5" fill="#003B57"/>
+        <text class="funT" x="554" y="108">4 coffees</text>
+        <rect x="540" y="122" width="150" height="18" fill="#E9F4FB" stroke="#3DA0E3"/>
+        <rect x="540" y="142" width="150" height="18" fill="#E9F4FB" stroke="#3DA0E3"/>
+        <!-- arrows -->
+        <path d="M195,110 L245,110" stroke="#526472" stroke-width="2" marker-end="url(#funArrow)"/>
+        <path d="M475,110 L535,110" stroke="#526472" stroke-width="2" marker-end="url(#funArrow)"/>
+        <defs>
+          <marker id="funArrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 Z" fill="#526472"/>
+          </marker>
+        </defs>
+        <text class="funX" x="40" y="215">Every row is tested once. True rows pass through; false rows are dropped on the floor.</text>
+        <text class="funCode" x="40" y="248">SELECT name, category, price FROM products WHERE category = 'Coffee';</text>
+        <rect x="40" y="266" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="funN" x="64" y="278">Text values need single quotes: 'Coffee'. Numbers do not: price &lt; 18. A common first slip.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - WHERE is a funnel that keeps only the rows that pass the test</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Filter by an exact match<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Here is the funnel from the diagram, live. This asks for only the rows where <code>category</code> equals <code>'Coffee'</code>. Press <strong>▶ Run</strong>, then change <code>'Coffee'</code> to <code>'Equipment'</code> or <code>'Add-on'</code> and run again - watch which rows survive.</p>
+        <div class="sqlbox" data-caption="Swap 'Coffee' for 'Equipment' or 'Add-on' and re-run.">
+          <pre class="sql-src">SELECT name, category, price
+FROM products
+WHERE category = 'Coffee';</pre>
+        </div>
+        <div class="callout tip">
+          <strong>Quotes matter</strong>
+          <code>'Coffee'</code> is text, so it needs single quotes. Miss them and SQLite thinks <code>Coffee</code> is a column name and errors. Numbers like <code>18</code> are bare, no quotes.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Filter by a number range<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Comparison operators shine on numbers. This keeps only products priced below 18. Change <code>&lt;</code> to <code>&gt;=</code>, or the <code>18</code> to <code>25</code>, and re-run to feel how the operator picks the rows.</p>
+        <div class="sqlbox" data-caption="Try &gt;= 25, or != 34, to see the operators in action.">
+          <pre class="sql-src">SELECT name, price
+FROM products
+WHERE price &lt; 18;</pre>
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>"Show me everything under our free-shipping threshold."</strong> That request is a one-line <code>WHERE price &lt; 18</code>. Pricing pages, discount tiers, "budget picks" carousels - all of it starts as a comparison filter on one number column. The clause you just ran is quietly powering shopping sites everywhere.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: AND OR NOT ============ -->
+  <section class="section" id="and-or-not">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers Mode "logical operators", SQLBolt L3, W3Schools "And/Or/Not"</span>
+      <h2>Combining tests: AND, OR, NOT <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">One test is useful; combining them is where filtering gets sharp. <code>AND</code> means a row must pass <strong>both</strong> tests. <code>OR</code> means it needs pass <strong>either</strong>. <code>NOT</code> flips a test. String enough together and you can describe almost any slice of customers in one line - "Pro plan, in the USA, signed up this year".</p>
+
+    <table class="clean">
+      <thead><tr><th>Connector</th><th>Row is kept when...</th><th>Plain-English read</th></tr></thead>
+      <tbody>
+        <tr><td><strong>AND</strong></td><td>both tests are true</td><td>"Pro <em>and</em> in the USA" - stricter, fewer rows</td></tr>
+        <tr><td><strong>OR</strong></td><td>at least one test is true</td><td>"Canada <em>or</em> UK" - looser, more rows</td></tr>
+        <tr><td><strong>NOT</strong></td><td>the test is false</td><td>"NOT cancelled" - everything except the match</td></tr>
+      </tbody>
+    </table>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>AND - both tests must pass<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>This finds customers who are on the Pro plan <em>and</em> based in the USA - both conditions, joined by <code>AND</code>. Because both must be true, <code>AND</code> narrows the result. Try changing <code>'USA'</code> to <code>'UK'</code>, or swap <code>AND</code> for <code>OR</code> and watch the row count grow.</p>
+        <div class="sqlbox" data-caption="Swap AND for OR to see the result set widen.">
+          <pre class="sql-src">SELECT name, city
+FROM customers
+WHERE plan = 'Pro' AND country = 'USA';</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>OR - either test passes<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Here <code>OR</code> keeps a customer if they are in Canada <em>or</em> the UK. Notice you repeat the column name on both sides of <code>OR</code> - <code>country = 'Canada' OR country = 'UK'</code>, not <code>country = 'Canada' OR 'UK'</code>. Part 3 shows <code>IN</code>, a tidier way to write exactly this.</p>
+        <div class="sqlbox" data-caption="Add OR country = 'Germany' to widen it further.">
+          <pre class="sql-src">SELECT name, country
+FROM customers
+WHERE country = 'Canada' OR country = 'UK';</pre>
+        </div>
+        <div class="callout tip">
+          <strong>Mixing AND with OR? Use parentheses</strong>
+          When a query has both, SQLite evaluates <code>AND</code> before <code>OR</code> - just like times-before-plus in maths. Wrap the OR group in parentheses to be explicit: <code>WHERE plan = 'Pro' AND (country = 'Canada' OR country = 'UK')</code>. Clear beats clever.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: LIKE IN BETWEEN IS NULL ============ -->
+  <section class="section" id="pattern-set">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers Mode "LIKE, IN, BETWEEN, IS NULL", SQLBolt L4, W3Schools "Like/In/Between/Null"</span>
+      <h2>Pattern and set matching: LIKE, IN, BETWEEN, IS NULL <span class="tag concept">8 min live</span></h2>
+    </div>
+    <p class="lede">Four specialist operators cover the filters that <code>=</code> cannot. <code>LIKE</code> matches text patterns with wildcards. <code>IN</code> checks membership in a list. <code>BETWEEN</code> tests a range, endpoints included. <code>IS NULL</code> finds missing values - and it is the one people get wrong most often.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>LIKE - match a text pattern<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The <code>%</code> wildcard means "any run of characters". So <code>'%Espresso%'</code> matches any product name that contains "Espresso" anywhere - start, middle, or end. Run it, then try <code>'Cold%'</code> (starts with Cold) or <code>'%Beans'</code> (ends with Beans).</p>
+        <div class="sqlbox" data-caption="% = any characters. Try 'Cold%' or '%Beans'.">
+          <pre class="sql-src">SELECT name
+FROM products
+WHERE name LIKE '%Espresso%';</pre>
+        </div>
+        <div class="callout tip">
+          <strong>Two wildcards</strong>
+          <code>%</code> matches any number of characters; <code>_</code> matches exactly one. In SQLite, <code>LIKE</code> is case-insensitive for plain ASCII letters, so <code>'%espresso%'</code> matches too.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>IN - match any value in a list<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Remember the repetitive <code>OR</code> from Part 2? <code>IN</code> collapses it into one clean list. This is the exact same result - Canada or UK customers - written the tidy way. Add <code>'Germany'</code> to the list and re-run.</p>
+        <div class="sqlbox" data-caption="IN ('Canada','UK') is shorthand for country='Canada' OR country='UK'.">
+          <pre class="sql-src">SELECT name, country
+FROM customers
+WHERE country IN ('Canada','UK');</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>BETWEEN - a range, endpoints included<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>BETWEEN 15 AND 20</code> keeps every price from 15 to 20 <em>inclusive</em> of both ends. It is the readable way to write <code>price &gt;= 15 AND price &lt;= 20</code>. Watch the boundaries: a product priced exactly 15 or exactly 20 is kept.</p>
+        <div class="sqlbox" data-caption="BETWEEN includes both endpoints. Try BETWEEN 9 AND 12.">
+          <pre class="sql-src">SELECT name, price
+FROM products
+WHERE price BETWEEN 15 AND 20;</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>IS NULL - find the missing values<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>In Daybreak, only Coffee products have a <code>roast</code>; Equipment and Add-on rows store <code>NULL</code> there. To find them you must write <code>roast IS NULL</code> - never <code>roast = NULL</code>. This is the number-one beginner trap, so it earns its own callout below.</p>
+        <div class="sqlbox" data-caption="These are the non-coffee products - roast is NULL for them.">
+          <pre class="sql-src">SELECT name
+FROM products
+WHERE roast IS NULL;</pre>
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>Why <code>= NULL</code> silently returns nothing.</strong> <code>NULL</code> means "unknown", and in SQL anything compared to unknown is itself unknown - never true. So <code>roast = NULL</code> is never true for any row and quietly returns zero rows, no error. Teams have shipped reports that "found no missing data" for months because of exactly this. Always use <code>IS NULL</code> and <code>IS NOT NULL</code>.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 2</span>
+      <h2>Build-along: a customer segment <span class="tag demo">★ 12 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">Daybreak's marketing lead wants a segment: "our Pro customers in the USA, newest signups first." That is two filters joined by <code>AND</code>, plus an <code>ORDER BY</code> from session b1. Let us assemble it one clause at a time.</p>
+
+    <div class="steps">
+      <div class="step"><p>Start with the table: <code>SELECT name, city, signup_date FROM customers;</code> - everyone, all columns you care about.</p></div>
+      <div class="step"><p>Add the first filter: <code>WHERE plan = 'Pro'</code>. Now only Pro customers remain.</p></div>
+      <div class="step"><p>Tighten with <code>AND country = 'USA'</code>. Both tests must pass - the segment narrows.</p></div>
+      <div class="step"><p>Order it: <code>ORDER BY signup_date DESC</code> puts the newest signups on top. That is the segment.</p></div>
+    </div>
+
+    <div class="sqlbox" data-caption="The finished segment. Try switching country to 'UK', or plan to 'Basic'.">
+      <pre class="sql-src">SELECT name, city, signup_date
+FROM customers
+WHERE plan = 'Pro' AND country = 'USA'
+ORDER BY signup_date DESC;</pre>
+    </div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>Every "audience" is a WHERE clause.</strong> The segments marketing teams obsess over - "high-value UK subscribers", "at-risk trial users" - are, underneath the dashboard, exactly this: a few <code>WHERE</code> conditions and a sort. Learn to write them fast and you become the person who answers "can you pull a list of..." in thirty seconds.</p>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 2</span>
+      <h2>Your turn: three filters, your queries <span class="tag demo">★ 10 min · build your own</span></h2>
+    </div>
+    <p class="lede">No hand-holding now. Each editor answers one question - run it, tweak it, break it, fix it. That run-fix-run loop is the whole skill, and errors are cheap here.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Q1 · Coffees under $18<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two filters joined by <code>AND</code>: the category is Coffee, and the price is below 18. Run it, then loosen the price to 25 and see who joins.</p>
+        <div class="sqlbox" data-caption="Hint: WHERE category = 'Coffee' AND price &lt; 18.">
+          <pre class="sql-src">SELECT name, price
+FROM products
+WHERE category = 'Coffee' AND price &lt; 18;</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Q2 · The equipment items (roast is missing)<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Equipment has no roast, so filter on both the category and the missing value. Notice the <code>IS NULL</code> - never <code>= NULL</code>.</p>
+        <div class="sqlbox" data-caption="Hint: WHERE category = 'Equipment' AND roast IS NULL.">
+          <pre class="sql-src">SELECT name, category, roast
+FROM products
+WHERE category = 'Equipment' AND roast IS NULL;</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Q3 · Customers who signed up in 2026<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A neat trick: dates are stored as text like <code>'2026-03-14'</code>, so <code>LIKE '2026%'</code> matches every date that starts with 2026. Later sessions use proper date functions, but this pattern is handy and readable.</p>
+        <div class="sqlbox" data-caption="LIKE '2026%' matches any signup_date beginning with 2026.">
+          <pre class="sql-src">SELECT name, signup_date
+FROM customers
+WHERE signup_date LIKE '2026%'
+ORDER BY signup_date;</pre>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 20-30 min total</span></h2>
+    </div>
+    <ul>
+      <li>List every Dark-roast coffee by name and price. (Hint: two filters, <code>roast = 'Dark'</code>.)</li>
+      <li>Find all customers who are <em>not</em> in the USA. Try it two ways: with <code>!=</code> and with <code>NOT country = 'USA'</code>.</li>
+      <li>Pull products priced <code>BETWEEN 20 AND 30</code>, most expensive first.</li>
+      <li>Find every product whose name contains the word "Blend" using <code>LIKE</code>.</li>
+      <li>Bring one segment question about Daybreak you cannot yet answer to session b3 - odds are it needs counting or summing, which is exactly what b3 delivers.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This session teaches the filtering core of the major free SQL curricula, run on live Daybreak data instead of screenshots. Certificates and graded problem sets stay on the official sites (linked below). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Mode SQL Tutorial - Basic: WHERE, comparison &amp; logical operators, LIKE, IN, BETWEEN, IS NULL</span><span class="note">Parts 1-3 · the full WHERE toolkit, run live</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">SQLBolt Lessons 2-4 - filtering, AND/OR, complex filtering</span><span class="note">Parts 1-3 · same operators, editable here</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">W3Schools - Where, And/Or/Not, Like, In, Between, Null</span><span class="note">Parts 1-3 · syntax reference stays linked on W3Schools</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · What does a WHERE clause do?</p>
+      <button class="qopt" type="button">A · Sorts the rows into a chosen order</button>
+      <button class="qopt" type="button">B · Filters which rows are returned, testing each row before any grouping</button>
+      <button class="qopt" type="button">C · Chooses which columns appear in the output</button>
+      <p class="qwhy">WHERE filters rows - it tests each row and keeps the ones that pass, before grouping happens. SELECT picks columns; ORDER BY sorts.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · <code>WHERE name LIKE '%Espresso%'</code> matches names that...</p>
+      <button class="qopt" type="button">A · Start with the letters Espresso exactly</button>
+      <button class="qopt" type="button">B · Equal the word Espresso and nothing else</button>
+      <button class="qopt" type="button">C · Contain "Espresso" anywhere - start, middle, or end</button>
+      <p class="qwhy">The % wildcards on both sides mean "any characters before and after", so it matches any name containing Espresso anywhere in it.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · How do you filter for rows where <code>roast</code> has no value?</p>
+      <button class="qopt" type="button">A · WHERE roast IS NULL</button>
+      <button class="qopt" type="button">B · WHERE roast = NULL</button>
+      <button class="qopt" type="button">C · WHERE roast = ''</button>
+      <p class="qwhy">Use IS NULL, never = NULL. Comparing anything to NULL yields "unknown", never true, so = NULL silently returns zero rows with no error.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 2 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>WHERE</b><span>Filters rows. Sits after FROM, tests each row, keeps the ones that pass.</span></div>
+      <div class="cheat-item"><b>Comparison</b><span>= != &gt; &lt; &gt;= &lt;=. Text in single quotes ('Coffee'), numbers bare (18).</span></div>
+      <div class="cheat-item"><b>AND / OR / NOT</b><span>AND = both, OR = either, NOT = flip. Wrap OR groups in parentheses when mixing.</span></div>
+      <div class="cheat-item"><b>LIKE</b><span>Text patterns. % = any characters, _ = one character. '%Espresso%' = contains Espresso.</span></div>
+      <div class="cheat-item"><b>IN</b><span>Membership in a list. country IN ('Canada','UK') = tidy OR.</span></div>
+      <div class="cheat-item"><b>BETWEEN</b><span>A range, both endpoints included. price BETWEEN 15 AND 20.</span></div>
+      <div class="cheat-item"><b>IS NULL</b><span>Finds missing values. Always IS NULL / IS NOT NULL, never = NULL.</span></div>
+      <div class="cheat-item"><b>Running project</b><span>You can now carve any slice of Daybreak. Next: b3 counts and sums those slices.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 2 of 10 · learn-sql-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="b3-aggregating.html">Next: Aggregating with COUNT, SUM, GROUP BY →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/daybreak-seed.js?v=1"></script>
+<script src="../assets/sql-wasm.js?v=1"></script>
+<script src="../assets/sql-live.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

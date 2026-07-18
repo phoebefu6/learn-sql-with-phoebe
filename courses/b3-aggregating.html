@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 3 · Aggregating: COUNT, SUM, GROUP BY - learn sql with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-sql-with-phoebe</a> / Builder session 3 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe · Builder track · Session 3 of 10</div>
+    <h1>Aggregating: <span class="accent">COUNT, SUM, GROUP BY</span></h1>
+    <p class="sub">So far every query returned rows - one line per record. But most real questions want a number: how many orders, total revenue, average price, customers per country. Aggregation collapses many rows into a summary, and <code>GROUP BY</code> lets you get one summary per group. This is the session where SQL stops listing data and starts answering business questions. Same Daybreak database, same live editor.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Builder track</span>
+      <span class="chip audience">Practitioners: analysts · DE · DS · PMs</span>
+      <span class="chip audience">Runs in your browser · SQLite</span>
+      <span class="chip time">~45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:4">3-20 · Aggregates &amp; GROUP BY</span>
+      <span class="a3" style="flex:5">20-42 · Build-along: revenue per product</span>
+      <span class="a4" style="flex:1">42-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>From rows to answers</h2>
+    </div>
+    <p class="lede">Sessions b1 and b2 gave you rows - filtered, sorted, but still one line per record. Leadership rarely wants 33 order rows; they want "how many orders?" and "how much revenue?". Aggregate functions squeeze many rows into a single number, and <code>GROUP BY</code> repeats that squeeze once per group so you get "orders per country" or "average price per category". That is the leap from data to insight.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">▶ Live SQL - editable &amp; runnable</span>
+      <span class="pill inkpill">Official sources covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      The five aggregate functions (<code>COUNT</code>, <code>SUM</code>, <code>AVG</code>, <code>MIN</code>, <code>MAX</code>), <code>GROUP BY</code> to compute them per group, <code>HAVING</code> to filter those groups, and <code>DISTINCT</code> to count unique values. You will finish by computing revenue per product on the real order data.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: AGGREGATE FUNCTIONS ============ -->
+  <section class="section" id="aggregates">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers Mode "Intermediate - Aggregate functions", SQLBolt L10, Kaggle "Group By, Having &amp; Count"</span>
+      <h2>Aggregate functions <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">An aggregate function takes a whole column of values and returns one number. <code>COUNT</code> tallies rows, <code>SUM</code> adds them up, <code>AVG</code> averages, <code>MIN</code> and <code>MAX</code> find the extremes. Applied to a whole table with no grouping, they collapse every row into a single summary line - the simplest form of a report.</p>
+
+    <table class="clean">
+      <thead><tr><th>Function</th><th>Returns</th><th>Example question</th></tr></thead>
+      <tbody>
+        <tr><td><strong>COUNT(*)</strong></td><td>how many rows</td><td>"How many orders do we have?"</td></tr>
+        <tr><td><strong>SUM(x)</strong></td><td>total of a column</td><td>"What is total revenue?"</td></tr>
+        <tr><td><strong>AVG(x)</strong></td><td>the mean of a column</td><td>"What is our average product price?"</td></tr>
+        <tr><td><strong>MIN(x) / MAX(x)</strong></td><td>the smallest / largest value</td><td>"Cheapest and priciest product?"</td></tr>
+      </tbody>
+    </table>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>COUNT - how many rows<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>COUNT(*)</code> returns the number of rows, collapsing the whole table to one number. The <code>AS orders</code> renames the output column so the result reads cleanly. Press <strong>▶ Run</strong>, then change <code>orders</code> to <code>customers</code> or <code>products</code>.</p>
+        <div class="sqlbox" data-caption="AS orders renames the result column. Try FROM customers.">
+          <pre class="sql-src">SELECT COUNT(*) AS orders
+FROM orders;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>One number, not a list</strong>
+          Notice the result is a single cell, not 33 rows. That is the signature of an aggregate: many rows in, one value out. No <code>GROUP BY</code> yet means "the whole table is one group".
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>AVG - the average, rounded<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>AVG(price)</code> averages the price column. Raw averages spill long decimals, so wrap it in <code>ROUND(..., 2)</code> to keep two places - a small habit that makes reports readable. Change the <code>2</code> to <code>0</code> to round to whole dollars.</p>
+        <div class="sqlbox" data-caption="ROUND(x, 2) keeps two decimals. Try ROUND(AVG(price), 0).">
+          <pre class="sql-src">SELECT ROUND(AVG(price),2) AS avg_price
+FROM products;</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>MIN and MAX together<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You can compute several aggregates in one query - here the cheapest and priciest product side by side. Both scan the same <code>price</code> column and each returns one value, so the result is a single tidy row.</p>
+        <div class="sqlbox" data-caption="Multiple aggregates in one SELECT come back as one row.">
+          <pre class="sql-src">SELECT MIN(price) AS cheapest, MAX(price) AS priciest
+FROM products;</pre>
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>The "one big number" dashboard tile.</strong> Every KPI card you have ever seen - total revenue, active users, average order value - is one aggregate function under the hood. When a stakeholder asks "just give me the headline number", they are asking for a <code>SUM</code>, a <code>COUNT</code>, or an <code>AVG</code>. You already know how to write all three.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: GROUP BY ============ -->
+  <section class="section" id="group-by">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers Mode "GROUP BY", SQLBolt L11, Kaggle "Group By"</span>
+      <h2>GROUP BY - per what? <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">One number for the whole table is a start, but the real questions are "per country", "per category", "per month". <code>GROUP BY</code> sorts rows into buckets by a column, then runs the aggregate once <em>per bucket</em>. The rule of thumb: whatever you put after <code>GROUP BY</code> is the "per what" of your question.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rows bucketed by country, then counted per bucket to give one row per country">
+        <style>
+          .grpT { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .grpI { font: 700 13px Inter, sans-serif; fill: #10222E; }
+          .grpX { font: 400 12.5px Inter, sans-serif; fill: #526472; }
+          .grpCode { font: 700 14px "SF Mono", Menlo, monospace; fill: #10222E; }
+          .grpN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+        </style>
+        <!-- raw rows -->
+        <text class="grpX" x="40" y="42">15 customer rows</text>
+        <rect x="40" y="52" width="150" height="18" fill="#E9F4FB" stroke="#9FCFEE"/><text class="grpI" x="48" y="65">USA</text>
+        <rect x="40" y="72" width="150" height="18" fill="#E9F4FB" stroke="#9FCFEE"/><text class="grpI" x="48" y="85">Canada</text>
+        <rect x="40" y="92" width="150" height="18" fill="#E9F4FB" stroke="#9FCFEE"/><text class="grpI" x="48" y="105">USA</text>
+        <rect x="40" y="112" width="150" height="18" fill="#E9F4FB" stroke="#9FCFEE"/><text class="grpI" x="48" y="125">UK</text>
+        <rect x="40" y="132" width="150" height="18" fill="#E9F4FB" stroke="#9FCFEE"/><text class="grpI" x="48" y="145">USA</text>
+        <rect x="40" y="152" width="150" height="18" fill="#E9F4FB" stroke="#9FCFEE"/><text class="grpI" x="48" y="165">Canada</text>
+        <!-- bucket step -->
+        <text class="grpT" x="300" y="42" fill="#526472">GROUP BY country</text>
+        <rect x="300" y="52" width="150" height="58" rx="5" fill="#9FCFEE"/>
+        <text class="grpI" x="312" y="72">USA</text><text class="grpI" x="312" y="92">USA</text><text class="grpI" x="312" y="102">USA</text>
+        <rect x="300" y="120" width="150" height="40" rx="5" fill="#3DA0E3"/>
+        <text class="grpT" x="312" y="138">Canada</text><text class="grpT" x="312" y="156">Canada</text>
+        <rect x="300" y="170" width="150" height="24" rx="5" fill="#0F80CC"/>
+        <text class="grpT" x="312" y="187">UK</text>
+        <!-- aggregated result -->
+        <text class="grpX" x="600" y="42">one row per country</text>
+        <rect x="600" y="52" width="200" height="24" rx="5" fill="#003B57"/>
+        <text class="grpT" x="612" y="69">USA · COUNT = 3</text>
+        <rect x="600" y="82" width="200" height="24" rx="5" fill="#003B57"/>
+        <text class="grpT" x="612" y="99">Canada · COUNT = 2</text>
+        <rect x="600" y="112" width="200" height="24" rx="5" fill="#003B57"/>
+        <text class="grpT" x="612" y="129">UK · COUNT = 1</text>
+        <!-- arrows -->
+        <path d="M195,110 L295,110" stroke="#526472" stroke-width="2" marker-end="url(#grpArrow)"/>
+        <path d="M455,110 L595,110" stroke="#526472" stroke-width="2" marker-end="url(#grpArrow)"/>
+        <defs>
+          <marker id="grpArrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 Z" fill="#526472"/>
+          </marker>
+        </defs>
+        <text class="grpCode" x="40" y="240">SELECT country, COUNT(*) FROM customers GROUP BY country;</text>
+        <text class="grpX" x="40" y="270">Bucket the rows by country, then count each bucket. Grouping column + aggregate = one row per group.</text>
+        <rect x="40" y="290" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="grpN" x="64" y="302">Rule: every non-aggregated column in SELECT should appear in GROUP BY.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - GROUP BY buckets rows, then aggregates each bucket</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Count customers per country<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>This is the diagram, live. Group by <code>country</code>, count the rows in each group, and sort so the biggest markets sit on top. The output has one row per country - exactly what "per country" promised.</p>
+        <div class="sqlbox" data-caption="Change country to plan to count customers per plan instead.">
+          <pre class="sql-src">SELECT country, COUNT(*) AS customers
+FROM customers
+GROUP BY country
+ORDER BY customers DESC;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>The golden rule</strong>
+          Every column in your <code>SELECT</code> that is not inside an aggregate must appear in <code>GROUP BY</code>. Here <code>country</code> is grouped and <code>COUNT(*)</code> is aggregated - balanced. Break the rule and other databases error; SQLite guesses, which is worse.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Average price per category<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Swap <code>COUNT</code> for <code>AVG</code> and you get the mean price within each product category - one line for Coffee, one for Equipment, one for Add-on. This single query would take a pivot table and several clicks in a spreadsheet.</p>
+        <div class="sqlbox" data-caption="Try MAX(price) or COUNT(*) in place of AVG to ask a different question per category.">
+          <pre class="sql-src">SELECT category, ROUND(AVG(price),2) AS avg_price
+FROM products
+GROUP BY category;</pre>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: HAVING & DISTINCT ============ -->
+  <section class="section" id="having-distinct">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers Mode "HAVING, DISTINCT", SQLBolt L11, Kaggle "Having &amp; Count"</span>
+      <h2>HAVING and DISTINCT <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">Two finishing tools. <code>HAVING</code> filters <em>groups</em> after aggregation - the counterpart to <code>WHERE</code>, which filters rows before. And <code>DISTINCT</code> strips duplicates, which is how you count unique things: how many <em>different</em> countries, not how many customers.</p>
+
+    <table class="clean">
+      <thead><tr><th>Clause</th><th>Filters...</th><th>Runs...</th></tr></thead>
+      <tbody>
+        <tr><td><strong>WHERE</strong></td><td>individual rows</td><td>before grouping - "only USA customers"</td></tr>
+        <tr><td><strong>HAVING</strong></td><td>whole groups</td><td>after grouping - "only groups with 3+ members"</td></tr>
+      </tbody>
+    </table>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>HAVING - filter groups after aggregating<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You cannot put an aggregate in <code>WHERE</code> - the counts do not exist yet when <code>WHERE</code> runs. <code>HAVING</code> comes after grouping, so it can. This keeps only the plans with three or more customers. Change <code>3</code> to <code>10</code> and watch groups drop out.</p>
+        <div class="sqlbox" data-caption="HAVING sees the aggregate; WHERE cannot. Try HAVING COUNT(*) &gt;= 10.">
+          <pre class="sql-src">SELECT plan, COUNT(*) AS n
+FROM customers
+GROUP BY plan
+HAVING COUNT(*) &gt;= 3;</pre>
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>"Show me products that sold more than 100 units."</strong> That is <code>GROUP BY product</code> then <code>HAVING SUM(quantity) &gt; 100</code>. Any request of the form "groups that meet a threshold" - high-volume SKUs, cities with many complaints, reps over quota - is a <code>HAVING</code> clause. Mixing it up with <code>WHERE</code> is the most common aggregation bug, so the order matters: filter rows with WHERE, filter groups with HAVING.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>DISTINCT - count the unique values<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>COUNT(DISTINCT country)</code> counts how many <em>different</em> countries appear, ignoring repeats. Plain <code>COUNT(country)</code> would count every customer; the <code>DISTINCT</code> is what turns it into "how many markets do we operate in".</p>
+        <div class="sqlbox" data-caption="Drop DISTINCT to see the difference: COUNT(country) counts all 15 rows.">
+          <pre class="sql-src">SELECT COUNT(DISTINCT country) AS countries
+FROM customers;</pre>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Revenue per product, from the line items <span class="tag demo">★ 14 min · everyone builds</span></h2>
+    </div>
+    <p class="lede">Daybreak's founder asks the big one: "Which products make us the most money?" Revenue lives in <code>order_items</code>, where each line is a <code>quantity</code> times a <code>unit_price</code>. You have not learned joins yet (that is b4), so we will stay inside one table and aggregate by <code>product_id</code>. It is the most useful query in the whole session.</p>
+
+    <div class="steps">
+      <div class="step"><p>See the raw material: <code>SELECT * FROM order_items LIMIT 8;</code> - each row is one product line, with quantity and unit_price.</p></div>
+      <div class="step"><p>Compute line revenue: <code>quantity * unit_price</code>. That is money for a single line.</p></div>
+      <div class="step"><p>Total it per product: <code>SUM(quantity * unit_price)</code> with <code>GROUP BY product_id</code> - one revenue figure per product.</p></div>
+      <div class="step"><p>Rank it: <code>ORDER BY revenue DESC</code> puts the top earners first. That is the founder's answer.</p></div>
+    </div>
+
+    <div class="sqlbox" data-caption="The finished query. product_id is shown for now; b4's joins swap it for the product name.">
+      <pre class="sql-src">SELECT product_id, SUM(quantity*unit_price) AS revenue
+FROM order_items
+GROUP BY product_id
+ORDER BY revenue DESC;</pre>
+    </div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>This is the revenue report.</strong> "Top products by revenue" is one of the most-run queries in any commerce business, and you just wrote it in four lines. The only thing missing is the product name instead of the id - and that is a single join away in session b4. The hard part, the aggregation logic, is already done.</p>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Your turn</span>
+      <h2>Three questions, your queries <span class="tag demo">★ 10 min · build your own</span></h2>
+    </div>
+    <p class="lede">No scaffolding now. Each editor answers one aggregation question - run it, tweak it, break it, fix it. The run-fix-run loop is the whole skill.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Q1 · How many orders came through each channel?<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Group the orders by <code>channel</code> (web vs app) and count each bucket. One row per channel comes back.</p>
+        <div class="sqlbox" data-caption="Hint: GROUP BY channel, then COUNT(*).">
+          <pre class="sql-src">SELECT channel, COUNT(*) AS orders
+FROM orders
+GROUP BY channel
+ORDER BY orders DESC;</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Q2 · How many products are in each category?<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Group products by <code>category</code> and count. This tells you where the catalog is deep and where it is thin.</p>
+        <div class="sqlbox" data-caption="Hint: GROUP BY category. Try adding ROUND(AVG(price),2) to the SELECT too.">
+          <pre class="sql-src">SELECT category, COUNT(*) AS products
+FROM products
+GROUP BY category
+ORDER BY products DESC;</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Q3 · How many distinct customers placed orders?<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The orders table has 33 rows but fewer distinct customers - some people ordered more than once. <code>COUNT(DISTINCT customer_id)</code> counts the unique buyers.</p>
+        <div class="sqlbox" data-caption="Compare to COUNT(*) - the gap is your repeat buyers.">
+          <pre class="sql-src">SELECT COUNT(DISTINCT customer_id) AS buyers
+FROM orders;</pre>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 20-30 min total</span></h2>
+    </div>
+    <ul>
+      <li>Count how many orders fall into each <code>status</code> (completed, refunded, cancelled). Which dominates?</li>
+      <li>Find the total quantity sold per product with <code>SUM(quantity)</code> and <code>GROUP BY product_id</code>, biggest first.</li>
+      <li>Using <code>HAVING</code>, list only the countries with two or more customers.</li>
+      <li>Compute the average <code>monthly_qty</code> across the subscriptions table with <code>AVG</code>.</li>
+      <li>Bring one "per group" question about Daybreak that also needs a product or customer name to session b4 - that is exactly the gap joins fill.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This session teaches the aggregation core of the major free SQL curricula, run on live Daybreak data instead of screenshots. Certificates and graded problem sets stay on the official sites (linked below). This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Mode SQL Tutorial - Intermediate: aggregate functions, COUNT/SUM/MIN/MAX/AVG, GROUP BY, HAVING, DISTINCT</span><span class="note">Parts 1-3 · the full aggregation toolkit, run live</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">SQLBolt Lessons 10-11 - aggregate queries &amp; filtering grouped rows</span><span class="note">Parts 1-3 · same functions and GROUP BY, editable here</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Kaggle - Intro to SQL: "Group By, Having &amp; Count"</span><span class="note">Parts 2-3 · GROUP BY + HAVING; Kaggle's exercises stay on Kaggle</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · What does GROUP BY do?</p>
+      <button class="qopt" type="button">A · Sorts the rows alphabetically before returning them</button>
+      <button class="qopt" type="button">B · Collapses rows into one row per group, so aggregates are computed per group</button>
+      <button class="qopt" type="button">C · Removes duplicate rows from the output</button>
+      <p class="qwhy">GROUP BY buckets rows by a column and returns one row per bucket, letting COUNT/SUM/AVG run once per group. Sorting is ORDER BY; de-duping is DISTINCT.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · What is the difference between WHERE and HAVING?</p>
+      <button class="qopt" type="button">A · They are interchangeable; use whichever reads better</button>
+      <button class="qopt" type="button">B · WHERE filters groups, HAVING filters columns</button>
+      <button class="qopt" type="button">C · WHERE filters rows before grouping, HAVING filters groups after</button>
+      <p class="qwhy">WHERE runs first on individual rows; HAVING runs after grouping and can test aggregates like COUNT(*). That order is why HAVING can see counts and WHERE cannot.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · What does <code>COUNT(DISTINCT country)</code> return?</p>
+      <button class="qopt" type="button">A · The number of unique values in the country column</button>
+      <button class="qopt" type="button">B · The total number of rows in the table</button>
+      <button class="qopt" type="button">C · The country that appears most often</button>
+      <p class="qwhy">DISTINCT strips duplicates first, so COUNT(DISTINCT country) counts how many different countries appear - the number of unique values, not total rows.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 3 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Aggregates</b><span>COUNT, SUM, AVG, MIN, MAX. Many rows in, one number out.</span></div>
+      <div class="cheat-item"><b>COUNT(*)</b><span>Counts rows. SELECT COUNT(*) FROM orders = how many orders.</span></div>
+      <div class="cheat-item"><b>GROUP BY</b><span>The "per what". GROUP BY country = one summary row per country.</span></div>
+      <div class="cheat-item"><b>Golden rule</b><span>Every non-aggregated SELECT column must appear in GROUP BY.</span></div>
+      <div class="cheat-item"><b>HAVING</b><span>Filters groups after aggregating. HAVING COUNT(*) &gt;= 3.</span></div>
+      <div class="cheat-item"><b>WHERE vs HAVING</b><span>WHERE filters rows before grouping; HAVING filters groups after.</span></div>
+      <div class="cheat-item"><b>DISTINCT</b><span>Counts unique values. COUNT(DISTINCT country) = number of markets.</span></div>
+      <div class="cheat-item"><b>Running project</b><span>You can now report on Daybreak. Next: b4 joins tables to add names to the numbers.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 3 of 10 · learn-sql-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="b4-joining-tables.html">Next: Joining tables →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/daybreak-seed.js?v=1"></script>
+<script src="../assets/sql-wasm.js?v=1"></script>
+<script src="../assets/sql-live.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

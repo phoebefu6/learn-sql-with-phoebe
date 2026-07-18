@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>learn sql with phoebe - a two-track course you run in your browser</title>
+<link rel="stylesheet" href="assets/style.css?v=1">
+<style>
+  .stats-row { display: flex; gap: 2.4rem; margin-top: 1.5rem; flex-wrap: wrap; }
+  .stat b { display: block; font-size: 2.1rem; font-weight: 800; line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .stat span { font-size: .72rem; opacity: .85; text-transform: uppercase; letter-spacing: .09em; font-weight: 600; }
+
+  .course-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+  .course-card {
+    border: 1px solid var(--hairline);
+    border-top: 4px solid var(--diff, var(--indigo));
+    border-radius: var(--radius);
+    padding: 1.2rem 1.3rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    text-decoration: none;
+    color: var(--ink);
+    background: #fff;
+    transition: box-shadow .15s ease, border-color .15s ease, transform .15s ease;
+    position: relative;
+  }
+  .course-card:hover { border-color: var(--indigo-soft); border-top-color: var(--diff, var(--indigo)); box-shadow: 0 8px 28px rgba(15,128,204,.12); transform: translateY(-3px); }
+  .course-card .cicon { font-size: 1.7rem; line-height: 1; }
+  .course-card .cnum { font-size: .72rem; font-weight: 700; color: var(--indigo); text-transform: uppercase; letter-spacing: .1em; }
+  .course-card h3 { font-size: 1.05rem; font-weight: 800; line-height: 1.3; }
+  .course-card p { font-size: .85rem; color: var(--muted); flex: 1; }
+  .course-card .meta { display: flex; gap: .4rem; flex-wrap: wrap; }
+
+  .diff-legend { display: flex; gap: 1rem; margin-top: 1.6rem; font-size: .74rem; color: var(--muted); font-weight: 600; flex-wrap: wrap; }
+  .diff-legend i { display: inline-block; width: .85rem; height: .35rem; border-radius: 999px; margin-right: .35rem; vertical-align: middle; }
+
+  .paths { margin-top: 2.6rem; }
+  .paths h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: .3rem; }
+  .paths .plede { color: var(--muted); font-size: .92rem; margin-bottom: .8rem; }
+  .path { display: flex; gap: .55rem; align-items: center; padding: .75rem 0; border-bottom: .5px solid var(--hairline); flex-wrap: wrap; }
+  .path:last-child { border-bottom: none; }
+  .path b { min-width: 15.5rem; font-size: .9rem; }
+  .path .pstep { background: var(--indigo-50); color: var(--indigo); border-radius: 999px; padding: .16rem .68rem; font-weight: 700; font-size: .8rem; text-decoration: none; transition: all .12s ease; }
+  .path .pstep:hover { background: var(--indigo); color: #fff; }
+  .path .parr { color: var(--faint); font-weight: 700; }
+
+  .mm-section { margin-top: 1.6rem; }
+  .mm-section h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: .2rem; }
+  .mm-section .mm-lede { color: var(--muted); font-size: .92rem; margin-bottom: .4rem; }
+  .mm-wrap { border: 1px solid var(--hairline); border-radius: var(--radius); background: linear-gradient(180deg,#fff,#F1F8FC); padding: .6rem; overflow-x: auto; }
+  .mm-svg { width: 100%; height: auto; display: block; max-width: 60rem; margin: 0 auto; min-width: 34rem; }
+  .mm-link { cursor: pointer; text-decoration: none; }
+  .mm-node rect { transition: opacity .15s ease, filter .15s ease; }
+  .mm-node text { pointer-events: none; }
+  .mm-link:hover .mm-node rect { filter: brightness(1.06); }
+  .mm-edge { transition: opacity .15s ease; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe</div>
+    <h1>Two tracks from data-curious to query-fluent</h1>
+    <p class="sub">A leader track that teaches you to read, question, and commission SQL without writing a line - and a builder track that takes you from your first SELECT to window functions, a real revenue-drop investigation, and production warehouses. Both run against one small database, Daybreak, in a live editor right in your browser. No install, no login, no server.</p>
+    <div class="stats-row">
+      <div class="stat"><b data-count="2">2</b><span>tracks</span></div>
+      <div class="stat"><b data-count="16">16</b><span>sessions</span></div>
+      <div class="stat"><b data-count="1">1</b><span>live database</span></div>
+      <div class="stat"><b data-count="45">45</b><span>min per session</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="section">
+    <div class="paths" style="margin-top:0">
+      <h2>The leader track 🤝 <span style="font-size:.85rem;font-weight:600;color:var(--muted)">· for C-level, managers &amp; curious minds · 6 x 45 min · no code to write</span></h2>
+      <p class="plede">Thinking mode: what SQL is, how to read a query, how to judge a data claim, and how to brief an analyst - each session ends with questions to ask your data team.</p>
+    </div>
+    <div class="course-grid">
+      <a class="course-card" href="courses/a1-what-sql-is.html" style="--diff:#34D399">
+        <span class="cicon">🗄️</span>
+        <span class="cnum">Leader 1 · easy</span>
+        <h3>What SQL actually is</h3>
+        <p>Databases as organized tables, SQL as the question-asking layer, and the reframe: every metric is a query underneath.</p>
+        <span class="meta"><span class="pill amber">▶ Leaders start here</span></span>
+      </a>
+      <a class="course-card" href="courses/a2-reading-a-query.html" style="--diff:#34D399">
+        <span class="cicon">👓</span>
+        <span class="cnum">Leader 2 · easy</span>
+        <h3>Reading a query without fear</h3>
+        <p>SELECT, FROM, WHERE, GROUP BY in plain business terms - and what a JOIN really means, no writing required.</p>
+        <span class="meta"><span class="pill light">Read-aloud session</span></span>
+      </a>
+      <a class="course-card" href="courses/a3-judging-a-claim.html" style="--diff:#FBBF24">
+        <span class="cicon">⚖️</span>
+        <span class="cnum">Leader 3 · medium</span>
+        <h3>Judging a data claim</h3>
+        <p>Count vs sum vs average, "per what", and the refund trap - how the same data yields two honest but different numbers.</p>
+        <span class="meta"><span class="pill light">Spot-the-mislead</span></span>
+      </a>
+      <a class="course-card" href="courses/a4-dashboard-behind.html" style="--diff:#FBBF24">
+        <span class="cicon">📊</span>
+        <span class="cnum">Leader 4 · medium</span>
+        <h3>The dashboard behind the dashboard</h3>
+        <p>Every KPI tile is a saved query. Cohort vs snapshot, denominator games, and why "active users" can be two numbers.</p>
+        <span class="meta"><span class="pill light">Peel-the-tile exercise</span></span>
+      </a>
+      <a class="course-card" href="courses/a5-asking-right-cut.html" style="--diff:#FB923C">
+        <span class="cicon">🎯</span>
+        <span class="cnum">Leader 5 · deciding</span>
+        <h3>Asking for the right cut</h3>
+        <p>The five-part data request, defining a metric so two people agree, and how not to be the "just pull the numbers" exec.</p>
+        <span class="meta"><span class="pill light">Request-template exercise</span></span>
+      </a>
+      <a class="course-card" href="courses/a6-sql-warehouses-ai.html" style="--diff:#FB923C">
+        <span class="cicon">🤖</span>
+        <span class="cnum">Leader 6 · deciding</span>
+        <h3>SQL, warehouses and AI</h3>
+        <p>The modern stack, why text-to-SQL makes reading queries matter more, and what to fund: governed metrics, not tool churn.</p>
+        <span class="meta"><span class="pill light">What-to-invest exercise</span></span>
+      </a>
+    </div>
+
+    <div class="paths">
+      <h2>The builder track 🛠️ <span style="font-size:.85rem;font-weight:600;color:var(--muted)">· for practitioners · 10 x 45 min · runs live in your browser</span></h2>
+      <p class="plede">One database, Daybreak, queried harder every session. Every idea lands on data you already know - from your first SELECT to window functions, a real investigation, and warehouse-grade tuning.</p>
+    </div>
+    <div class="course-grid">
+      <a class="course-card" href="courses/b1-meet-your-database.html" style="--diff:#34D399">
+        <span class="cicon">🚪</span>
+        <span class="cnum">Builder 1 · easy</span>
+        <h3>Meet your database</h3>
+        <p>Run a real query in two minutes: SELECT, FROM, LIMIT, ORDER BY, and a tour of the whole Daybreak schema.</p>
+        <span class="meta"><span class="pill amber">▶ Builders start here</span></span>
+      </a>
+      <a class="course-card" href="courses/b2-filtering-rows.html" style="--diff:#34D399">
+        <span class="cicon">🔍</span>
+        <span class="cnum">Builder 2 · easy</span>
+        <h3>Filtering rows with WHERE</h3>
+        <p>Comparison and logical operators, LIKE, IN, BETWEEN, IS NULL - asking for exactly the rows you want.</p>
+        <span class="meta"><span class="pill light">Build a segment</span></span>
+      </a>
+      <a class="course-card" href="courses/b3-aggregating.html" style="--diff:#FBBF24">
+        <span class="cicon">📐</span>
+        <span class="cnum">Builder 3 · medium</span>
+        <h3>Aggregating: COUNT, SUM, GROUP BY</h3>
+        <p>Collapse many rows into answers - COUNT, SUM, AVG, GROUP BY, HAVING, DISTINCT, and "per what" thinking.</p>
+        <span class="meta"><span class="pill light">Revenue per product</span></span>
+      </a>
+      <a class="course-card" href="courses/b4-joining-tables.html" style="--diff:#FBBF24">
+        <span class="cicon">🔗</span>
+        <span class="cnum">Builder 4 · medium</span>
+        <h3>Joining tables</h3>
+        <p>The relational payoff: INNER and LEFT joins, chaining three tables, self-joins - stitching Daybreak together.</p>
+        <span class="meta"><span class="pill light">Revenue per customer</span></span>
+      </a>
+      <a class="course-card" href="courses/b5-combining-reshaping.html" style="--diff:#FBBF24">
+        <span class="cicon">🧩</span>
+        <span class="cnum">Builder 5 · medium</span>
+        <h3>Combining and reshaping</h3>
+        <p>CASE buckets, aliases and expressions, string and date functions, UNION - reshaping results into what you need.</p>
+        <span class="meta"><span class="pill light">Monthly rollups</span></span>
+      </a>
+      <a class="course-card" href="courses/b6-subqueries-ctes.html" style="--diff:#FB923C">
+        <span class="cicon">🪆</span>
+        <span class="cnum">Builder 6 · hands-on</span>
+        <h3>Subqueries and CTEs</h3>
+        <p>Queries inside queries, and WITH clauses that make multi-step logic read top-to-bottom instead of inside-out.</p>
+        <span class="meta"><span class="pill light">Readable pipelines</span></span>
+      </a>
+      <a class="course-card" href="courses/b7-window-functions.html" style="--diff:#FB923C">
+        <span class="cicon">🪟</span>
+        <span class="cnum">Builder 7 · hands-on</span>
+        <h3>Window functions</h3>
+        <p>Rank, ROW_NUMBER, LAG/LEAD, running totals and PARTITION BY - the analyst superpower, on Daybreak's revenue.</p>
+        <span class="meta"><span class="pill light">Running totals</span></span>
+      </a>
+      <a class="course-card" href="courses/b8-building-changing-data.html" style="--diff:#FB923C">
+        <span class="cicon">🏗️</span>
+        <span class="cnum">Builder 8 · hands-on</span>
+        <h3>Building and changing data</h3>
+        <p>CREATE, INSERT, UPDATE, DELETE, ALTER, keys and constraints, and the order queries actually execute in.</p>
+        <span class="meta"><span class="pill light">Write, not just read</span></span>
+      </a>
+      <a class="course-card" href="courses/b9-analyst-case-study.html" style="--diff:#F87171">
+        <span class="cicon">🕵️</span>
+        <span class="cnum">Builder 9 · hardest</span>
+        <h3>Analyst case study: the March drop</h3>
+        <p>A full investigation: confirm the revenue dip, drill into March, find the cause in refunds, events and cancels.</p>
+        <span class="meta"><span class="pill light">End-to-end analysis</span></span>
+      </a>
+      <a class="course-card" href="courses/b10-performance-warehouses.html" style="--diff:#F87171">
+        <span class="cicon">🚀</span>
+        <span class="cnum">Builder 10 · hardest</span>
+        <h3>Performance and real warehouses</h3>
+        <p>Reading a query plan, indexes and their tradeoffs, and the dialect deltas from SQLite to Postgres, BigQuery, Snowflake.</p>
+        <span class="meta"><span class="pill light">SQLite to production</span></span>
+      </a>
+    </div>
+    <div class="diff-legend">
+      <span><i style="background:#34D399"></i>easy - everyone</span>
+      <span><i style="background:#FBBF24"></i>medium</span>
+      <span><i style="background:#FB923C"></i>hands-on / deciding</span>
+      <span><i style="background:#F87171"></i>hardest</span>
+    </div>
+
+    <div class="paths">
+      <h2>Choose your path 🗺️</h2>
+      <p class="plede">Two doors, one database. Leaders never write a query; builders never sit through theory they have not just run themselves.</p>
+      <div class="path"><b>🤝 Leader (read &amp; judge)</b>
+        <a class="pstep" href="courses/a1-what-sql-is.html">a1</a><span class="parr">→</span>
+        <a class="pstep" href="courses/a2-reading-a-query.html">a2</a><span class="parr">→</span>
+        <a class="pstep" href="courses/a3-judging-a-claim.html">a3</a><span class="parr">→</span>
+        <a class="pstep" href="courses/a4-dashboard-behind.html">a4</a><span class="parr">→</span>
+        <a class="pstep" href="courses/a5-asking-right-cut.html">a5</a><span class="parr">→</span>
+        <a class="pstep" href="courses/a6-sql-warehouses-ai.html">a6</a>
+      </div>
+      <div class="path"><b>🛠️ Builder (query Daybreak)</b>
+        <a class="pstep" href="courses/b1-meet-your-database.html">b1</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b2-filtering-rows.html">b2</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b3-aggregating.html">b3</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b4-joining-tables.html">b4</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b5-combining-reshaping.html">b5</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b6-subqueries-ctes.html">b6</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b7-window-functions.html">b7</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b8-building-changing-data.html">b8</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b9-analyst-case-study.html">b9</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b10-performance-warehouses.html">b10</a>
+      </div>
+      <div class="path"><b>🌱 Curious follower (a taste)</b>
+        <a class="pstep" href="courses/a1-what-sql-is.html">a1</a><span class="parr">→</span>
+        <a class="pstep" href="courses/a2-reading-a-query.html">a2</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b1-meet-your-database.html">b1</a>
+      </div>
+      <div class="path"><b>🚀 Full journey (lead AND build)</b>
+        <a class="pstep" href="courses/a1-what-sql-is.html">a1-a6</a><span class="parr">→</span>
+        <a class="pstep" href="courses/b1-meet-your-database.html">b1-b10</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section mm-section">
+    <h2>The knowledge map 🧠</h2>
+    <p class="mm-lede">Both tracks at a glance - hover a session to spotlight its concepts, click any node to jump in.</p>
+    <div class="mm-wrap"><div id="mindmap"></div></div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>learn-sql-with-phoebe · by Phoebe Fu · taught from Mode, SQLBolt, SQLZoo, Kaggle, Khan Academy &amp; W3Schools · runs on SQLite via sql.js</span>
+  </footer>
+</main>
+
+<script>
+window.MINDMAP_DATA = {
+  title: "Learn\nSQL",
+  centerColor: "#003B57",
+  sessions: [
+    { label: "What SQL\nis", href: "courses/a1-what-sql-is.html", color: "#34D399",
+      concepts: [
+        { label: "Tables & rows", href: "courses/a1-what-sql-is.html" },
+        { label: "Metric = a query", href: "courses/a1-what-sql-is.html" },
+        { label: "The data stack", href: "courses/a1-what-sql-is.html" } ] },
+    { label: "Reading a\nquery", href: "courses/a2-reading-a-query.html", color: "#34D399",
+      concepts: [
+        { label: "SELECT/FROM/WHERE", href: "courses/a2-reading-a-query.html" },
+        { label: "What a JOIN means", href: "courses/a2-reading-a-query.html" } ] },
+    { label: "Judging a\nclaim", href: "courses/a3-judging-a-claim.html", color: "#FBBF24",
+      concepts: [
+        { label: "Count vs sum vs avg", href: "courses/a3-judging-a-claim.html" },
+        { label: "The refund trap", href: "courses/a3-judging-a-claim.html" },
+        { label: "Per what?", href: "courses/a3-judging-a-claim.html" } ] },
+    { label: "Dashboard\nbehind it", href: "courses/a4-dashboard-behind.html", color: "#FBBF24",
+      concepts: [
+        { label: "Every tile is a query", href: "courses/a4-dashboard-behind.html" },
+        { label: "Cohort vs snapshot", href: "courses/a4-dashboard-behind.html" } ] },
+    { label: "Asking the\nright cut", href: "courses/a5-asking-right-cut.html", color: "#FB923C",
+      concepts: [
+        { label: "5-part request", href: "courses/a5-asking-right-cut.html" },
+        { label: "Define the metric", href: "courses/a5-asking-right-cut.html" } ] },
+    { label: "SQL, warehouses\n& AI", href: "courses/a6-sql-warehouses-ai.html", color: "#FB923C",
+      concepts: [
+        { label: "The modern stack", href: "courses/a6-sql-warehouses-ai.html" },
+        { label: "Text-to-SQL", href: "courses/a6-sql-warehouses-ai.html" },
+        { label: "Govern the metric", href: "courses/a6-sql-warehouses-ai.html" } ] },
+    { label: "Meet your\ndatabase", href: "courses/b1-meet-your-database.html", color: "#34D399",
+      concepts: [
+        { label: "SELECT/FROM/LIMIT", href: "courses/b1-meet-your-database.html" },
+        { label: "ORDER BY", href: "courses/b1-meet-your-database.html" },
+        { label: "The schema", href: "courses/b1-meet-your-database.html" } ] },
+    { label: "Filtering\nrows", href: "courses/b2-filtering-rows.html", color: "#34D399",
+      concepts: [
+        { label: "WHERE + operators", href: "courses/b2-filtering-rows.html" },
+        { label: "LIKE / IN / BETWEEN", href: "courses/b2-filtering-rows.html" },
+        { label: "IS NULL", href: "courses/b2-filtering-rows.html" } ] },
+    { label: "Aggregating", href: "courses/b3-aggregating.html", color: "#FBBF24",
+      concepts: [
+        { label: "COUNT / SUM / AVG", href: "courses/b3-aggregating.html" },
+        { label: "GROUP BY", href: "courses/b3-aggregating.html" },
+        { label: "HAVING", href: "courses/b3-aggregating.html" } ] },
+    { label: "Joining\ntables", href: "courses/b4-joining-tables.html", color: "#FBBF24",
+      concepts: [
+        { label: "INNER vs LEFT", href: "courses/b4-joining-tables.html" },
+        { label: "Chaining joins", href: "courses/b4-joining-tables.html" },
+        { label: "Self-joins", href: "courses/b4-joining-tables.html" } ] },
+    { label: "Combining &\nreshaping", href: "courses/b5-combining-reshaping.html", color: "#FBBF24",
+      concepts: [
+        { label: "CASE buckets", href: "courses/b5-combining-reshaping.html" },
+        { label: "String & date fns", href: "courses/b5-combining-reshaping.html" },
+        { label: "UNION", href: "courses/b5-combining-reshaping.html" } ] },
+    { label: "Subqueries\n& CTEs", href: "courses/b6-subqueries-ctes.html", color: "#FB923C",
+      concepts: [
+        { label: "Scalar subquery", href: "courses/b6-subqueries-ctes.html" },
+        { label: "WITH clauses", href: "courses/b6-subqueries-ctes.html" } ] },
+    { label: "Window\nfunctions", href: "courses/b7-window-functions.html", color: "#FB923C",
+      concepts: [
+        { label: "RANK / ROW_NUMBER", href: "courses/b7-window-functions.html" },
+        { label: "LAG / LEAD", href: "courses/b7-window-functions.html" },
+        { label: "Running totals", href: "courses/b7-window-functions.html" } ] },
+    { label: "Building &\nchanging data", href: "courses/b8-building-changing-data.html", color: "#FB923C",
+      concepts: [
+        { label: "CREATE / ALTER", href: "courses/b8-building-changing-data.html" },
+        { label: "INSERT/UPDATE/DELETE", href: "courses/b8-building-changing-data.html" },
+        { label: "Order of execution", href: "courses/b8-building-changing-data.html" } ] },
+    { label: "Analyst\ncase study", href: "courses/b9-analyst-case-study.html", color: "#F87171",
+      concepts: [
+        { label: "Confirm the drop", href: "courses/b9-analyst-case-study.html" },
+        { label: "Drill into March", href: "courses/b9-analyst-case-study.html" },
+        { label: "Write the brief", href: "courses/b9-analyst-case-study.html" } ] },
+    { label: "Performance &\nwarehouses", href: "courses/b10-performance-warehouses.html", color: "#F87171",
+      concepts: [
+        { label: "Query plans", href: "courses/b10-performance-warehouses.html" },
+        { label: "Indexes", href: "courses/b10-performance-warehouses.html" },
+        { label: "Dialect deltas", href: "courses/b10-performance-warehouses.html" } ] }
+  ]
+};
+</script>
+<script src="assets/mindmap.js?v=1"></script>
+<script src="assets/app.js?v=1"></script>
+</body>
+</html>

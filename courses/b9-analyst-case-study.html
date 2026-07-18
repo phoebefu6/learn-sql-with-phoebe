@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builder session 9 · Analyst case study - learn sql with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-sql-with-phoebe</a> / Builder session 9 of 10</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe · Builder track · Session 9 of 10</div>
+    <h1>Analyst case study: the <span class="accent">March</span> revenue drop</h1>
+    <p class="sub">Daybreak's founder walks in with one sentence: "Revenue fell in March - why?" No hint, no dashboard, just a question and a database. This is the session where the last eight click into one skill. You will confirm the drop, drill into what changed, hunt for causes in customer behavior, and write the one-paragraph brief a founder can actually act on. Every query runs live against Daybreak, and every claim in your brief will be backed by a query you can point to.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Builder track</span>
+      <span class="chip audience">Practitioners: analysts · DE · DS · PMs</span>
+      <span class="chip audience">Runs in your browser · SQLite</span>
+      <span class="chip time">Everything from b1-b7</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:2">0-5 · The founder's question</span>
+      <span class="a2" style="flex:4">5-20 · Confirm &amp; drill</span>
+      <span class="a3" style="flex:4">20-38 · Causes &amp; cohorts</span>
+      <span class="a4" style="flex:2">38-45 · Write the brief</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Think like an analyst, not a query-writer</h2>
+    </div>
+    <p class="lede">Anyone can write SQL. An analyst decides <strong>which</strong> SQL to write, in what order, and knows when to stop. The trap with "revenue dropped, why?" is theorizing first - blaming a campaign, a price change, a season - before you have confirmed the drop is even real and pinned down where it lives. Tonight you run the discipline instead: confirm, drill, explain, recommend. The Daybreak numbers are small enough to hold in your head, so the method stays in focus, not the arithmetic.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill peach">▶ Live SQL - editable &amp; runnable</span>
+      <span class="pill inkpill">Official sources covered</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A repeatable investigation loop you can run on any "the metric moved" question at work: confirm the trend with a clean query, drill into the affected slice, look for a behavioral cause, sanity-check with a cohort, then write a short brief where every claim cites a query. That last part is what gets an analyst trusted.
+    </div>
+  </section>
+
+  <!-- ============ THE FUNNEL SVG ============ -->
+  <section class="section" id="method">
+    <div class="section-kicker">
+      <span class="klabel">The method · your map for tonight</span>
+      <h2>The investigation funnel <span class="tag concept">3 min live</span></h2>
+    </div>
+    <p class="lede">Four moves, narrowing each time. You start wide (is the drop real?), narrow to the month, narrow to a behavior, then widen just enough to sanity-check - and only then do you write anything down. Skipping straight to "recommend" is how analysts get burned; the funnel keeps you honest.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The investigation funnel: Confirm, Drill, Explain, Recommend">
+        <style>
+          .fnT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .fnS { font: 400 12.5px Inter, sans-serif; fill: #10222E; }
+          .fnX { font: 400 12px Inter, sans-serif; fill: #526472; }
+          .fnN { font: 600 13px Inter, sans-serif; fill: #4A2E00; }
+          .fnArr { stroke: #3DA0E3; stroke-width: 2.5; fill: none; marker-end: url(#fnhead); }
+        </style>
+        <defs>
+          <marker id="fnhead" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#3DA0E3"/>
+          </marker>
+        </defs>
+        <rect x="30" y="60" width="180" height="150" rx="10" fill="#003B57"/>
+        <text class="fnT" x="60" y="130">1 · Confirm</text>
+        <text class="fnS" x="30" y="235" fill="#526472">Is the drop real?</text>
+        <rect x="248" y="80" width="170" height="110" rx="10" fill="#0F80CC"/>
+        <text class="fnT" x="290" y="140">2 · Drill</text>
+        <text class="fnS" x="255" y="235" fill="#526472">What changed in March?</text>
+        <rect x="456" y="98" width="160" height="74" rx="10" fill="#3DA0E3"/>
+        <text class="fnT" x="498" y="140">3 · Explain</text>
+        <text class="fnS" x="462" y="235" fill="#526472">Why did it happen?</text>
+        <rect x="654" y="112" width="150" height="46" rx="10" fill="#F5A623"/>
+        <text class="fnT" x="686" y="140">4 · Recommend</text>
+        <text class="fnS" x="662" y="235" fill="#526472">Now write the brief.</text>
+        <path class="fnArr" d="M212,135 L246,135"/>
+        <path class="fnArr" d="M420,135 L454,135"/>
+        <path class="fnArr" d="M618,135 L652,135"/>
+        <rect x="30" y="262" width="14" height="14" rx="3" fill="#F5A623"/>
+        <text class="fnN" x="54" y="274">Each stage is one or two queries. You never skip Confirm - theorizing before confirming is the classic mistake.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the four moves of any metric-drop investigation</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ PART 1: CONFIRM ============ -->
+  <section class="section" id="confirm">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers Mode "SQL Analytics Training" - confirm the trend</span>
+      <h2>Confirm the drop <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">Before any theory, get the actual monthly trend on screen. We sum completed line revenue per month, then use <code>LAG</code> (from b7) to show the month-over-month change in the same result. If March really dropped, the change column will show it in one negative number - no arguing with it.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Monthly revenue, with the change column<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Line revenue is <code>quantity * unit_price</code>, and we count only <code>completed</code> orders - refunded and cancelled money is not revenue. <code>LAG(rev)</code> pulls the previous month's total onto the current row so you see the delta directly.</p>
+        <div class="sqlbox" data-caption="Feb 271 to Mar 150 is a -121 swing - the clearest number in the whole case. Try removing the status filter and watch the totals distort.">
+          <pre class="sql-src">WITH m AS (
+  SELECT substr(o.order_date,1,7) AS mo,
+         SUM(oi.quantity*oi.unit_price) AS rev
+  FROM orders o
+  JOIN order_items oi ON o.order_id = oi.order_id
+  WHERE o.status = 'completed'
+  GROUP BY mo
+)
+SELECT mo, rev,
+       rev - LAG(rev) OVER (ORDER BY mo) AS change
+FROM m
+ORDER BY mo;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>Confirm before you theorize</strong>
+          Notice we have not guessed a cause yet. The whole point of stage one is to replace "I heard revenue dropped" with a number you can defend: Feb 271, Mar 150, a -121 change. Now the investigation has a target.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Why the status filter is not optional<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>If you sum revenue across <em>all</em> orders regardless of status, you fold refunded and cancelled money into the total - and your "revenue" is now a fiction that no finance team will accept. A single refunded order can mask or fake a trend. The habit: whenever you sum money, decide explicitly which statuses count, and put it in the WHERE where a reviewer can see it. In Daybreak, <code>completed</code> is the honest revenue set.</p>
+        <ul>
+          <li><strong>completed</strong> - real, recognized revenue. Count it.</li>
+          <li><strong>refunded</strong> - money that came back out. Exclude from revenue.</li>
+          <li><strong>cancelled</strong> - never collected. Exclude.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: DRILL ============ -->
+  <section class="section" id="drill">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · drill into the affected slice</span>
+      <h2>Drill into March <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">The drop lives in March, so zoom in. Two cheap questions answer most of it: what statuses do March's orders have (is there a refund distorting things?), and how many orders did March even get (was it a volume problem)? Small queries, big signal.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>March orders by status<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Group March's orders by status. This surfaces whether a refund or cancellation is part of the story - and in Daybreak's March, one order was refunded.</p>
+        <div class="sqlbox" data-caption="LIKE '2026-03%' is the whole-month filter. A refunded row here is a real clue - order 1017.">
+          <pre class="sql-src">SELECT status, COUNT(*) AS n
+FROM orders
+WHERE order_date LIKE '2026-03%'
+GROUP BY status;</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>How many orders did March get at all?<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Volume is the other half. Fewer orders is a different problem from smaller orders. Count March's orders outright, then compare that mentally to the busier months.</p>
+        <div class="sqlbox" data-caption="March had fewer orders than its neighbours - so this is partly a volume story, not just a refund.">
+          <pre class="sql-src">SELECT COUNT(*) AS march_orders
+FROM orders
+WHERE order_date LIKE '2026-03%';</pre>
+        </div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p><strong>Two very different fixes.</strong> "Fewer orders" points at acquisition and retention - marketing, churn, seasonality. "Same orders, smaller baskets" points at pricing, promos, product mix. Drilling before recommending is what tells you which conversation to walk into. Guess wrong and you optimize the thing that was fine.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: CAUSES IN BEHAVIOR ============ -->
+  <section class="section" id="causes">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · look for causes in customer behavior</span>
+      <h2>Hunt for causes: events and cancellations <span class="tag concept">7 min live</span></h2>
+    </div>
+    <p class="lede">Orders tell you <em>what</em> happened; the <code>events</code> and <code>subscriptions</code> tables hint at <em>why</em>. If March saw support tickets and a cancel survey, and a subscription actually cancelled that month, you have a behavioral thread that lines up with the revenue dip.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>What were customers doing in March?<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Count March's events by type. A cluster of <code>support_ticket</code> and a <code>cancel_survey</code> is exactly the kind of unhappy-customer signal that precedes lost revenue.</p>
+        <div class="sqlbox" data-caption="March events include support_ticket and cancel_survey - friction, not just a quiet month.">
+          <pre class="sql-src">SELECT event_type, COUNT(*) AS n
+FROM events
+WHERE event_date LIKE '2026-03%'
+GROUP BY event_type;</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Which subscriptions cancelled, and when?<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>An active subscription has a NULL <code>cancel_date</code> (the b2 NULL lesson pays off here). List the ones that are <strong>not</strong> NULL to see who churned - and the date tells you if it lands in March.</p>
+        <div class="sqlbox" data-caption="sub_id 2 (Liam Ford) cancelled 2026-03-10 - a subscription lost inside the drop month.">
+          <pre class="sql-src">SELECT sub_id, customer_id, cancel_date
+FROM subscriptions
+WHERE cancel_date IS NOT NULL;</pre>
+        </div>
+        <div class="callout tip">
+          <strong>Correlation, stated honestly</strong>
+          A cancel on March 10 and a revenue dip in March line up in time - that is worth reporting, but say it as "these coincide", not "this caused the drop". A good analyst brief is precise about what the data shows versus what it merely suggests.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 4: COHORT PEEK ============ -->
+  <section class="section" id="cohort">
+    <div class="section-kicker">
+      <span class="klabel">Part 4 · a cohort sanity-check</span>
+      <h2>Cohort peek: are we acquiring customers? <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">One more angle before we write. Group customers by signup month - a "cohort" view. If new-customer intake sagged around March, that reinforces the volume story from Part 2. This is a widen-to-sanity-check move, not a new theory.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>New customers by signup month<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>substr(signup_date,1,7)</code> gives the year-month, and grouping on it turns 15 customers into a clean intake timeline. Read it alongside the revenue trend from Part 1.</p>
+        <div class="sqlbox" data-caption="Compare the intake pattern to the revenue months. Thin acquisition and a revenue dip tell a consistent story.">
+          <pre class="sql-src">SELECT substr(signup_date,1,7) AS cohort,
+       COUNT(*) AS new_customers
+FROM customers
+GROUP BY cohort
+ORDER BY cohort;</pre>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO: THE BRIEF ============ -->
+  <section class="section" id="demo">
+    <div class="section-kicker">
+      <span class="klabel">Build-along · the deliverable</span>
+      <h2>Write the "what happened in March" brief <span class="tag demo">★ 10 min · everyone writes</span></h2>
+    </div>
+    <p class="lede">The queries were the easy part. The value an analyst adds is the paragraph a founder reads in 30 seconds. Rule: one claim per finding, each backed by a specific query above. No adjectives, no drama, just what the data shows and one recommendation.</p>
+
+    <div class="steps">
+      <div class="step"><p><strong>Confirm.</strong> "Completed revenue fell from 271 in February to 150 in March, a -121 swing." - <em>Part 1 query.</em></p></div>
+      <div class="step"><p><strong>Drill.</strong> "March took fewer orders than its neighbours, and one order (1017) was refunded." - <em>Part 2 queries.</em></p></div>
+      <div class="step"><p><strong>Explain.</strong> "March also showed support tickets, a cancel survey, and a subscription cancellation (sub 2, Mar 10) - friction signals that coincide with the dip." - <em>Part 3 queries.</em></p></div>
+      <div class="step"><p><strong>Recommend.</strong> "Volume, not basket size, drove most of it - suggest a retention check on at-risk subscribers and a look at March acquisition." - <em>Part 4 sanity-check.</em></p></div>
+    </div>
+
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p><strong>The brief is the job.</strong> Founders and execs rarely read your SQL - they read the four sentences and decide. An analyst who hands over a clean, query-backed paragraph gets trusted with the next question; one who hands over a raw result set and says "here's the data" does not. The queries make you correct. The brief makes you useful.</p>
+    </div>
+
+    <div class="sqlbox" data-caption="Optional: prove one brief claim in a single query - March completed revenue on its own.">
+      <pre class="sql-src">SELECT SUM(oi.quantity*oi.unit_price) AS march_completed_rev
+FROM orders o
+JOIN order_items oi ON o.order_id = oi.order_id
+WHERE o.status = 'completed'
+  AND o.order_date LIKE '2026-03%';</pre>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Try it yourself - this week <span class="tag exercise">◐ 20-30 min total</span></h2>
+    </div>
+    <ul>
+      <li>Re-run the Part 1 trend query, but change the status filter to include refunded orders. Note how the March number shifts, and write one sentence on why the honest version excludes them.</li>
+      <li>Pick a <em>different</em> month (say May) and run the full funnel on it: confirm, drill by status, check events. Is there a story, or is it a quiet month?</li>
+      <li>Write a three-sentence brief for your chosen month, one claim per sentence, each naming the query that backs it.</li>
+      <li>Extend Part 3: join <code>subscriptions</code> to <code>customers</code> so your churned-subscriber finding includes the customer's name and plan.</li>
+      <li>Bring one question to b10: your March queries feel instant on 33 orders - what happens when the table has 33 million rows? Next session is exactly that.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This session is a guided analytics investigation in the spirit of the major training curricula, run on live data instead of screenshots. It leans on every technique from b1-b7. This page covers:</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Mode - SQL Analytics Training (Investigating a Drop in User Engagement)</span><span class="note">Whole session · the confirm-drill-explain investigation loop, run on Daybreak</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Applies Builder sessions b1-b7</span><span class="note">SELECT, WHERE, JOIN, GROUP BY, HAVING, CTEs, and window functions (LAG) all in one case</span></div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">1 · A metric drops and someone asks why. What is your first step?</p>
+      <button class="qopt" type="button">A · Immediately propose the most likely cause so the team can act fast</button>
+      <button class="qopt" type="button">B · Pull the raw table and hand it over for others to interpret</button>
+      <button class="qopt" type="button">C · Confirm the trend with a clean query before theorizing about causes</button>
+      <p class="qwhy">Confirm first. Replace "I heard it dropped" with a defensible number (Feb 271, Mar 150, -121). Only then does the hunt for a cause have a real target.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">2 · Why filter on status when summing revenue?</p>
+      <button class="qopt" type="button">A · Refunded and cancelled orders distort the total - they are not recognized revenue</button>
+      <button class="qopt" type="button">B · It makes the query run faster</button>
+      <button class="qopt" type="button">C · Status is required syntax in any SUM</button>
+      <p class="qwhy">Folding refunded or cancelled money into a revenue sum produces a number finance will reject. Summing only completed orders is the honest revenue set.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">3 · What makes a good analyst brief?</p>
+      <button class="qopt" type="button">A · Every query you ran, pasted in full for completeness</button>
+      <button class="qopt" type="button">B · A short claim per finding, each backed by a specific query</button>
+      <button class="qopt" type="button">C · A confident single-cause conclusion, stated without caveats</button>
+      <p class="qwhy">One claim per finding, each traceable to a query, with correlation stated as correlation. That is what earns an analyst the next question.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 9 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The funnel</b><span>Confirm → Drill → Explain → Recommend. Never skip Confirm; never lead with a theory.</span></div>
+      <div class="cheat-item"><b>Confirm the trend</b><span>Monthly SUM(quantity*unit_price) on completed orders + LAG for the change column.</span></div>
+      <div class="cheat-item"><b>Filter status for money</b><span>Only completed = revenue. Refunded and cancelled distort the total - exclude them.</span></div>
+      <div class="cheat-item"><b>Drill the slice</b><span>Group the affected month by status; count its volume. Refund vs fewer-orders are different bugs.</span></div>
+      <div class="cheat-item"><b>Causes in behavior</b><span>events (tickets, cancel surveys) + subscriptions with cancel_date IS NOT NULL = the why.</span></div>
+      <div class="cheat-item"><b>Cohort sanity-check</b><span>substr(signup_date,1,7) grouped = new-customer intake by month. Confirms volume stories.</span></div>
+      <div class="cheat-item"><b>Correlation ≠ cause</b><span>A cancel and a dip in the same month "coincide". Say that, not "this caused it".</span></div>
+      <div class="cheat-item"><b>The brief is the job</b><span>One claim per finding, each backed by a query. The queries make you correct; the brief makes you useful.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Builder session 9 of 10 · learn-sql-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="b10-performance-warehouses.html">Next: Performance and real warehouses →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/daybreak-seed.js?v=1"></script>
+<script src="../assets/sql-wasm.js?v=1"></script>
+<script src="../assets/sql-live.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>
