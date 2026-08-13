@@ -1,7 +1,16 @@
-<!-- learn-with-phoebe hub banner -->
-> ### 📚 Part of [**Learn with Phoebe**](https://phoebefu6.github.io/learn-with-phoebe/)
-> The shelf of 20 free, hands-on courses on AI, data, and the craft around them. **[Browse every course ↗](https://phoebefu6.github.io/learn-with-phoebe/)**
-<!-- /learn-with-phoebe hub banner -->
+<!-- phoebe header -->
+
+[![Open the live course](https://img.shields.io/badge/%E2%96%B6%20open%20the%20live%20course-1f6feb?style=for-the-badge)](https://phoebefu6.github.io/learn-sql-with-phoebe/)
+[![Star this repo](https://img.shields.io/github/stars/phoebefu6/learn-sql-with-phoebe?style=for-the-badge&label=star%20this%20repo&color=444)](https://github.com/phoebefu6/learn-sql-with-phoebe/stargazers)
+[![Learn with Phoebe](https://img.shields.io/badge/part%20of-learn%20with%20phoebe-111?style=for-the-badge)](https://phoebefu6.github.io/learn-with-phoebe/)
+
+### ▶︎ [Open the live course →](https://phoebefu6.github.io/learn-sql-with-phoebe/)
+
+Free, runs in your browser. No install, no login.
+
+> 📚 Part of **[Learn with Phoebe](https://phoebefu6.github.io/learn-with-phoebe/)** - 75 free hands-on courses on AI, data, and the craft around them. **[Browse every course ↗](https://phoebefu6.github.io/learn-with-phoebe/)**
+
+<!-- /phoebe header -->
 
 # learn-sql-with-phoebe
 
