@@ -113,6 +113,36 @@
       <summary><span class="mode live">Live</span>Monthly revenue, with the change column<span class="mini">3 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>Line revenue is <code>quantity * unit_price</code>, and we count only <code>completed</code> orders - refunded and cancelled money is not revenue. <code>LAG(rev)</code> pulls the previous month's total onto the current row so you see the delta directly.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A two-bar comparison confirming the drop: completed revenue at 271 in February and 150 in March, a decline of 121, established before any cause is investigated.">
+    <style>
+      .b9cfT { font: 700 13px Inter, sans-serif; fill: #10222E; }
+      .b9cfL { font: 600 12px Inter, sans-serif; fill: #10222E; text-anchor: end; }
+      .b9cfV { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+      .b9cfD { font: 700 13px Inter, sans-serif; fill: #991B1B; }
+      .b9cfN { font: 400 12px Inter, sans-serif; fill: #526472; }
+    </style>
+    <rect x="0" y="0" width="880" height="260" fill="#F7FBFD"/>
+    <text class="b9cfT" x="40" y="28">Confirm before theorizing: February to March, in one query</text>
+
+    <text class="b9cfL" x="240" y="96">February</text>
+    <rect x="260" y="72" width="480" height="36" rx="6" fill="#0F80CC"/>
+    <text class="b9cfV" x="274" y="96">271</text>
+
+    <text class="b9cfL" x="240" y="176">March</text>
+    <rect x="260" y="152" width="265" height="36" rx="6" fill="#991B1B"/>
+    <text class="b9cfV" x="274" y="176">150</text>
+
+    <line x1="770" y1="90" x2="770" y2="170" stroke="#991B1B" stroke-width="1.6"/>
+    <line x1="762" y1="90" x2="778" y2="90" stroke="#991B1B" stroke-width="1.6"/>
+    <line x1="762" y1="170" x2="778" y2="170" stroke="#991B1B" stroke-width="1.6"/>
+    <text class="b9cfD" x="786" y="134">-121</text>
+
+    <text class="b9cfN" x="40" y="222">Completed revenue fell from 271 in February to 150 in March - confirmed by one query.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - confirm the number before you theorize about why</figcaption>
+</figure>
+
         <div class="sqlbox" data-caption="Feb 271 to Mar 150 is a -121 swing - the clearest number in the whole case. Try removing the status filter and watch the totals distort.">
           <pre class="sql-src">WITH m AS (
   SELECT substr(o.order_date,1,7) AS mo,
@@ -210,6 +240,41 @@ GROUP BY event_type;</pre>
       <summary><span class="mode live">Live</span>Which subscriptions cancelled, and when?<span class="mini">3 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>An active subscription has a NULL <code>cancel_date</code> (the b2 NULL lesson pays off here). List the ones that are <strong>not</strong> NULL to see who churned - and the date tells you if it lands in March.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three evidence cards from the investigation: order 1017 was refunded, support tickets and a cancel survey clustered, and subscription 2 cancelled on March 10 - three findings that coincide with the March revenue dip but are not, on their own, proof of a single cause.">
+    <style>
+      .b9evT { font: 700 13px Inter, sans-serif; fill: #10222E; }
+      .b9evC1 { font: 700 10.5px Inter, sans-serif; fill: #4A2E00; letter-spacing: .04em; }
+      .b9evC2 { font: 700 10.5px Inter, sans-serif; fill: #FFFFFF; letter-spacing: .04em; }
+      .b9evB { font: 600 12px Inter, sans-serif; fill: #10222E; }
+      .b9evN { font: 400 12px Inter, sans-serif; fill: #526472; }
+    </style>
+    <rect x="0" y="0" width="880" height="230" fill="#F7FBFD"/>
+    <text class="b9evT" x="40" y="28">Three findings, read together - not yet a cause</text>
+
+    <rect x="40" y="60" width="260" height="110" rx="12" fill="#FEF3E0" stroke="#F5A623" stroke-width="1.5"/>
+    <rect x="56" y="76" width="60" height="20" rx="4" fill="#F5A623"/>
+    <text class="b9evC1" x="86" y="90" text-anchor="middle">DRILL</text>
+    <text class="b9evB" x="56" y="122">Order 1017 was</text>
+    <text class="b9evB" x="56" y="142">refunded</text>
+
+    <rect x="310" y="60" width="260" height="110" rx="12" fill="#E9F4FB" stroke="#0F80CC" stroke-width="1.5"/>
+    <rect x="326" y="76" width="74" height="20" rx="4" fill="#0F80CC"/>
+    <text class="b9evC2" x="363" y="90" text-anchor="middle">EXPLAIN</text>
+    <text class="b9evB" x="326" y="122">Support tickets,</text>
+    <text class="b9evB" x="326" y="142">cancel survey</text>
+
+    <rect x="580" y="60" width="260" height="110" rx="12" fill="#E9F4FB" stroke="#0F80CC" stroke-width="1.5"/>
+    <rect x="596" y="76" width="74" height="20" rx="4" fill="#0F80CC"/>
+    <text class="b9evC2" x="633" y="90" text-anchor="middle">EXPLAIN</text>
+    <text class="b9evB" x="596" y="122">Sub 2 cancelled</text>
+    <text class="b9evB" x="596" y="142">Mar 10</text>
+
+    <text class="b9evN" x="40" y="200">These coincide with the March dip - worth reporting as correlation, not proven as the cause.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - three findings that coincide with March's dip, not proof of one cause</figcaption>
+</figure>
+
         <div class="sqlbox" data-caption="sub_id 2 (Liam Ford) cancelled 2026-03-10 - a subscription lost inside the drop month.">
           <pre class="sql-src">SELECT sub_id, customer_id, cancel_date
 FROM subscriptions

@@ -144,6 +144,40 @@ LIMIT 5;</pre>
       <summary><span class="mode live">Live</span>Pull the month out of a date<span class="mini">3 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>Daybreak dates are stored as text like <code>2026-03-14</code>. To group by month you only want the first seven characters, <code>2026-03</code>. <code>substr(order_date, 1, 7)</code> takes a 7-character slice starting at position 1 - a clean year-month key. Run it and you have the building block for every monthly trend.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The date 2026-03-14 shown as a ten-character string, with the first seven characters, 2026-03, highlighted and kept by substr(order_date,1,7), while the last three characters, dash 1 4, are dropped, producing the month key 2026-03.">
+    <defs>
+      <marker id="arrB5dt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#526472"/>
+      </marker>
+    </defs>
+    <style>
+      .b5dtT { font: 700 13px Inter, sans-serif; fill: #10222E; }
+      .b5dtK { font: 700 15px "SF Mono", Menlo, monospace; fill: #003B57; }
+      .b5dtD { font: 700 15px "SF Mono", Menlo, monospace; fill: #AEC4D2; }
+      .b5dtO { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+      .b5dtL { font: 400 12px Inter, sans-serif; fill: #526472; }
+      .b5dtN { font: 400 12px Inter, sans-serif; fill: #526472; }
+    </style>
+    <rect x="0" y="0" width="880" height="250" fill="#F7FBFD"/>
+    <text class="b5dtT" x="40" y="28">substr(order_date,1,7) keeps 7 characters, drops the rest</text>
+
+    <rect x="266" y="66" width="242" height="34" rx="6" fill="#E9F4FB" stroke="#0F80CC" stroke-width="2"/>
+    <text class="b5dtK" x="278" y="90">2026-03</text>
+    <text class="b5dtD" x="496" y="90" text-anchor="end">-14</text>
+
+    <line x1="389" y1="112" x2="389" y2="148" stroke="#526472" stroke-width="1.6" marker-end="url(#arrB5dt)"/>
+
+    <rect x="334" y="150" width="110" height="34" rx="8" fill="#003B57"/>
+    <text class="b5dtO" x="389" y="173" text-anchor="middle">2026-03</text>
+    <text class="b5dtL" x="456" y="173">AS month</text>
+
+    <text class="b5dtN" x="40" y="210">substr(order_date,1,7) keeps 2026-03 from 2026-03-14 and drops the rest.</text>
+    <text class="b5dtN" x="40" y="230">That year-month key is the building block for every monthly trend later on.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - substr keeps the year-month, drops the day</figcaption>
+</figure>
+
         <div class="sqlbox" data-caption="substr(text, start, length). Position 1 is the first character.">
           <pre class="sql-src">SELECT order_id, substr(order_date,1,7) AS month
 FROM orders
@@ -169,6 +203,53 @@ LIMIT 8;</pre>
       <summary><span class="mode live">Live</span>Stack customers and products into one list<span class="mini">3 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>Each half selects a name plus a literal label - <code>'customer'</code> or <code>'product'</code> - so the combined list stays self-describing. Both halves return two columns in the same order, which is the one rule <code>UNION</code> enforces. Press <strong>▶ Run</strong> to see the two tables poured into one column set.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two small source tables, customers labeled kind equals customer and products labeled kind equals product, each shown with three placeholder rows, stacked by UNION ALL into one combined table of six rows that still has only the two columns name and kind.">
+    <defs>
+      <marker id="arrB5un" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#526472"/>
+      </marker>
+    </defs>
+    <style>
+      .b5unT { font: 700 12.5px Inter, sans-serif; fill: #10222E; }
+      .b5unH { font: 700 11.5px Inter, sans-serif; fill: #10222E; }
+      .b5unN { font: 400 12px Inter, sans-serif; fill: #526472; }
+    </style>
+    <rect x="0" y="0" width="880" height="400" fill="#F7FBFD"/>
+
+    <text class="b5unT" x="60" y="32">customers rows, kind = 'customer'</text>
+    <text class="b5unT" x="490" y="32">products rows, kind = 'product'</text>
+
+    <rect x="60" y="46" width="330" height="26" fill="#E1E9EF"/>
+    <text class="b5unH" x="76" y="64">name | kind</text>
+    <rect x="60" y="72" width="330" height="22" fill="#F7FBFD" stroke="#E1E9EF"/>
+    <rect x="60" y="94" width="330" height="22" fill="#F7FBFD" stroke="#E1E9EF"/>
+    <rect x="60" y="116" width="330" height="22" fill="#F7FBFD" stroke="#E1E9EF"/>
+
+    <rect x="490" y="46" width="330" height="26" fill="#E1E9EF"/>
+    <text class="b5unH" x="506" y="64">name | kind</text>
+    <rect x="490" y="72" width="330" height="22" fill="#F7FBFD" stroke="#E1E9EF"/>
+    <rect x="490" y="94" width="330" height="22" fill="#F7FBFD" stroke="#E1E9EF"/>
+    <rect x="490" y="116" width="330" height="22" fill="#F7FBFD" stroke="#E1E9EF"/>
+
+    <path d="M225,138 L390,182" fill="none" stroke="#526472" stroke-width="1.6" marker-end="url(#arrB5un)"/>
+    <path d="M655,138 L490,182" fill="none" stroke="#526472" stroke-width="1.6" marker-end="url(#arrB5un)"/>
+
+    <rect x="300" y="190" width="280" height="26" fill="#E1E9EF"/>
+    <text class="b5unH" x="316" y="208">name | kind</text>
+    <rect x="300" y="216" width="280" height="20" fill="#E9F4FB"/>
+    <rect x="300" y="236" width="280" height="20" fill="#E9F4FB"/>
+    <rect x="300" y="256" width="280" height="20" fill="#E9F4FB"/>
+    <rect x="300" y="276" width="280" height="20" fill="#FEF3E0"/>
+    <rect x="300" y="296" width="280" height="20" fill="#FEF3E0"/>
+    <rect x="300" y="316" width="280" height="20" fill="#FEF3E0"/>
+
+    <text class="b5unN" x="40" y="360">UNION ALL pours query 2's rows under query 1's - same two columns, more rows.</text>
+    <text class="b5unN" x="40" y="380">Top 3 rows are customers labeled 'customer'; bottom 3 are products labeled 'product'.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - UNION ALL stacks rows, it never adds columns</figcaption>
+</figure>
+
         <div class="sqlbox" data-caption="Both SELECTs must return the same columns, same order. The labels tell rows apart.">
           <pre class="sql-src">SELECT name, 'customer' AS kind FROM customers
 UNION ALL

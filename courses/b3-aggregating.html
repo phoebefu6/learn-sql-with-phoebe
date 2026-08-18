@@ -65,7 +65,63 @@
     </div>
     <p class="lede">An aggregate function takes a whole column of values and returns one number. <code>COUNT</code> tallies rows, <code>SUM</code> adds them up, <code>AVG</code> averages, <code>MIN</code> and <code>MAX</code> find the extremes. Applied to a whole table with no grouping, they collapse every row into a single summary line - the simplest form of a report.</p>
 
-    <table class="clean">
+    
+<figure class="zoomable">
+  <svg viewBox="0 0 880 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four small diagrams, one per aggregate function, each showing a stack of many rows collapsing down an arrow into a single output value: COUNT counts rows, SUM totals a column, AVG means a column, and MIN or MAX finds the smallest or largest value.">
+    <defs>
+      <marker id="arrB3ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#526472"/>
+      </marker>
+    </defs>
+    <style>
+      .b3agT { font: 700 12px Inter, sans-serif; fill: #10222E; }
+      .b3agR { fill: #AEC4D2; }
+      .b3agV { font: 700 11px Inter, sans-serif; fill: #FFFFFF; }
+      .b3agN { font: 400 12px Inter, sans-serif; fill: #526472; }
+    </style>
+    <rect x="0" y="0" width="880" height="260" fill="#F7FBFD"/>
+
+    <text class="b3agT" x="150" y="48" text-anchor="middle">COUNT(*)</text>
+    <rect class="b3agR" x="100" y="66" width="100" height="7" rx="2"/>
+    <rect class="b3agR" x="100" y="76" width="100" height="7" rx="2"/>
+    <rect class="b3agR" x="100" y="86" width="100" height="7" rx="2"/>
+    <rect class="b3agR" x="100" y="96" width="100" height="7" rx="2"/>
+    <line x1="150" y1="108" x2="150" y2="128" stroke="#526472" stroke-width="1.6" marker-end="url(#arrB3ag)"/>
+    <rect x="95" y="132" width="110" height="30" rx="6" fill="#0F80CC"/>
+    <text class="b3agV" x="150" y="151" text-anchor="middle">counts rows</text>
+
+    <text class="b3agT" x="350" y="48" text-anchor="middle">SUM(x)</text>
+    <rect class="b3agR" x="300" y="66" width="100" height="7" rx="2"/>
+    <rect class="b3agR" x="300" y="76" width="100" height="7" rx="2"/>
+    <rect class="b3agR" x="300" y="86" width="100" height="7" rx="2"/>
+    <rect class="b3agR" x="300" y="96" width="100" height="7" rx="2"/>
+    <line x1="350" y1="108" x2="350" y2="128" stroke="#526472" stroke-width="1.6" marker-end="url(#arrB3ag)"/>
+    <rect x="295" y="132" width="110" height="30" rx="6" fill="#0F80CC"/>
+    <text class="b3agV" x="350" y="151" text-anchor="middle">column total</text>
+
+    <text class="b3agT" x="550" y="48" text-anchor="middle">AVG(x)</text>
+    <rect class="b3agR" x="500" y="66" width="100" height="7" rx="2"/>
+    <rect class="b3agR" x="500" y="76" width="100" height="7" rx="2"/>
+    <rect class="b3agR" x="500" y="86" width="100" height="7" rx="2"/>
+    <rect class="b3agR" x="500" y="96" width="100" height="7" rx="2"/>
+    <line x1="550" y1="108" x2="550" y2="128" stroke="#526472" stroke-width="1.6" marker-end="url(#arrB3ag)"/>
+    <rect x="495" y="132" width="110" height="30" rx="6" fill="#0F80CC"/>
+    <text class="b3agV" x="550" y="151" text-anchor="middle">column mean</text>
+
+    <text class="b3agT" x="750" y="48" text-anchor="middle">MIN / MAX(x)</text>
+    <rect class="b3agR" x="700" y="66" width="100" height="7" rx="2"/>
+    <rect class="b3agR" x="700" y="76" width="100" height="7" rx="2"/>
+    <rect class="b3agR" x="700" y="86" width="100" height="7" rx="2"/>
+    <rect class="b3agR" x="700" y="96" width="100" height="7" rx="2"/>
+    <line x1="750" y1="108" x2="750" y2="128" stroke="#526472" stroke-width="1.6" marker-end="url(#arrB3ag)"/>
+    <rect x="695" y="132" width="110" height="30" rx="6" fill="#0F80CC"/>
+    <text class="b3agV" x="750" y="151" text-anchor="middle">min or max</text>
+
+    <text class="b3agN" x="40" y="236">Every aggregate takes many rows and returns exactly one number - the shape behind every KPI tile.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - many rows go in, one number comes out, every time</figcaption>
+</figure>
+<table class="clean">
       <thead><tr><th>Function</th><th>Returns</th><th>Example question</th></tr></thead>
       <tbody>
         <tr><td><strong>COUNT(*)</strong></td><td>how many rows</td><td>"How many orders do we have?"</td></tr>
@@ -212,7 +268,52 @@ GROUP BY category;</pre>
     </div>
     <p class="lede">Two finishing tools. <code>HAVING</code> filters <em>groups</em> after aggregation - the counterpart to <code>WHERE</code>, which filters rows before. And <code>DISTINCT</code> strips duplicates, which is how you count unique things: how many <em>different</em> countries, not how many customers.</p>
 
-    <table class="clean">
+    
+<figure class="zoomable">
+  <svg viewBox="0 0 880 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A five-stage pipeline showing that WHERE filters individual rows before grouping happens, while HAVING filters whole groups only after GROUP BY has run, matching the rule that WHERE checks rows and HAVING checks groups.">
+    <defs>
+      <marker id="arrB3cl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#526472"/>
+      </marker>
+    </defs>
+    <style>
+      .b3clT { font: 700 13px Inter, sans-serif; fill: #10222E; }
+      .b3clH { font: 700 12px Inter, sans-serif; fill: #FFFFFF; }
+      .b3clS { font: 400 10.5px Inter, sans-serif; fill: rgba(255,255,255,.85); }
+      .b3clN { font: 400 12px Inter, sans-serif; fill: #526472; }
+    </style>
+    <rect x="0" y="0" width="880" height="260" fill="#F7FBFD"/>
+    <text class="b3clT" x="40" y="28">WHERE checks rows first; HAVING checks groups last</text>
+
+    <rect x="40" y="90" width="140" height="64" rx="10" fill="#526472"/>
+    <text class="b3clH" x="110" y="126" text-anchor="middle">All rows</text>
+
+    <rect x="192" y="90" width="140" height="64" rx="10" fill="#0F80CC"/>
+    <text class="b3clH" x="262" y="118" text-anchor="middle">WHERE</text>
+    <text class="b3clS" x="262" y="136" text-anchor="middle">filters each row</text>
+
+    <rect x="344" y="90" width="140" height="64" rx="10" fill="#3DA0E3"/>
+    <text class="b3clH" x="414" y="118" text-anchor="middle">GROUP BY</text>
+    <text class="b3clS" x="414" y="136" text-anchor="middle">buckets by column</text>
+
+    <rect x="496" y="90" width="140" height="64" rx="10" fill="#F5A623"/>
+    <text class="b3clH" x="566" y="118" text-anchor="middle" fill="#4A2E00">HAVING</text>
+    <text class="b3clS" x="566" y="136" text-anchor="middle" fill="#4A2E00">filters whole groups</text>
+
+    <rect x="648" y="90" width="140" height="64" rx="10" fill="#003B57"/>
+    <text class="b3clH" x="718" y="126" text-anchor="middle">Result</text>
+
+    <line x1="180" y1="122" x2="190" y2="122" stroke="#526472" stroke-width="2" marker-end="url(#arrB3cl)"/>
+    <line x1="332" y1="122" x2="342" y2="122" stroke="#526472" stroke-width="2" marker-end="url(#arrB3cl)"/>
+    <line x1="484" y1="122" x2="494" y2="122" stroke="#526472" stroke-width="2" marker-end="url(#arrB3cl)"/>
+    <line x1="636" y1="122" x2="646" y2="122" stroke="#526472" stroke-width="2" marker-end="url(#arrB3cl)"/>
+
+    <text class="b3clN" x="40" y="196">WHERE filters individual rows before grouping; HAVING filters whole groups after grouping.</text>
+    <text class="b3clN" x="40" y="216">Put an aggregate in WHERE and there is nothing to test yet - that is what HAVING is for.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - filter rows with WHERE, filter groups with HAVING, in that order</figcaption>
+</figure>
+<table class="clean">
       <thead><tr><th>Clause</th><th>Filters...</th><th>Runs...</th></tr></thead>
       <tbody>
         <tr><td><strong>WHERE</strong></td><td>individual rows</td><td>before grouping - "only USA customers"</td></tr>

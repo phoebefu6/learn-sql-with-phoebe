@@ -154,6 +154,34 @@ FROM products;</pre>
       <summary><span class="mode live">Live</span>Rank customers by total spend<span class="mini">4 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>A CTE from b6 does the heavy lifting - <code>spend</code> sums each customer's completed revenue. Then <code>RANK() OVER (ORDER BY s.total DESC)</code> ranks them. Run it: Noah Park (232) is rank 1, Ava Chen (222) rank 2, Ethan Ruiz (177) rank 3. The window did the ranking; the rows stayed intact.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A bar chart ranking three customers by total spend with RANK: Noah Park at 232 ranked first, Ava Chen at 222 ranked second, and Ethan Ruiz at 177 ranked third, with every customer still shown as its own row.">
+    <style>
+      .b7rkT { font: 700 13px Inter, sans-serif; fill: #10222E; }
+      .b7rkL { font: 600 12px Inter, sans-serif; fill: #10222E; text-anchor: end; }
+      .b7rkV { font: 700 12px Inter, sans-serif; fill: #FFFFFF; }
+      .b7rkN { font: 400 12px Inter, sans-serif; fill: #526472; }
+    </style>
+    <rect x="0" y="0" width="880" height="300" fill="#F7FBFD"/>
+    <text class="b7rkT" x="40" y="28">Ranking customers by spend keeps every row - RANK adds a column</text>
+
+    <text class="b7rkL" x="240" y="94">Noah Park - rank 1</text>
+    <rect x="260" y="76" width="480" height="30" rx="6" fill="#F5A623"/>
+    <text class="b7rkV" x="272" y="96" fill="#4A2E00">232</text>
+
+    <text class="b7rkL" x="240" y="154">Ava Chen - rank 2</text>
+    <rect x="260" y="136" width="459" height="30" rx="6" fill="#0F80CC"/>
+    <text class="b7rkV" x="272" y="156">222</text>
+
+    <text class="b7rkL" x="240" y="214">Ethan Ruiz - rank 3</text>
+    <rect x="260" y="196" width="366" height="30" rx="6" fill="#0F80CC"/>
+    <text class="b7rkV" x="272" y="216">177</text>
+
+    <text class="b7rkN" x="40" y="256">Noah Park (232), Ava Chen (222) and Ethan Ruiz (177) each keep their own row - RANK just adds a number.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - RANK adds a column, it never removes a row</figcaption>
+</figure>
+
         <div class="sqlbox" data-caption="Try DENSE_RANK or ROW_NUMBER in place of RANK and compare the numbers.">
           <pre class="sql-src">WITH spend AS (
   SELECT o.customer_id, SUM(oi.quantity*oi.unit_price) AS total
@@ -254,6 +282,65 @@ ORDER BY mo;</pre>
       <h2>Read the running total and spot the March dip <span class="tag demo">★ 16 min · everyone builds</span></h2>
     </div>
     <p class="lede">Let us put the two Part 3 queries side by side and actually read them like an analyst. The verified monthly completed revenue is Jan 209, Feb 271, Mar 150, Apr 239, May 183, Jun 168. Your job: run both, then narrate what the <code>change</code> column is telling you - because that March dip is the mystery session b9 investigates end to end.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A six-month sequence, January through June, with completed revenue 209, 271, 150, 239, 183 and 168, and curved LAG arrows reaching back to the previous month, labeled with a plus 62 rise from January to February and a minus 121 drop from February to March, the sharpest fall in the run.">
+    <defs>
+      <marker id="arrB7lg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#0F80CC"/>
+      </marker>
+      <marker id="arrB7lgD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#991B1B"/>
+      </marker>
+    </defs>
+    <style>
+      .b7lgT { font: 700 13px Inter, sans-serif; fill: #10222E; }
+      .b7lgM { font: 700 11px Inter, sans-serif; fill: #526472; }
+      .b7lgV { font: 700 12px Inter, sans-serif; fill: #10222E; }
+      .b7lgP { font: 700 11.5px Inter, sans-serif; fill: #0F80CC; }
+      .b7lgD { font: 700 11.5px Inter, sans-serif; fill: #991B1B; }
+      .b7lgN { font: 400 12px Inter, sans-serif; fill: #526472; }
+    </style>
+    <rect x="0" y="0" width="880" height="230" fill="#F7FBFD"/>
+    <text class="b7lgT" x="40" y="28">The same LAG window slides across every ordered month</text>
+
+    <line x1="70" y1="140" x2="810" y2="140" stroke="#E1E9EF" stroke-width="2"/>
+
+    <path d="M218,128 Q144,70 70,128" fill="none" stroke="#0F80CC" stroke-width="1.8" marker-end="url(#arrB7lg)"/>
+    <text class="b7lgP" x="144" y="66" text-anchor="middle">+62</text>
+
+    <path d="M366,128 Q292,70 218,128" fill="none" stroke="#991B1B" stroke-width="2.2" marker-end="url(#arrB7lgD)"/>
+    <text class="b7lgD" x="292" y="66" text-anchor="middle">-121</text>
+
+    <path d="M514,128 Q440,90 366,128" fill="none" stroke="#AEC4D2" stroke-width="1.4"/>
+    <path d="M662,128 Q588,90 514,128" fill="none" stroke="#AEC4D2" stroke-width="1.4"/>
+    <path d="M810,128 Q736,90 662,128" fill="none" stroke="#AEC4D2" stroke-width="1.4"/>
+
+    <circle cx="70" cy="140" r="7" fill="#0F80CC"/>
+    <circle cx="218" cy="140" r="7" fill="#0F80CC"/>
+    <circle cx="366" cy="140" r="7" fill="#991B1B"/>
+    <circle cx="514" cy="140" r="7" fill="#0F80CC"/>
+    <circle cx="662" cy="140" r="7" fill="#0F80CC"/>
+    <circle cx="810" cy="140" r="7" fill="#0F80CC"/>
+
+    <text class="b7lgM" x="70" y="122" text-anchor="middle">Jan</text>
+    <text class="b7lgM" x="218" y="122" text-anchor="middle">Feb</text>
+    <text class="b7lgM" x="366" y="122" text-anchor="middle">Mar</text>
+    <text class="b7lgM" x="514" y="122" text-anchor="middle">Apr</text>
+    <text class="b7lgM" x="662" y="122" text-anchor="middle">May</text>
+    <text class="b7lgM" x="810" y="122" text-anchor="middle">Jun</text>
+
+    <text class="b7lgV" x="70" y="162" text-anchor="middle">209</text>
+    <text class="b7lgV" x="218" y="162" text-anchor="middle">271</text>
+    <text class="b7lgV" x="366" y="162" text-anchor="middle">150</text>
+    <text class="b7lgV" x="514" y="162" text-anchor="middle">239</text>
+    <text class="b7lgV" x="662" y="162" text-anchor="middle">183</text>
+    <text class="b7lgV" x="810" y="162" text-anchor="middle">168</text>
+
+    <text class="b7lgN" x="40" y="200">LAG reaches back one row: Feb rises +62 over Jan, then Mar falls -121, the sharpest drop yet.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - the same LAG window slides month to month; March's drop is the sharpest</figcaption>
+</figure>
+
 
     <div class="steps">
       <div class="step"><p>Run the running-total query. Confirm the <code>running</code> column only ever climbs - a running total never goes down when revenue is positive.</p></div>

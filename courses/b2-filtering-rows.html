@@ -149,7 +149,34 @@ WHERE price &lt; 18;</pre>
     </div>
     <p class="lede">One test is useful; combining them is where filtering gets sharp. <code>AND</code> means a row must pass <strong>both</strong> tests. <code>OR</code> means it needs pass <strong>either</strong>. <code>NOT</code> flips a test. String enough together and you can describe almost any slice of customers in one line - "Pro plan, in the USA, signed up this year".</p>
 
-    <table class="clean">
+    
+<figure class="zoomable">
+  <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two overlapping boxes for the conditions plan equals Pro and country equals USA. AND keeps only the narrow strip where both boxes overlap, fewer rows. OR, shown by the Canada-or-UK example, would keep every row inside either box, more rows.">
+    <style>
+      .b2aoT { font: 700 13px Inter, sans-serif; fill: #10222E; }
+      .b2aoL { font: 700 12px Inter, sans-serif; fill: #003B57; }
+      .b2aoL2 { font: 700 12px Inter, sans-serif; fill: #4A2E00; }
+      .b2aoX { font: 700 11px Inter, sans-serif; fill: #10222E; }
+      .b2aoN { font: 400 12px Inter, sans-serif; fill: #526472; }
+    </style>
+    <rect x="0" y="0" width="880" height="300" fill="#F7FBFD"/>
+    <text class="b2aoT" x="40" y="28">AND keeps only the double-shaded strip; OR keeps both boxes</text>
+
+    <rect x="140" y="46" width="340" height="160" rx="16" fill="#0F80CC" fill-opacity="0.16" stroke="#0F80CC" stroke-width="2"/>
+    <rect x="400" y="46" width="340" height="160" rx="16" fill="#F5A623" fill-opacity="0.20" stroke="#F5A623" stroke-width="2"/>
+
+    <text class="b2aoL" x="160" y="105">plan = 'Pro'</text>
+    <text class="b2aoL2" x="720" y="105" text-anchor="end">country = 'USA'</text>
+
+    <text class="b2aoX" x="440" y="152" text-anchor="middle">AND</text>
+    <text class="b2aoX" x="440" y="168" text-anchor="middle">kept</text>
+
+    <text class="b2aoN" x="40" y="258">AND: plan = 'Pro' and country = 'USA' - the narrow strip, fewer rows.</text>
+    <text class="b2aoN" x="40" y="278">OR (Part 2's other query): country = 'Canada' OR country = 'UK' keeps the union, more rows.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - AND narrows to the overlap, OR widens to the union</figcaption>
+</figure>
+<table class="clean">
       <thead><tr><th>Connector</th><th>Row is kept when...</th><th>Plain-English read</th></tr></thead>
       <tbody>
         <tr><td><strong>AND</strong></td><td>both tests are true</td><td>"Pro <em>and</em> in the USA" - stricter, fewer rows</td></tr>
@@ -247,6 +274,33 @@ WHERE roast IS NULL;</pre>
         <div class="callout example">
           <span class="ex-pill">Real world</span>
           <p><strong>Why <code>= NULL</code> silently returns nothing.</strong> <code>NULL</code> means "unknown", and in SQL anything compared to unknown is itself unknown - never true. So <code>roast = NULL</code> is never true for any row and quietly returns zero rows, no error. Teams have shipped reports that "found no missing data" for months because of exactly this. Always use <code>IS NULL</code> and <code>IS NOT NULL</code>.</p>
+<figure class="zoomable">
+  <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A before-and-after comparison of filtering for missing values: WHERE roast = NULL always returns zero rows because NULL compared to NULL is unknown, while WHERE roast IS NULL correctly matches the Equipment and Add-on products that store NULL in the roast column.">
+    <style>
+      .b2nlH { font: 700 13px Inter, sans-serif; }
+      .b2nlB { font: 400 12.5px Inter, sans-serif; fill: #10222E; }
+      .b2nlN { font: 400 12px Inter, sans-serif; fill: #526472; }
+    </style>
+    <rect x="0" y="0" width="880" height="300" fill="#F7FBFD"/>
+
+    <rect x="40" y="50" width="390" height="180" rx="12" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="2"/>
+    <text class="b2nlH" x="58" y="84" fill="#991B1B">✗ roast = NULL</text>
+    <text class="b2nlB" x="58" y="114">NULL compared to NULL is unknown</text>
+    <text class="b2nlB" x="58" y="134">Row is never counted as true</text>
+    <text class="b2nlB" x="58" y="154">Returns zero rows - no error, ever</text>
+
+    <rect x="450" y="50" width="390" height="180" rx="12" fill="#E9F4FB" stroke="#0F80CC" stroke-width="2"/>
+    <text class="b2nlH" x="468" y="84" fill="#003B57">✓ roast IS NULL</text>
+    <text class="b2nlB" x="468" y="114">Checks for a missing value directly</text>
+    <text class="b2nlB" x="468" y="134">Matches Equipment and Add-on rows</text>
+    <text class="b2nlB" x="468" y="154">Coffee rows (with a roast) are skipped</text>
+
+    <text class="b2nlN" x="40" y="256">roast = NULL silently returns zero rows every time - never an error, just nothing.</text>
+    <text class="b2nlN" x="40" y="276">Only Coffee products carry a roast; Equipment and Add-on store NULL - IS NULL finds them.</text>
+  </svg>
+  <figcaption>🔍 Click to zoom - roast = NULL always fails silently; roast IS NULL finds the gap</figcaption>
+</figure>
+
         </div>
       </div>
     </details>
