@@ -123,6 +123,74 @@ WHERE cancel_date IS NULL;</pre>
     </div>
     <p class="lede">The most common dashboard confusion is one word carrying two definitions. "Subscribers" can mean everyone who ever subscribed, or only those active right now - and a dashboard can show both on different tiles, each true. The trap is a denominator game: the word stays the same while the population underneath quietly changes.</p>
 
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The ten-row subscriptions table produces two true subscriber counts. Counting every row gives all_subs equals 10. Adding WHERE cancel_date IS NULL drops the two cancelled subscriptions, numbers 2 and 5, giving active_subs equals 8. Same word subscribers, two populations.">
+        <style>
+          .a4sH { font: 700 11px Inter, sans-serif; fill: #FFFFFF; }
+          .a4sR { font: 400 11px Inter, sans-serif; fill: #10222E; }
+          .a4sD { font: 400 11px Inter, sans-serif; fill: #991B1B; }
+          .a4sT { font: 700 12px Inter, sans-serif; fill: #003B57; }
+          .a4sQ { font: 600 12px "SF Mono", Menlo, monospace; fill: #CDE7F5; }
+          .a4sBig { font: 800 24px Inter, sans-serif; fill: #003B57; }
+          .a4sX { font: 400 11.5px Inter, sans-serif; fill: #526472; }
+          .a4sN { font: 400 12px Inter, sans-serif; fill: #526472; }
+          .a4sArr { stroke: #0F80CC; stroke-width: 2.5; fill: none; marker-end: url(#a4sAh); }
+        </style>
+        <defs>
+          <marker id="a4sAh" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#0F80CC" stroke-width="1.6"/>
+          </marker>
+        </defs>
+        <text class="a4sT" x="40" y="52">subscriptions - all 10 rows</text>
+        <rect x="40" y="62" width="180" height="18" fill="#003B57"/>
+        <text class="a4sH" x="48" y="75">sub_id</text><text class="a4sH" x="110" y="75">cancel_date</text>
+        <rect x="40" y="80" width="180" height="18" fill="#E9F4FB"/>
+        <text class="a4sR" x="48" y="93">1</text><text class="a4sR" x="110" y="93">NULL</text>
+        <rect x="40" y="98" width="180" height="18" fill="#FEF2F2"/>
+        <text class="a4sD" x="48" y="111">2</text><text class="a4sD" x="110" y="111">2026-03-10</text>
+        <rect x="40" y="116" width="180" height="18" fill="#E9F4FB"/>
+        <text class="a4sR" x="48" y="129">3</text><text class="a4sR" x="110" y="129">NULL</text>
+        <rect x="40" y="134" width="180" height="18" fill="#FFFFFF"/>
+        <text class="a4sR" x="48" y="147">4</text><text class="a4sR" x="110" y="147">NULL</text>
+        <rect x="40" y="152" width="180" height="18" fill="#FEF2F2"/>
+        <text class="a4sD" x="48" y="165">5</text><text class="a4sD" x="110" y="165">2026-04-02</text>
+        <rect x="40" y="170" width="180" height="18" fill="#E9F4FB"/>
+        <text class="a4sR" x="48" y="183">6</text><text class="a4sR" x="110" y="183">NULL</text>
+        <rect x="40" y="188" width="180" height="18" fill="#FFFFFF"/>
+        <text class="a4sR" x="48" y="201">7</text><text class="a4sR" x="110" y="201">NULL</text>
+        <rect x="40" y="206" width="180" height="18" fill="#E9F4FB"/>
+        <text class="a4sR" x="48" y="219">8</text><text class="a4sR" x="110" y="219">NULL</text>
+        <rect x="40" y="224" width="180" height="18" fill="#FFFFFF"/>
+        <text class="a4sR" x="48" y="237">9</text><text class="a4sR" x="110" y="237">NULL</text>
+        <rect x="40" y="242" width="180" height="18" fill="#E9F4FB"/>
+        <text class="a4sR" x="48" y="255">10</text><text class="a4sR" x="110" y="255">NULL</text>
+
+        <line class="a4sArr" x1="226" y1="120" x2="290" y2="104"/>
+        <line class="a4sArr" x1="226" y1="210" x2="290" y2="226"/>
+
+        <rect x="300" y="70" width="270" height="68" rx="10" fill="#0F80CC"/>
+        <text class="a4sQ" x="314" y="94">SELECT COUNT(*)</text>
+        <text class="a4sQ" x="314" y="112">FROM subscriptions WHERE</text>
+        <text class="a4sQ" x="314" y="130">cancel_date IS NULL;</text>
+        <rect x="300" y="196" width="270" height="52" rx="10" fill="#003B57"/>
+        <text class="a4sQ" x="314" y="220">SELECT COUNT(*)</text>
+        <text class="a4sQ" x="314" y="238">FROM subscriptions;</text>
+
+        <line class="a4sArr" x1="574" y1="104" x2="626" y2="104"/>
+        <line class="a4sArr" x1="574" y1="222" x2="626" y2="222"/>
+
+        <text class="a4sBig" x="640" y="112">8</text>
+        <text class="a4sT" x="662" y="106">active_subs</text>
+        <text class="a4sX" x="640" y="132">rows 2 and 5 drop out</text>
+        <text class="a4sBig" x="640" y="230">10</text>
+        <text class="a4sT" x="682" y="224">all_subs</text>
+        <text class="a4sX" x="640" y="250">cancelled ones count too</text>
+
+        <text class="a4sN" x="40" y="308">Same table, same word on the slide. NULL means "never cancelled", so the WHERE line is the entire definition of "active".</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - "subscribers" is 8 or 10 depending on one WHERE line</figcaption>
+    </figure>
+
     <details class="card">
       <summary><span class="mode live">Live</span>"Subscribers", version one: active only<span class="mini">2 min</span><span class="caret">▶</span></summary>
       <div class="body">
@@ -163,6 +231,55 @@ FROM subscriptions;</pre>
       <summary><span class="mode live">Live</span>A cohort view: new customers per signup month<span class="mini">3 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>This groups customers into monthly cohorts by their signup month. Read it: "count new customers, per signup month, in date order." <code>substr(signup_date,1,7)</code> just keeps the year and month, like 2026-03. Run it - this is a cohort view, and it tells a different story than a single "total customers" snapshot tile would.</p>
+
+        <figure class="zoomable">
+          <svg viewBox="0 0 880 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A snapshot tile saying 15 customers next to the cohort view of the same 15 people: new customers per signup month are 1 in 2025-11, 1 in 2025-12, then 3 in each of 2026-01, 2026-02 and 2026-03, then 2 in 2026-04 and 2 in 2026-05. The snapshot hides that signups plateaued at 3 and then eased to 2.">
+            <style>
+              .a4cT { font: 700 12px Inter, sans-serif; fill: #003B57; }
+              .a4cW { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+              .a4cBig { font: 800 34px Inter, sans-serif; fill: #FFFFFF; }
+              .a4cV { font: 700 12px Inter, sans-serif; fill: #003B57; }
+              .a4cM { font: 600 10.5px Inter, sans-serif; fill: #526472; }
+              .a4cX { font: 400 11.5px Inter, sans-serif; fill: #526472; }
+              .a4cN { font: 400 12px Inter, sans-serif; fill: #526472; }
+            </style>
+            <text class="a4cT" x="40" y="46">The snapshot tile</text>
+            <rect x="40" y="58" width="190" height="120" rx="14" fill="#003B57"/>
+            <text class="a4cW" x="60" y="90">Customers</text>
+            <text class="a4cBig" x="60" y="140">15</text>
+            <text class="a4cX" x="40" y="204">one number, right now -</text>
+            <text class="a4cX" x="40" y="222">no story of when they came</text>
+
+            <text class="a4cT" x="310" y="46">The cohort view: the same 15 customers, per signup month</text>
+            <text class="a4cV" x="334" y="176" text-anchor="middle">1</text>
+            <rect x="310" y="184" width="48" height="30" rx="4" fill="#9FCFEE"/>
+            <text class="a4cM" x="334" y="234" text-anchor="middle">2025-11</text>
+            <text class="a4cV" x="410" y="176" text-anchor="middle">1</text>
+            <rect x="386" y="184" width="48" height="30" rx="4" fill="#9FCFEE"/>
+            <text class="a4cM" x="410" y="234" text-anchor="middle">2025-12</text>
+            <text class="a4cV" x="486" y="116" text-anchor="middle">3</text>
+            <rect x="462" y="124" width="48" height="90" rx="4" fill="#0F80CC"/>
+            <text class="a4cM" x="486" y="234" text-anchor="middle">2026-01</text>
+            <text class="a4cV" x="562" y="116" text-anchor="middle">3</text>
+            <rect x="538" y="124" width="48" height="90" rx="4" fill="#0F80CC"/>
+            <text class="a4cM" x="562" y="234" text-anchor="middle">2026-02</text>
+            <text class="a4cV" x="638" y="116" text-anchor="middle">3</text>
+            <rect x="614" y="124" width="48" height="90" rx="4" fill="#0F80CC"/>
+            <text class="a4cM" x="638" y="234" text-anchor="middle">2026-03</text>
+            <text class="a4cV" x="714" y="146" text-anchor="middle">2</text>
+            <rect x="690" y="154" width="48" height="60" rx="4" fill="#3DA0E3"/>
+            <text class="a4cM" x="714" y="234" text-anchor="middle">2026-04</text>
+            <text class="a4cV" x="790" y="146" text-anchor="middle">2</text>
+            <rect x="766" y="154" width="48" height="60" rx="4" fill="#3DA0E3"/>
+            <text class="a4cM" x="790" y="234" text-anchor="middle">2026-05</text>
+            <line x1="310" y1="214" x2="838" y2="214" stroke="#E1E9EF" stroke-width="2"/>
+
+            <text class="a4cN" x="40" y="266">substr(signup_date, 1, 7) keeps just "2026-03", so GROUP BY buckets people by joining month. Both views count</text>
+            <text class="a4cN" x="40" y="284">the same 15 people; only the cohort view shows signups plateauing at 3 and easing to 2.</text>
+          </svg>
+          <figcaption>🔍 Click to zoom - the snapshot says 15, the cohort view says the pace changed</figcaption>
+        </figure>
+
         <div class="sqlbox" data-caption="A cohort: new customers grouped by the month they joined - not one snapshot number.">
           <pre class="sql-src">SELECT substr(signup_date, 1, 7) AS cohort,
        COUNT(*) AS new_customers

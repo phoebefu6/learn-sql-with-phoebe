@@ -151,6 +151,63 @@
       <summary><span class="mode live">Live</span>Even "how many customers" needs a definition<span class="mini">4 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>Watch how quickly a simple count forks. The query below counts every row in the customer table, split by plan. Read it: "give me plan and a count of customers, from customers, grouped by plan." Run it and you will see two groups, Basic and Pro. But now ask the real question: when the board says "how many customers do we have", do they mean all 15 signups here - or only the paying ones, or only those who ordered recently? The number changes with the definition, and the query has to change with it.</p>
+
+        <figure class="zoomable">
+          <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The fifteen customer rows pass through GROUP BY plan and come out as two summary rows: Basic 7 and Pro 8. Underneath, the same board question 'how many customers' forks into three different definitions - all signups, paying only, ordered recently - each a different query and a different number.">
+            <style>
+              .a5dH { font: 700 11px Inter, sans-serif; fill: #FFFFFF; }
+              .a5dR { font: 400 11px Inter, sans-serif; fill: #10222E; }
+              .a5dT { font: 700 12px Inter, sans-serif; fill: #003B57; }
+              .a5dQ { font: 600 12px "SF Mono", Menlo, monospace; fill: #CDE7F5; }
+              .a5dB { font: 700 12px Inter, sans-serif; fill: #10222E; }
+              .a5dX { font: 400 11.5px Inter, sans-serif; fill: #526472; }
+              .a5dN { font: 400 12px Inter, sans-serif; fill: #526472; }
+              .a5dArr { stroke: #0F80CC; stroke-width: 2.5; fill: none; marker-end: url(#a5dAh); }
+            </style>
+            <defs>
+              <marker id="a5dAh" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6" fill="none" stroke="#0F80CC" stroke-width="1.6"/>
+              </marker>
+            </defs>
+            <text class="a5dT" x="40" y="52">customers - 15 rows</text>
+            <rect x="40" y="62" width="200" height="20" fill="#003B57"/>
+            <text class="a5dH" x="48" y="76">name</text><text class="a5dH" x="180" y="76">plan</text>
+            <rect x="40" y="82" width="200" height="20" fill="#E9F4FB"/>
+            <text class="a5dR" x="48" y="96">Ava Chen</text><text class="a5dR" x="180" y="96">Pro</text>
+            <rect x="40" y="102" width="200" height="20" fill="#FFFFFF"/>
+            <text class="a5dR" x="48" y="116">Liam Ford</text><text class="a5dR" x="180" y="116">Basic</text>
+            <rect x="40" y="122" width="200" height="20" fill="#E9F4FB"/>
+            <text class="a5dR" x="48" y="136">Noah Park</text><text class="a5dR" x="180" y="136">Pro</text>
+            <rect x="40" y="142" width="200" height="20" fill="#FFFFFF"/>
+            <text class="a5dR" x="48" y="156">Mia Wong</text><text class="a5dR" x="180" y="156">Basic</text>
+            <rect x="40" y="162" width="200" height="20" fill="#E9F4FB"/>
+            <text class="a5dR" x="48" y="176">Ethan Ruiz</text><text class="a5dR" x="180" y="176">Pro</text>
+            <text class="a5dX" x="40" y="200">… 10 more rows</text>
+
+            <rect x="300" y="96" width="170" height="52" rx="10" fill="#003B57"/>
+            <text class="a5dQ" x="314" y="118">GROUP BY</text>
+            <text class="a5dQ" x="314" y="136">plan</text>
+            <line class="a5dArr" x1="246" y1="122" x2="296" y2="122"/>
+            <line class="a5dArr" x1="474" y1="122" x2="524" y2="122"/>
+
+            <text class="a5dT" x="534" y="52">one row per plan</text>
+            <rect x="534" y="62" width="180" height="20" fill="#0F80CC"/>
+            <text class="a5dH" x="542" y="76">plan</text><text class="a5dH" x="630" y="76">customers</text>
+            <rect x="534" y="82" width="180" height="20" fill="#E9F4FB"/>
+            <text class="a5dR" x="542" y="96">Basic</text><text class="a5dB" x="630" y="96">7</text>
+            <rect x="534" y="102" width="180" height="20" fill="#FFFFFF"/>
+            <text class="a5dR" x="542" y="116">Pro</text><text class="a5dB" x="630" y="116">8</text>
+            <text class="a5dX" x="534" y="146">7 + 8 = all 15 signups</text>
+
+            <text class="a5dX" x="534" y="180">But "customers" could mean:</text>
+            <text class="a5dX" x="534" y="198">all signups · paying only ·</text>
+            <text class="a5dX" x="534" y="216">ordered recently - 3 queries</text>
+
+            <text class="a5dN" x="40" y="268">The split is honest: 7 Basic + 8 Pro = 15. Whether 15 is "our customers" is a definition the leader must pin first.</text>
+          </svg>
+          <figcaption>🔍 Click to zoom - the count is easy, the definition of "customer" is the decision</figcaption>
+        </figure>
+
         <div class="sqlbox" data-caption="A count is never just a count. 'How many customers' hides a definition you must pin down.">
           <pre class="sql-src">SELECT plan, COUNT(*) AS customers
 FROM customers
@@ -199,6 +256,35 @@ GROUP BY plan;</pre>
       <div class="step"><p><strong>Batch and give lead time.</strong> Send five questions together with a real deadline, not five pings across a morning marked urgent. Context-switching is the hidden tax on a data team.</p></div>
       <div class="step"><p><strong>Bring the definition, not just the ask.</strong> "Just pull the numbers" makes the analyst guess your intent. The five-field request removes the guessing and gets you the right cut first time.</p></div>
     </div>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two versions of the same revenue request side by side. The vague version, can you pull our revenue by country, bounced twice - refunds were included, then calendar months were used instead of weeks - costing two days of rework. The five-field version names completed revenue with refunds excluded, per country per week, last 6 months versus prior period, and came back right in twenty minutes.">
+        <style>
+          .a5rA { font: 700 13px Inter, sans-serif; fill: #991B1B; }
+          .a5rB { font: 700 13px Inter, sans-serif; fill: #003B57; }
+          .a5rX { font: 400 12px Inter, sans-serif; fill: #10222E; }
+          .a5rN { font: 400 12px Inter, sans-serif; fill: #526472; }
+        </style>
+        <rect x="40" y="50" width="390" height="200" rx="12" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1.5"/>
+        <text class="a5rA" x="58" y="84">✗ "Can you pull our revenue?"</text>
+        <text class="a5rX" x="58" y="114">The analyst guesses every missing field.</text>
+        <text class="a5rX" x="58" y="136">Bounce 1: refunds were included.</text>
+        <text class="a5rX" x="58" y="158">Bounce 2: calendar months, not weeks.</text>
+        <text class="a5rX" x="58" y="180">Version three finally matches the intent.</text>
+        <text class="a5rA" x="58" y="222">Cost: two full days of rework</text>
+
+        <rect x="450" y="50" width="390" height="200" rx="12" fill="#E9F4FB" stroke="#0F80CC" stroke-width="1.5"/>
+        <text class="a5rB" x="468" y="84">✓ The same ask, five fields named</text>
+        <text class="a5rX" x="468" y="114">Metric: completed revenue, refunds excluded.</text>
+        <text class="a5rX" x="468" y="136">Grain: per country, per week.</text>
+        <text class="a5rX" x="468" y="158">Timeframe: last 6 months, vs prior period.</text>
+        <text class="a5rX" x="468" y="180">Nothing left for the analyst to guess.</text>
+        <text class="a5rB" x="468" y="222">Right in twenty minutes</text>
+
+        <text class="a5rN" x="40" y="288">The fields did not slow the ask down. The vague version was the slow one - it just moved the delay to rework.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the vague ask bounced twice; the five-field ask was right first time</figcaption>
+    </figure>
 
     <table class="clean">
       <thead>

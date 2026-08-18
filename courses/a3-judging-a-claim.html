@@ -69,6 +69,37 @@
       <summary><span class="mode live">Live</span>Customers, per country<span class="mini">3 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>Read it first: "count of customers, per country, biggest first." The <code>GROUP BY country</code> is the granularity; the <code>ORDER BY ... DESC</code> just sorts the summary. Run it, then ask: would a headline of "we serve five countries" have told you the same thing? It would have hidden that the count is lopsided.</p>
+
+        <figure class="zoomable">
+          <svg viewBox="0 0 880 296" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bar chart of the query's result: customers per country, biggest first. USA has 8 of the 15 customers, Canada 3, Germany 2, UK 1 and Singapore 1. The headline 'we serve five countries' is true and hides that more than half the customers sit in one of them.">
+            <style>
+              .a3gT { font: 700 13px Inter, sans-serif; fill: #10222E; }
+              .a3gL { font: 600 12px Inter, sans-serif; fill: #10222E; }
+              .a3gV { font: 700 12px Inter, sans-serif; fill: #003B57; }
+              .a3gI { font: 700 12px Inter, sans-serif; fill: #FFFFFF; }
+              .a3gN { font: 400 12px Inter, sans-serif; fill: #526472; }
+            </style>
+            <text class="a3gT" x="40" y="36">GROUP BY country: one row per country, its own COUNT(*) - 15 customers total</text>
+            <text class="a3gL" x="170" y="88" text-anchor="end">USA</text>
+            <rect x="180" y="70" width="560" height="26" rx="5" fill="#0F80CC"/>
+            <text class="a3gI" x="192" y="88">8 customers</text>
+            <text class="a3gL" x="170" y="128" text-anchor="end">Canada</text>
+            <rect x="180" y="110" width="210" height="26" rx="5" fill="#3DA0E3"/>
+            <text class="a3gV" x="400" y="128">3</text>
+            <text class="a3gL" x="170" y="168" text-anchor="end">Germany</text>
+            <rect x="180" y="150" width="140" height="26" rx="5" fill="#3DA0E3"/>
+            <text class="a3gV" x="330" y="168">2</text>
+            <text class="a3gL" x="170" y="208" text-anchor="end">UK</text>
+            <rect x="180" y="190" width="70" height="26" rx="5" fill="#9FCFEE"/>
+            <text class="a3gV" x="260" y="208">1</text>
+            <text class="a3gL" x="170" y="248" text-anchor="end">Singapore</text>
+            <rect x="180" y="230" width="70" height="26" rx="5" fill="#9FCFEE"/>
+            <text class="a3gV" x="260" y="248">1</text>
+            <text class="a3gN" x="40" y="284">"We serve five countries" is true - and 8 of 15 customers sit in one of them. The grain exposes what the total hides.</text>
+          </svg>
+          <figcaption>🔍 Click to zoom - five countries is true, lopsided is the story</figcaption>
+        </figure>
+
         <div class="sqlbox" data-caption="GROUP BY country sets the granularity: one row per country, its own count.">
           <pre class="sql-src">SELECT country, COUNT(*) AS customers
 FROM customers
@@ -107,6 +138,48 @@ ORDER BY customers DESC;</pre>
       <summary><span class="mode live">Live</span>Three summaries of the same price column<span class="mini">3 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>Read it: "how many products, the average price rounded to cents, and the highest price." Run it. The catalog has coffee bags around $15-22 and one Cold Brew Kit at $34. Watch how the average lands in the middle and says nothing about that top-end outlier - a leader who only saw "average price" would never guess a $34 item existed.</p>
+
+        <figure class="zoomable">
+          <svg viewBox="0 0 880 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The eight product prices drawn as bars from Cold Brew Kit at thirty-four dollars down to Oat Milk Pods at nine, with the query's average of 19.88 dollars drawn as a vertical line cutting across them. The average sits in the middle of the coffee bags and says nothing about the thirty-four dollar outlier above it.">
+            <style>
+              .a3vT { font: 700 13px Inter, sans-serif; fill: #10222E; }
+              .a3vL { font: 600 11px Inter, sans-serif; fill: #10222E; }
+              .a3vV { font: 700 11px Inter, sans-serif; fill: #003B57; }
+              .a3vA { font: 700 12px Inter, sans-serif; fill: #4A2E00; }
+              .a3vN { font: 400 12px Inter, sans-serif; fill: #526472; }
+            </style>
+            <text class="a3vT" x="40" y="34">8 prices, one average: AVG(price) = 19.88, MAX = 34.00</text>
+            <text class="a3vL" x="250" y="88" text-anchor="end">Cold Brew Kit</text>
+            <rect x="260" y="74" width="480" height="18" rx="4" fill="#F5A623"/>
+            <text class="a3vV" x="750" y="88">34.00</text>
+            <text class="a3vL" x="250" y="114" text-anchor="end">Ceramic Dripper</text>
+            <rect x="260" y="100" width="395" height="18" rx="4" fill="#3DA0E3"/>
+            <text class="a3vV" x="665" y="114">28.00</text>
+            <text class="a3vL" x="250" y="140" text-anchor="end">Single-Origin Ethiopia</text>
+            <rect x="260" y="126" width="311" height="18" rx="4" fill="#3DA0E3"/>
+            <text class="a3vV" x="581" y="140">22.00</text>
+            <text class="a3vL" x="250" y="166" text-anchor="end">Midnight Espresso</text>
+            <rect x="260" y="152" width="254" height="18" rx="4" fill="#3DA0E3"/>
+            <text class="a3vV" x="506" y="166" text-anchor="end">18.00</text>
+            <text class="a3vL" x="250" y="192" text-anchor="end">House Decaf Beans</text>
+            <rect x="260" y="178" width="240" height="18" rx="4" fill="#3DA0E3"/>
+            <text class="a3vV" x="492" y="192" text-anchor="end">17.00</text>
+            <text class="a3vL" x="250" y="218" text-anchor="end">Sunrise Blend</text>
+            <rect x="260" y="204" width="226" height="18" rx="4" fill="#3DA0E3"/>
+            <text class="a3vV" x="496" y="218">16.00</text>
+            <text class="a3vL" x="250" y="244" text-anchor="end">Decaf Calm</text>
+            <rect x="260" y="230" width="212" height="18" rx="4" fill="#3DA0E3"/>
+            <text class="a3vV" x="482" y="244">15.00</text>
+            <text class="a3vL" x="250" y="270" text-anchor="end">Oat Milk Pods</text>
+            <rect x="260" y="256" width="127" height="18" rx="4" fill="#9FCFEE"/>
+            <text class="a3vV" x="397" y="270">9.00</text>
+            <line x1="541" y1="52" x2="541" y2="280" stroke="#F5A623" stroke-width="2.5" stroke-dasharray="6 4"/>
+            <text class="a3vA" x="551" y="62">AVG = 19.88</text>
+            <text class="a3vN" x="40" y="308">The mean lands between the coffee bags. Anyone shown only "avg price 19.88" never learns a 34.00 item exists.</text>
+          </svg>
+          <figcaption>🔍 Click to zoom - the average sits where no product is, and hides the outlier</figcaption>
+        </figure>
+
         <div class="sqlbox" data-caption="COUNT, AVG and MAX from one column - three different truths.">
           <pre class="sql-src">SELECT COUNT(*) AS products,
        ROUND(AVG(price), 2) AS avg_price,
