@@ -60,6 +60,49 @@
       <h2>How this track works</h2>
     </div>
     <p class="lede">Six sessions that turn "SQL" from a black box your data team owns into something you can reason about. You will not write queries for a living - you will learn to <strong>read</strong> them, spot when a number is being computed in a misleading way, and ask an analyst for exactly the right cut of data. The examples all run against one small database, <strong>Daybreak</strong>, a coffee-subscription brand - and yes, a few live queries appear so you can see with your own eyes that SQL is less mysterious than it looks.</p>
+<figure class="zoomable">
+        <svg viewBox="0 0 880 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="An iceberg diagram. Above the waterline, the small visible part: a single number on a dashboard, 4,182 dollars, average order value. Below the waterline, the much larger hidden mass that produced it: which table the rows came from, which rows were filtered out, how the joins matched records, whether nulls were counted or skipped, and which date range was chosen. The caption states that every metric on every dashboard is a question someone wrote in SQL, and this track teaches you to read the part under the water.">
+        <style>
+          .a1ibT { font: 700 13px Inter, sans-serif; fill: #10222E; }
+          .a1ibN { font: 800 30px Inter, sans-serif; fill: #003B57; font-variant-numeric: tabular-nums; }
+          .a1ibK { font: 700 10.5px Inter, sans-serif; fill: #526472; letter-spacing: .1em; }
+          .a1ibW { font: 700 11px Inter, sans-serif; fill: #0F80CC; letter-spacing: .12em; }
+          .a1ibL { font: 600 13px Inter, sans-serif; fill: #FFFFFF; }
+          .a1ibS { font: 400 11.5px Inter, sans-serif; fill: #E9F4FB; }
+          .a1ibNote { font: 400 12px Inter, sans-serif; fill: #526472; }
+        </style>
+        <rect x="0" y="0" width="880" height="400" fill="#E9F4FB"/>
+        <text class="a1ibT" x="40" y="28">What leadership sees, and what actually produced it</text>
+
+        <rect x="330" y="46" width="220" height="66" rx="10" fill="#FFFFFF" stroke="#AEC4D2"/>
+        <text class="a1ibK" x="346" y="66">AVERAGE ORDER VALUE</text>
+        <text class="a1ibN" x="346" y="98">$4,182</text>
+
+        <line x1="40" y1="132" x2="840" y2="132" stroke="#0F80CC" stroke-width="2.5"/>
+        <text class="a1ibW" x="40" y="124">THE DASHBOARD</text>
+        <text class="a1ibW" x="840" y="150" text-anchor="end">THE QUERY UNDERNEATH</text>
+
+        <rect x="150" y="164" width="580" height="40" rx="8" fill="#3DA0E3"/>
+        <text class="a1ibL" x="168" y="182">Which table did the rows come from?</text>
+        <text class="a1ibS" x="168" y="197">orders, or orders joined to subscriptions - a different denominator either way</text>
+
+        <rect x="130" y="212" width="620" height="40" rx="8" fill="#1E7FBF"/>
+        <text class="a1ibL" x="148" y="230">Which rows were filtered out?</text>
+        <text class="a1ibS" x="148" y="245">refunds, test accounts, the free tier - each one moves the average</text>
+
+        <rect x="110" y="260" width="660" height="40" rx="8" fill="#12628F"/>
+        <text class="a1ibL" x="128" y="278">Were empty values counted or skipped?</text>
+        <text class="a1ibS" x="128" y="293">a skipped null shrinks the denominator and quietly lifts the number</text>
+
+        <rect x="90" y="308" width="700" height="40" rx="8" fill="#003B57"/>
+        <text class="a1ibL" x="108" y="326">Which date range, and who chose it?</text>
+        <text class="a1ibS" x="108" y="341">last 30 days, last quarter, or since launch - three different stories</text>
+
+        <text class="a1ibNote" x="40" y="378">Every metric on every dashboard is a question someone wrote in SQL. This track teaches you to read the part under the water.</text>
+        </svg>
+        <figcaption>🔍 Click to zoom - the number is the tip; the judgment lives underneath</figcaption>
+      </figure>
+
     <div class="legend">
       <span class="pill solid">Live - discussed in session</span>
       <span class="pill light">Self-study - read after</span>
@@ -79,6 +122,55 @@
       <h2>A database is just organized tables <span class="tag concept">7 min live</span></h2>
     </div>
     <p class="lede">Strip away the jargon and a database is a set of <strong>tables</strong> - spreadsheets with discipline. One table for customers, one for orders, one for products. SQL (Structured Query Language) is the plain-ish way people ask those tables questions: "which columns, from which table, matching which rules". That is the entire idea, and it has run the business world for 50 years.</p>
+<figure class="zoomable">
+        <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A bento grid of the Daybreak coffee-subscription database. A large hero cell shows the customers table with the columns customer id, name, city and signed-up date. A second cell shows the orders table with order id, customer id, product id, quantity and order date. A third shows the products table with product id, name, roast and unit price. A fourth narrow cell states the one rule that makes them a database rather than three spreadsheets: the repeated customer id column is what lets a question span two tables.">
+        <style>
+          .a1bnT { font: 700 13px Inter, sans-serif; fill: #10222E; }
+          .a1bnH { font: 800 14px Inter, sans-serif; fill: #FFFFFF; }
+          .a1bnC { font: 400 12px Inter, sans-serif; fill: #10222E; }
+          .a1bnK { font: 700 10px Inter, sans-serif; fill: #526472; letter-spacing: .1em; }
+          .a1bnJ { font: 700 12px Inter, sans-serif; fill: #4A2E00; }
+          .a1bnX { font: 400 11.5px Inter, sans-serif; fill: #526472; }
+          .a1bnNote { font: 400 12px Inter, sans-serif; fill: #526472; }
+        </style>
+        <rect x="0" y="0" width="880" height="340" fill="#FFFFFF"/>
+        <text class="a1bnT" x="40" y="28">The Daybreak database: three tables, one shared column</text>
+
+        <rect x="40" y="44" width="360" height="150" rx="12" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <rect x="40" y="44" width="360" height="32" rx="12" fill="#003B57"/>
+        <rect x="40" y="64" width="360" height="12" fill="#003B57"/>
+        <text class="a1bnH" x="58" y="66">customers</text>
+        <text class="a1bnK" x="58" y="98">COLUMNS</text>
+        <text class="a1bnC" x="58" y="120">customer_id</text>
+        <text class="a1bnC" x="58" y="142">name</text>
+        <text class="a1bnC" x="58" y="164">city</text>
+        <text class="a1bnC" x="58" y="186">signed_up</text>
+        <text class="a1bnX" x="210" y="120">the shared key</text>
+        <text class="a1bnX" x="210" y="142">who they are</text>
+        <text class="a1bnX" x="210" y="164">where they are</text>
+        <text class="a1bnX" x="210" y="186">when they joined</text>
+
+        <rect x="416" y="44" width="424" height="70" rx="12" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <rect x="416" y="44" width="424" height="30" rx="12" fill="#0F80CC"/>
+        <rect x="416" y="62" width="424" height="12" fill="#0F80CC"/>
+        <text class="a1bnH" x="434" y="65">orders</text>
+        <text class="a1bnC" x="434" y="98">order_id · customer_id · product_id · quantity · order_date</text>
+
+        <rect x="416" y="124" width="424" height="70" rx="12" fill="#E9F4FB" stroke="#9FCFEE"/>
+        <rect x="416" y="124" width="424" height="30" rx="12" fill="#3DA0E3"/>
+        <rect x="416" y="142" width="424" height="12" fill="#3DA0E3"/>
+        <text class="a1bnH" x="434" y="145">products</text>
+        <text class="a1bnC" x="434" y="178">product_id · name · roast · unit_price</text>
+
+        <rect x="40" y="212" width="800" height="60" rx="12" fill="#FEF3E0" stroke="#F5A623" stroke-width="1.6"/>
+        <text class="a1bnJ" x="60" y="238">The one rule that makes this a database and not three spreadsheets</text>
+        <text class="a1bnX" x="60" y="258">customer_id appears in two tables. That repetition is what lets a single question reach across both.</text>
+
+        <text class="a1bnNote" x="40" y="306">Spreadsheets with discipline: fixed columns, one subject per table, and a shared key to join them.</text>
+        </svg>
+        <figcaption>🔍 Click to zoom - the shared column is the whole trick</figcaption>
+      </figure>
+
 
     <figure class="zoomable">
       <svg viewBox="0 0 880 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A question in English becomes a SQL query becomes a table of answers">
@@ -323,6 +415,156 @@ ORDER BY price DESC;</pre>
       <h2>Read three queries as a group <span class="tag demo">★ 12 min · discuss together</span></h2>
     </div>
     <p class="lede">No code to write - just read each query aloud, agree on what it returns, then run it to check. The goal is fluency at reading, and catching the small words that change the meaning.</p>
+<figure class="zoomable">
+        <svg viewBox="0 0 880 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A reference sheet for reading a SQL query. Four columns cover the three anchor words plus the cap. SELECT asks which columns come back; FROM asks which table; ORDER BY asks in what order; LIMIT asks how many rows. Each column shows the question, a worked line of SQL against the Daybreak customers table, what comes back, and the trap that word hides. A summary table shows what you lose if each word is missing, and a four-step checklist gives the order to read a query aloud: which table, which columns, what order, how many rows.">
+        <style>
+          .a1csT { font: 700 13px Inter, sans-serif; fill: #10222E; }
+          .a1csS { font: 400 11px Inter, sans-serif; fill: #526472; }
+          .a1csK { font: 700 10px Inter, sans-serif; fill: #9FCFEE; letter-spacing: .12em; }
+          .a1csW { font: 800 14px Inter, sans-serif; fill: #FFFFFF; }
+          .a1csQ { font: 700 11.5px Inter, sans-serif; fill: #003B57; }
+          .a1csM { font: 600 10px "SF Mono", Menlo, monospace; fill: #CDE7F5; }
+          .a1csR { font: 600 10.5px Inter, sans-serif; fill: #003B57; }
+          .a1csTrapK { font: 700 10px Inter, sans-serif; fill: #4A2E00; letter-spacing: .1em; }
+          .a1csTrap { font: 400 11px Inter, sans-serif; fill: #526472; }
+          .a1csTH { font: 700 10px Inter, sans-serif; fill: #FFFFFF; letter-spacing: .1em; }
+          .a1csRW { font: 700 11px Inter, sans-serif; fill: #003B57; }
+          .a1csRR { font: 400 11px Inter, sans-serif; fill: #10222E; }
+          .a1csRD { font: 400 11px Inter, sans-serif; fill: #526472; }
+          .a1csCK { font: 700 10px Inter, sans-serif; fill: #526472; letter-spacing: .12em; }
+          .a1csCN { font: 700 10px Inter, sans-serif; fill: #4A2E00; }
+          .a1csCT { font: 400 11px Inter, sans-serif; fill: #10222E; }
+          .a1csN { font: 400 11px Inter, sans-serif; fill: #526472; }
+        </style>
+        <rect x="0" y="0" width="880" height="560" fill="#FFFFFF"/>
+        <text class="a1csT" x="40" y="26">Three anchor words, and the one that caps the answer</text>
+        <text class="a1csS" x="40" y="44">Read left to right and say each line out loud as a question. Whatever comes back is always a table.</text>
+
+        <!-- column 1: SELECT -->
+        <rect x="40" y="60" width="188" height="258" rx="12" fill="#FFFFFF" stroke="#E1E9EF"/>
+        <path d="M52 60 h164 a12 12 0 0 1 12 12 v22 h-188 v-22 a12 12 0 0 1 12 -12 z" fill="#003B57"/>
+        <text class="a1csK" x="54" y="82">01</text>
+        <text class="a1csW" x="80" y="83">SELECT</text>
+        <text class="a1csQ" x="54" y="116">Which columns</text>
+        <text class="a1csQ" x="54" y="130">come back?</text>
+        <rect x="54" y="138" width="160" height="56" rx="8" fill="#002233"/>
+        <text class="a1csM" x="66" y="158"><tspan fill="#F5A623">SELECT</tspan> name, city</text>
+        <text class="a1csM" x="66" y="172">FROM customers</text>
+        <rect x="54" y="202" width="160" height="22" rx="6" fill="#E9F4FB"/>
+        <text class="a1csR" x="62" y="217">2 columns, all 15 rows</text>
+        <line x1="54" y1="232" x2="214" y2="232" stroke="#E1E9EF" stroke-width="1"/>
+        <rect x="54" y="240" width="26" height="2.5" fill="#F5A623"/>
+        <text class="a1csTrapK" x="54" y="256">THE TRAP</text>
+        <text class="a1csTrap" x="54" y="272">SELECT * hides which</text>
+        <text class="a1csTrap" x="54" y="286">column the number on</text>
+        <text class="a1csTrap" x="54" y="300">the slide actually used.</text>
+
+        <!-- column 2: FROM -->
+        <rect x="244" y="60" width="188" height="258" rx="12" fill="#FFFFFF" stroke="#E1E9EF"/>
+        <path d="M256 60 h164 a12 12 0 0 1 12 12 v22 h-188 v-22 a12 12 0 0 1 12 -12 z" fill="#003B57"/>
+        <text class="a1csK" x="258" y="82">02</text>
+        <text class="a1csW" x="284" y="83">FROM</text>
+        <text class="a1csQ" x="258" y="116">Which table is</text>
+        <text class="a1csQ" x="258" y="130">this about?</text>
+        <rect x="258" y="138" width="160" height="56" rx="8" fill="#002233"/>
+        <text class="a1csM" x="270" y="158">SELECT name, city</text>
+        <text class="a1csM" x="270" y="172"><tspan fill="#F5A623">FROM</tspan> customers</text>
+        <rect x="258" y="202" width="160" height="22" rx="6" fill="#E9F4FB"/>
+        <text class="a1csR" x="266" y="217">15 rows to choose from</text>
+        <line x1="258" y1="232" x2="418" y2="232" stroke="#E1E9EF" stroke-width="1"/>
+        <rect x="258" y="240" width="26" height="2.5" fill="#F5A623"/>
+        <text class="a1csTrapK" x="258" y="256">THE TRAP</text>
+        <text class="a1csTrap" x="258" y="272">Wrong table, perfect</text>
+        <text class="a1csTrap" x="258" y="286">syntax. Nothing warns</text>
+        <text class="a1csTrap" x="258" y="300">you. The number runs.</text>
+
+        <!-- column 3: ORDER BY -->
+        <rect x="448" y="60" width="188" height="258" rx="12" fill="#FFFFFF" stroke="#E1E9EF"/>
+        <path d="M460 60 h164 a12 12 0 0 1 12 12 v22 h-188 v-22 a12 12 0 0 1 12 -12 z" fill="#003B57"/>
+        <text class="a1csK" x="462" y="82">03</text>
+        <text class="a1csW" x="488" y="83">ORDER BY</text>
+        <text class="a1csQ" x="462" y="116">In what order do</text>
+        <text class="a1csQ" x="462" y="130">the rows arrive?</text>
+        <rect x="462" y="138" width="160" height="56" rx="8" fill="#002233"/>
+        <text class="a1csM" x="474" y="158"><tspan fill="#F5A623">ORDER BY</tspan></text>
+        <text class="a1csM" x="474" y="172">  signup_date DESC</text>
+        <rect x="462" y="202" width="160" height="22" rx="6" fill="#E9F4FB"/>
+        <text class="a1csR" x="470" y="217">newest customer first</text>
+        <line x1="462" y1="232" x2="622" y2="232" stroke="#E1E9EF" stroke-width="1"/>
+        <rect x="462" y="240" width="26" height="2.5" fill="#F5A623"/>
+        <text class="a1csTrapK" x="462" y="256">THE TRAP</text>
+        <text class="a1csTrap" x="462" y="272">The order decides which</text>
+        <text class="a1csTrap" x="462" y="286">rows a cap keeps. Sort</text>
+        <text class="a1csTrap" x="462" y="300">first, then cut.</text>
+
+        <!-- column 4: LIMIT, the cap -->
+        <rect x="652" y="60" width="188" height="258" rx="12" fill="#FFFFFF" stroke="#E1E9EF"/>
+        <path d="M664 60 h164 a12 12 0 0 1 12 12 v22 h-188 v-22 a12 12 0 0 1 12 -12 z" fill="#003B57"/>
+        <text class="a1csK" x="666" y="82">CAP</text>
+        <text class="a1csW" x="700" y="83">LIMIT</text>
+        <text class="a1csQ" x="666" y="116">How many rows</text>
+        <text class="a1csQ" x="666" y="130">do I want to see?</text>
+        <rect x="666" y="138" width="160" height="56" rx="8" fill="#002233"/>
+        <text class="a1csM" x="678" y="158">SELECT name, city</text>
+        <text class="a1csM" x="678" y="172">FROM customers</text>
+        <text class="a1csM" x="678" y="186"><tspan fill="#F5A623">LIMIT</tspan> 5</text>
+        <rect x="666" y="202" width="160" height="22" rx="6" fill="#E9F4FB"/>
+        <text class="a1csR" x="674" y="217">5 rows of the 15</text>
+        <line x1="666" y1="232" x2="826" y2="232" stroke="#E1E9EF" stroke-width="1"/>
+        <rect x="666" y="240" width="26" height="2.5" fill="#F5A623"/>
+        <text class="a1csTrapK" x="666" y="256">THE TRAP</text>
+        <text class="a1csTrap" x="666" y="272">A capped list is not a</text>
+        <text class="a1csTrap" x="666" y="286">total. Never read a</text>
+        <text class="a1csTrap" x="666" y="300">LIMIT result as a sum.</text>
+
+        <!-- summary table -->
+        <text class="a1csQ" x="40" y="340">Take one word away and here is what you lose</text>
+        <rect x="40" y="350" width="800" height="26" rx="4" fill="#003B57"/>
+        <text class="a1csTH" x="52" y="367">WORD</text>
+        <text class="a1csTH" x="200" y="367">READS AS</text>
+        <text class="a1csTH" x="430" y="367">TAKE IT AWAY AND</text>
+
+        <rect x="40" y="376" width="800" height="26" fill="#F7FBFD"/>
+        <text class="a1csRW" x="52" y="393">SELECT</text>
+        <text class="a1csRR" x="200" y="393">"give me these columns"</text>
+        <text class="a1csRD" x="430" y="393">every column comes back and none of them is the point</text>
+
+        <rect x="40" y="402" width="800" height="26" fill="#FFFFFF"/>
+        <text class="a1csRW" x="52" y="419">FROM</text>
+        <text class="a1csRR" x="200" y="419">"from this table"</text>
+        <text class="a1csRD" x="430" y="419">there is no query at all, and no answer to audit</text>
+
+        <rect x="40" y="428" width="800" height="26" fill="#F7FBFD"/>
+        <text class="a1csRW" x="52" y="445">ORDER BY</text>
+        <text class="a1csRR" x="200" y="445">"sorted this way"</text>
+        <text class="a1csRD" x="430" y="445">the order is whatever the database felt like today</text>
+
+        <rect x="40" y="454" width="800" height="26" fill="#FFFFFF"/>
+        <text class="a1csRW" x="52" y="471">LIMIT</text>
+        <text class="a1csRR" x="200" y="471">"just this many rows"</text>
+        <text class="a1csRD" x="430" y="471">all 15 rows here, and all 33 million back at work</text>
+        <rect x="40" y="350" width="800" height="130" rx="4" fill="none" stroke="#E1E9EF"/>
+
+        <!-- checklist -->
+        <text class="a1csCK" x="40" y="506">SAY IT OUT LOUD IN THIS ORDER</text>
+        <circle cx="48" cy="520" r="8" fill="#FEF3E0" stroke="#F5A623"/>
+        <text class="a1csCN" x="45" y="524">1</text>
+        <text class="a1csCT" x="62" y="524">Which table?</text>
+        <circle cx="248" cy="520" r="8" fill="#FEF3E0" stroke="#F5A623"/>
+        <text class="a1csCN" x="245" y="524">2</text>
+        <text class="a1csCT" x="262" y="524">Which columns?</text>
+        <circle cx="458" cy="520" r="8" fill="#FEF3E0" stroke="#F5A623"/>
+        <text class="a1csCN" x="455" y="524">3</text>
+        <text class="a1csCT" x="472" y="524">What order?</text>
+        <circle cx="658" cy="520" r="8" fill="#FEF3E0" stroke="#F5A623"/>
+        <text class="a1csCN" x="655" y="524">4</text>
+        <text class="a1csCT" x="672" y="524">How many rows?</text>
+
+        <text class="a1csN" x="40" y="550">If someone hands you a single number, ask which table it came out of. That question is the whole leader track.</text>
+        </svg>
+        <figcaption>🔍 Click to zoom - the reference sheet to keep open during the group read</figcaption>
+      </figure>
+
 
     <div class="steps">
       <div class="step"><p><strong>Query A:</strong> read it, predict the output in one sentence, then run. Did the group agree before running?</p></div>
@@ -375,6 +617,51 @@ FROM products;</pre>
       <h2>What this maps to</h2>
     </div>
     <p class="lede">The leader track distills the conceptual half of the major SQL curricula - the "what it is and why it matters" - without the syntax drills practitioners need. This session covers:</p>
+<figure class="zoomable">
+        <svg viewBox="0 0 880 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A roadmap of the six leader sessions and what each one unlocks: session one, what SQL is, gives you the reframe that every metric is a question; session two, reading a query, lets you say what a query returns; session three, judging a claim, lets you challenge a number; session four, the dashboard behind, shows you where a tile gets its rows; session five, asking the right cut, gets you the data you meant; session six, warehouses and AI, tells you what to trust from a copilot. The final session is marked as the one that changes the conversation with your data team.">
+        <style>
+          .a1rmT { font: 700 13px Inter, sans-serif; fill: #10222E; }
+          .a1rmN { font: 800 12px Inter, sans-serif; fill: #FFFFFF; }
+          .a1rmL { font: 700 12px Inter, sans-serif; fill: #10222E; }
+          .a1rmX { font: 400 11px Inter, sans-serif; fill: #526472; }
+          .a1rmNote { font: 400 12px Inter, sans-serif; fill: #526472; }
+        </style>
+        <rect x="0" y="0" width="880" height="240" fill="#FFFFFF"/>
+        <text class="a1rmT" x="40" y="28">Six sessions, and what each one puts in your hands</text>
+        <path d="M60,96 C180,96 180,150 300,150 C420,150 420,96 540,96 C660,96 660,150 780,150" fill="none" stroke="#9FCFEE" stroke-width="3"/>
+
+        <circle cx="60" cy="96" r="15" fill="#003B57"/><text class="a1rmN" x="60" y="101" text-anchor="middle">a1</text>
+        <text class="a1rmL" x="60" y="66" text-anchor="middle">What SQL is</text>
+        <text class="a1rmX" x="60" y="50" text-anchor="middle">the reframe</text>
+
+        <circle cx="180" cy="123" r="15" fill="#0F80CC"/><text class="a1rmN" x="180" y="128" text-anchor="middle">a2</text>
+        <text class="a1rmL" x="180" y="188" text-anchor="middle">Reading a query</text>
+        <text class="a1rmX" x="180" y="204" text-anchor="middle">say what it returns</text>
+
+        <circle cx="300" cy="150" r="15" fill="#0F80CC"/><text class="a1rmN" x="300" y="155" text-anchor="middle">a3</text>
+        <text class="a1rmL" x="300" y="188" text-anchor="middle">Judging a claim</text>
+        <text class="a1rmX" x="300" y="204" text-anchor="middle">challenge a number</text>
+
+        <circle cx="420" cy="123" r="15" fill="#0F80CC"/><text class="a1rmN" x="420" y="128" text-anchor="middle">a4</text>
+        <text class="a1rmL" x="420" y="66" text-anchor="middle">The dashboard behind</text>
+        <text class="a1rmX" x="420" y="50" text-anchor="middle">find its rows</text>
+
+        <circle cx="540" cy="96" r="15" fill="#0F80CC"/><text class="a1rmN" x="540" y="101" text-anchor="middle">a5</text>
+        <text class="a1rmL" x="540" y="66" text-anchor="middle">Asking the right cut</text>
+        <text class="a1rmX" x="540" y="50" text-anchor="middle">get what you meant</text>
+
+        <circle cx="660" cy="123" r="15" fill="#0F80CC"/><text class="a1rmN" x="660" y="128" text-anchor="middle">a6</text>
+        <text class="a1rmL" x="660" y="188" text-anchor="middle">Warehouses + AI</text>
+        <text class="a1rmX" x="660" y="204" text-anchor="middle">what to trust</text>
+
+        <rect x="742" y="132" width="98" height="36" rx="10" fill="#F5A623"/>
+        <text class="a1rmL" x="791" y="155" text-anchor="middle">you finish</text>
+
+        <text class="a1rmNote" x="40" y="228">You will not write queries for a living. You will read them, and know when a number is being computed misleadingly.</text>
+        </svg>
+        <figcaption>🔍 Click to zoom - six sessions, each one a thing you can do afterwards</figcaption>
+      </figure>
+
     <div class="covered">
       <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Mode SQL Tutorial - "Intro to SQL" framing</span><span class="note">Part 1 · what SQL and databases are, in decision-maker terms</span></div>
       <div class="covered-row"><span class="status pill solid">✓</span><span class="name">SQLBolt / Khan - SELECT, FROM, ORDER BY (reading level)</span><span class="note">Part 2 · reading a query, not writing it</span></div>

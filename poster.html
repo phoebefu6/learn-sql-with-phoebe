@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="The whole SQL course on one sheet: two tracks, the Daybreak schema, the clause ladder, the real order of execution, which join to reach for, and the traps that make honest numbers mislead.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="learn sql with phoebe - the whole course on one poster">
+<meta property="og:description" content="The whole SQL course on one sheet: two tracks, the Daybreak schema, the clause ladder, the real order of execution, which join to reach for, and the traps that make honest numbers mislead.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-sql-with-phoebe/poster.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-sql-with-phoebe/assets/poster/learn-sql-with-phoebe-poster.webp">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="1536">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="learn sql with phoebe - the whole course on one poster">
+<meta name="twitter:description" content="The whole SQL course on one sheet: two tracks, the Daybreak schema, the clause ladder, the real order of execution, which join to reach for, and the traps that make honest numbers mislead.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-sql-with-phoebe/assets/poster/learn-sql-with-phoebe-poster.webp">
+<!-- social:end -->
+<title>learn sql with phoebe - the whole course on one poster</title>
+<link rel="stylesheet" href="assets/style.css?v=6">
+<style>
+  .poster-wrap { max-width: 1180px; margin: 0 auto; padding: 0 1.4rem 3rem; }
+  .poster-bar {
+    display: flex; align-items: center; gap: .7rem; flex-wrap: wrap;
+    padding: .9rem 0 1.1rem;
+  }
+  .poster-bar .pb-note { font-size: .82rem; color: var(--muted); min-width: 0; flex: 1; }
+  .poster-btn {
+    font: inherit; font-size: .82rem; font-weight: 700; cursor: pointer;
+    border: 1px solid var(--hairline); background: #fff; color: var(--indigo-deep);
+    border-radius: 999px; padding: .5rem 1rem; min-height: 44px;
+    display: inline-flex; align-items: center; gap: .4rem;
+    text-decoration: none; transition: all .12s ease;
+  }
+  .poster-btn:hover { background: var(--indigo-50); border-color: var(--indigo-soft); }
+  .poster-btn[aria-pressed="true"] { background: var(--indigo-deep); color: #fff; border-color: var(--indigo-deep); }
+
+  .poster-frame {
+    border: 1px solid var(--hairline); border-radius: var(--radius);
+    background: var(--paper); overflow: auto; -webkit-overflow-scrolling: touch;
+  }
+  .poster-frame img { display: block; width: 100%; height: auto; }
+  /* actual-size mode: hold the authored pixels and scroll instead of shrinking */
+  .poster-frame.actual img { width: 1024px; max-width: none; }
+
+  .poster-text { margin-top: 1.6rem; }
+  .poster-text summary {
+    cursor: pointer; font-weight: 700; font-size: 1.05rem; color: var(--indigo-deep);
+    padding: .7rem 0; min-height: 44px; display: flex; align-items: center;
+  }
+  .poster-text pre {
+    white-space: pre-wrap; word-break: break-word; font-size: .82rem; line-height: 1.6;
+    background: var(--indigo-50); border-radius: var(--radius); padding: 1.1rem 1.2rem;
+    color: var(--ink); overflow-x: auto;
+  }
+
+  @media (max-width: 820px) {
+    /* desktop is the default view; on a phone the sheet keeps its width and scrolls,
+       because shrinking a dense poster to 390px makes every label illegible */
+    .poster-frame img { width: 1024px; max-width: none; }
+    .poster-bar .pb-note { flex-basis: 100%; }
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#poster">Skip to the poster</a>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn SQL with Phoebe</div>
+    <h1>The whole course on one sheet</h1>
+    <p class="sub">Seven modules: the two tracks, the Daybreak schema with real row counts, the clause ladder from SELECT to window functions, the order SQL actually runs your query in, which join to reach for, the four traps that make an honest query mislead, and the March revenue-drop investigation. Built for the wall beside your desk.</p>
+  </div>
+</header>
+
+<main class="poster-wrap" id="poster">
+  <div class="poster-bar">
+    <button class="poster-btn" id="zoomToggle" type="button" aria-pressed="false">Actual size</button>
+    <a class="poster-btn" href="assets/poster/learn-sql-with-phoebe-poster.webp" download>Download image</a>
+    <a class="poster-btn" href="index.html">All 16 sessions</a>
+    <span class="pb-note">Dense by design. Use <b>Actual size</b> and scroll, or open the text version below if you would rather read than squint.</span>
+  </div>
+
+  <figure class="poster-frame" id="frame">
+    <img src="assets/poster/learn-sql-with-phoebe-poster.webp"
+         width="1024" height="1536"
+         alt="Reference poster for learn sql with phoebe. Seven modules: the leader and builder tracks with all sixteen sessions; the Daybreak schema of six tables; the clause ladder in eight rungs from SELECT to CREATE TABLE; the order you write a query against the order SQL runs it; INNER, LEFT and SELF joins; four traps where honest numbers mislead; and the five-step March revenue-drop investigation. The full text is available below the image.">
+  </figure>
+
+  <details class="poster-text">
+    <summary>Read the poster as text (every label, in order)</summary>
+    <pre id="postertext">learn sql with phoebe - course reference poster
+Two tracks from data-curious to query-fluent
+16 sessions - one database - runs in your browser, no install
+
+SEC-01  TWO TRACKS
+Leader track, read and question, no code:
+  a1 What SQL actually is
+  a2 Reading a query without fear
+  a3 Judging a data claim
+  a4 The dashboard behind the dashboard
+  a5 Asking for the right cut
+  a6 SQL, warehouses and AI
+Builder track, write it yourself, live editor:
+  b1 Meet your database
+  b2 Filtering rows with WHERE
+  b3 Aggregating
+  b4 Joining tables
+  b5 Combining and reshaping
+  b6 Subqueries and CTEs
+  b7 Window functions
+  b8 Building and changing data
+  b9 Analyst case study
+  b10 Performance and warehouses
+Both tracks run against the same database.
+
+SEC-02  THE DAYBREAK DATABASE
+Daybreak is a coffee-subscription brand. One small database, all 16 sessions.
+  customers, 15 rows: customer_id, name, city, country, signup_date, plan
+  products, 8 rows: product_id, name, category, price, roast
+  orders, 33 rows: order_id, customer_id, order_date, status, channel
+  order_items, 53 rows: order_id, product_id, quantity, unit_price
+  subscriptions, 10 rows: sub_id, customer_id, product_id, start_date, cancel_date, monthly_qty
+  events, 10 rows: event_id, customer_id, event_date, event_type
+Relationships: customers to orders on customer_id, orders to order_items on order_id,
+products to order_items on product_id, customers to subscriptions on customer_id,
+customers to events on customer_id.
+
+SEC-03  THE CLAUSE LADDER
+  1  SELECT, FROM, LIMIT - ask for columns - b1
+  2  WHERE, AND, OR, LIKE, IN, BETWEEN, IS NULL - ask for some rows, not all - b2
+  3  COUNT, SUM, AVG, GROUP BY, HAVING, DISTINCT - collapse rows into a number - b3
+  4  JOIN, LEFT JOIN, INNER JOIN - stitch tables on a shared id - b4
+  5  CASE, UNION, aliases, date functions - reshape the output - b5
+  6  subqueries, WITH, CTEs - name your steps - b6
+  7  OVER, PARTITION BY, LAG, LEAD - compute across rows without collapsing them - b7
+  8  CREATE TABLE, INSERT, UPDATE, DELETE, ALTER TABLE - write, not just read - b8
+
+SEC-04  THE REAL ORDER OF EXECUTION
+The order you write it, with the step it actually runs at:
+  SELECT (5), FROM (1), WHERE (2), GROUP BY (3), HAVING (4), ORDER BY (6), LIMIT (7)
+The order SQL runs it:
+  1 FROM, 2 WHERE, 3 GROUP BY, 4 HAVING, 5 SELECT, 6 ORDER BY, 7 LIMIT
+This is why you cannot use a SELECT alias inside WHERE.
+
+SEC-05  WHICH JOIN
+  INNER JOIN, rows that match in both. Drops customers who never ordered.
+  LEFT JOIN, every row on the left, matches where they exist. Keeps them, fills NULL.
+  SELF JOIN, one table joined to itself. Compare a row to another row in the same table.
+The question &quot;who never ordered&quot; is only answerable with LEFT JOIN and IS NULL.
+
+SEC-06  WHERE HONEST NUMBERS MISLEAD
+  Hidden granularity. GROUP BY decides &quot;per what&quot;. Ask: per customer, per order, or per line item?
+  COUNT, SUM and AVG tell different stories from the same rows. Ask: which one is on this slide?
+  Cohort versus snapshot. Ask: is this everyone today, or everyone who joined in March?
+  A rate whose two halves do not match. Ask: is the numerator&#x27;s population the same as the denominator&#x27;s?
+Most misleading numbers are not lies. They are honest queries that answered a narrower question.
+
+SEC-07  THE MARCH REVENUE DROP
+  1 Confirm the drop: is it real, and how big
+  2 Drill into March: which product, which channel, which week
+  3 Hunt for causes: events and cancellations
+  4 Cohort peek: are we still acquiring customers
+  5 Write the brief: one paragraph the founder can act on
+Session b9. The founder asks one sentence: &quot;Revenue fell in March, why?&quot; No dashboard, just the database.
+
+16 sessions - 6 tables - 33 orders - 0 installs
+by Phoebe Fu
+</pre>
+  </details>
+</main>
+
+<footer class="pagefoot">
+  <span>learn-sql-with-phoebe · by Phoebe Fu &nbsp;·&nbsp; 📚 <a href="https://phoebefu6.github.io/learn-with-phoebe/">Learn with Phoebe ↗</a></span>
+</footer>
+
+<script>
+(function () {
+  var btn = document.getElementById('zoomToggle');
+  var frame = document.getElementById('frame');
+  btn.addEventListener('click', function () {
+    var on = frame.classList.toggle('actual');
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.textContent = on ? 'Fit to width' : 'Actual size';
+  });
+
+})();
+</script>
+</body>
+</html>
