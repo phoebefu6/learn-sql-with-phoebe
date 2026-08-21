@@ -12,7 +12,7 @@
 <meta property="og:url" content="https://phoebefu6.github.io/learn-sql-with-phoebe/poster.html">
 <meta property="og:image" content="https://phoebefu6.github.io/learn-sql-with-phoebe/assets/poster/learn-sql-with-phoebe-poster.webp">
 <meta property="og:image:width" content="1400">
-<meta property="og:image:height" content="1526">
+<meta property="og:image:height" content="1710">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="learn sql with phoebe - the whole course on one poster">
 <meta name="twitter:description" content="The whole SQL course on one sheet: both tracks, the Daybreak schema with real row counts, the clause ladder, the order SQL actually runs your query in, which join to reach for, and the four traps that make an honest query mislead.">
@@ -81,7 +81,7 @@
 .vposter .vp-stats div{text-align:center}
 .vposter .vp-stats b{display:block;font-size:23px;font-weight:800;color:var(--indigo-deep);line-height:1;
         font-variant-numeric:tabular-nums}
-.vposter .vp-stats span{display:block;font-size:9.5px;font-weight:700;color:var(--muted);
+.vposter .vp-stats span{display:block;font-size:10.5px;font-weight:700;color:var(--muted);
         text-transform:uppercase;letter-spacing:.07em;margin-top:3px}
 .vposter /* schema */ .vp-schema{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
 .vposter .vp-tbl{border:1px solid var(--indigo-soft);border-radius:8px;overflow:hidden;background:var(--indigo-50)}
@@ -89,10 +89,10 @@
         color:#fff;font-family:var(--mono);font-size:12.5px;font-weight:700;padding:5px 9px}
 .vposter .vp-tbl h4 span{font-family:var(--sans);font-size:11.5px;font-weight:800;color:var(--amber)}
 .vposter .vp-tbl ul{list-style:none;padding:7px 9px;display:flex;flex-direction:column;gap:1px}
-.vposter .vp-tbl li{font-family:var(--mono);font-size:11px;color:var(--ink);line-height:1.42}
+.vposter .vp-tbl li{font-family:var(--mono);font-size:11.5px;color:var(--ink);line-height:1.42}
 .vposter .vp-tbl li.vp-key{font-weight:700;color:var(--indigo-deep)}
 .vposter .vp-joins{font-size:11.5px;color:var(--muted);line-height:1.5}
-.vposter .vp-joins b{font-family:var(--mono);font-size:11px;color:var(--indigo-deep)}
+.vposter .vp-joins b{font-family:var(--mono);font-size:11.5px;color:var(--indigo-deep)}
 .vposter /* ladder */ .vp-lad{display:flex;flex-direction:column-reverse;gap:3px}
 .vposter .vp-rung{display:flex;align-items:stretch;gap:0;border:1px solid var(--hairline);border-radius:6px;
         overflow:hidden}
@@ -113,6 +113,15 @@
 .vposter .vp-ord li s{text-decoration:none;font-family:var(--sans);font-size:10.5px;font-weight:800;
         color:var(--amber-ink);background:var(--amber-50);border:1px solid var(--amber);
         border-radius:99px;width:17px;height:17px;display:grid;place-items:center;flex:none}
+.vposter .vp-conseq{margin-top:auto;border-top:1px solid var(--hairline);padding-top:10px}
+.vposter .vp-conseq > b{font-size:10.5px;font-weight:800;color:var(--indigo-deep);letter-spacing:.06em;
+        text-transform:uppercase;display:block;margin-bottom:6px}
+.vposter .vp-code{font-family:var(--mono);font-size:11.5px;line-height:1.5;background:var(--code-bg);
+        color:var(--code-ink);border-radius:6px;padding:7px 9px;white-space:pre;overflow:hidden}
+.vposter .vp-code u{text-decoration:none;color:#F7C371;font-weight:700}
+.vposter .vp-code s{text-decoration:none;color:#7FD1A8;font-weight:700}
+.vposter .vp-conseq p{font-size:11.5px;color:var(--muted);line-height:1.4;margin:5px 0 7px}
+.vposter .vp-conseq p:last-child{margin-bottom:0}
 .vposter /* joins */ .vp-jn{display:flex;flex-direction:column;gap:8px}
 .vposter .vp-jn .vp-row{display:flex;gap:9px;align-items:center;border:1px solid var(--hairline);
         border-radius:7px;padding:7px 9px}
@@ -269,6 +278,12 @@
           <div class="vp-rung"><i>7</i><div class="vp-kw"><b>OVER, PARTITION BY, LAG, LEAD</b> <em>compute across rows without collapsing them</em></div><u>b7</u></div>
           <div class="vp-rung"><i>8</i><div class="vp-kw"><b>CREATE TABLE, INSERT, UPDATE, DELETE, ALTER TABLE</b> <em>write, not just read</em></div><u>b8</u></div>
         </div>
+        <div class="vp-conseq">
+          <b>How to climb it</b>
+          <p>Every rung assumes the ones below it, so climb in order. Rungs 1 to 4 already answer
+          most day-to-day questions. Rung 7 is the one that separates people who know SQL from
+          people who reach for SQL first.</p>
+        </div>
       </div>
     </section>
 
@@ -291,7 +306,17 @@
             </ul>
           </div>
         </div>
-        <div class="vp-flag">Matching numbers are the same clause. This is why you cannot use a SELECT alias inside WHERE.</div>
+        <div class="vp-flag">Matching numbers are the same clause.</div>
+        <div class="vp-conseq">
+          <b>The consequence, on a real column</b>
+          <div class="vp-code">SELECT quantity * unit_price AS line_total
+FROM   order_items
+WHERE  line_total &gt; 40      <u>fails</u></div>
+          <p>WHERE runs at step 2, SELECT at step 5. The alias does not exist yet.</p>
+          <div class="vp-code">WHERE  quantity * unit_price &gt; 40   <s>works</s>
+ORDER BY line_total               <s>works</s></div>
+          <p>Repeat the expression, or sort by the alias: ORDER BY runs at step 6, after SELECT.</p>
+        </div>
       </div>
     </section>
 
@@ -323,6 +348,15 @@
           </div>
         </div>
         <div class="vp-flag">"Who never ordered" is only answerable with LEFT JOIN and IS NULL.</div>
+        <div class="vp-conseq">
+          <b>Chaining three tables</b>
+          <p>Money and names live in different tables, so revenue per customer needs all three.
+          Read the joins as a path:</p>
+          <div class="vp-code">customers <u>-&gt;</u> orders        on customer_id
+orders    <u>-&gt;</u> order_items   on order_id</div>
+          <p>Line revenue is quantity * unit_price, and SUM rolls it up per customer. Filter to
+          status = 'completed' so refunds and cancels do not inflate the number.</p>
+        </div>
       </div>
     </section>
 
@@ -356,6 +390,11 @@
           <div class="vp-step"><i>5</i><div><b>WRITE THE BRIEF</b><span>one paragraph the founder can act on</span></div></div>
         </div>
         <div class="vp-note">Session b9. The founder asks one sentence: "Revenue fell in March, why?" No dashboard, just the database.</div>
+        <div class="vp-conseq">
+          <b>Think like an analyst, not a query-writer</b>
+          <p>The funnel is the point. Each step narrows the question the next query has to answer,
+          which is why the last step is a paragraph rather than another chart.</p>
+        </div>
       </div>
     </section>
 
