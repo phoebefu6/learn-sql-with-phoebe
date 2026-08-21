@@ -4,63 +4,146 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- social:start -->
-<meta name="description" content="The whole SQL course on one sheet: two tracks, the Daybreak schema, the clause ladder, the real order of execution, which join to reach for, and the traps that make honest numbers mislead.">
+<meta name="description" content="The whole SQL course on one sheet: both tracks, the Daybreak schema with real row counts, the clause ladder, the order SQL actually runs your query in, which join to reach for, and the four traps that make an honest query mislead.">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Learn with Phoebe">
 <meta property="og:title" content="learn sql with phoebe - the whole course on one poster">
-<meta property="og:description" content="The whole SQL course on one sheet: two tracks, the Daybreak schema, the clause ladder, the real order of execution, which join to reach for, and the traps that make honest numbers mislead.">
+<meta property="og:description" content="The whole SQL course on one sheet: both tracks, the Daybreak schema with real row counts, the clause ladder, the order SQL actually runs your query in, which join to reach for, and the four traps that make an honest query mislead.">
 <meta property="og:url" content="https://phoebefu6.github.io/learn-sql-with-phoebe/poster.html">
 <meta property="og:image" content="https://phoebefu6.github.io/learn-sql-with-phoebe/assets/poster/learn-sql-with-phoebe-poster.webp">
-<meta property="og:image:width" content="1024">
-<meta property="og:image:height" content="1536">
+<meta property="og:image:width" content="1400">
+<meta property="og:image:height" content="1526">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="learn sql with phoebe - the whole course on one poster">
-<meta name="twitter:description" content="The whole SQL course on one sheet: two tracks, the Daybreak schema, the clause ladder, the real order of execution, which join to reach for, and the traps that make honest numbers mislead.">
+<meta name="twitter:description" content="The whole SQL course on one sheet: both tracks, the Daybreak schema with real row counts, the clause ladder, the order SQL actually runs your query in, which join to reach for, and the four traps that make an honest query mislead.">
 <meta name="twitter:image" content="https://phoebefu6.github.io/learn-sql-with-phoebe/assets/poster/learn-sql-with-phoebe-poster.webp">
 <!-- social:end -->
 <title>learn sql with phoebe - the whole course on one poster</title>
 <link rel="stylesheet" href="assets/style.css?v=6">
 <style>
-  .poster-wrap { max-width: 1180px; margin: 0 auto; padding: 0 1.4rem 3rem; }
-  .poster-bar {
-    display: flex; align-items: center; gap: .7rem; flex-wrap: wrap;
-    padding: .9rem 0 1.1rem;
-  }
+  .poster-wrap { max-width: 1480px; margin: 0 auto; padding: 0 1.4rem 3rem; }
+  .poster-bar { display: flex; align-items: center; gap: .7rem; flex-wrap: wrap; padding: .9rem 0 1.1rem; }
   .poster-bar .pb-note { font-size: .82rem; color: var(--muted); min-width: 0; flex: 1; }
   .poster-btn {
     font: inherit; font-size: .82rem; font-weight: 700; cursor: pointer;
     border: 1px solid var(--hairline); background: #fff; color: var(--indigo-deep);
     border-radius: 999px; padding: .5rem 1rem; min-height: 44px;
-    display: inline-flex; align-items: center; gap: .4rem;
-    text-decoration: none; transition: all .12s ease;
+    display: inline-flex; align-items: center; gap: .4rem; text-decoration: none;
+    transition: all .12s ease;
   }
   .poster-btn:hover { background: var(--indigo-50); border-color: var(--indigo-soft); }
   .poster-btn[aria-pressed="true"] { background: var(--indigo-deep); color: #fff; border-color: var(--indigo-deep); }
-
   .poster-frame {
     border: 1px solid var(--hairline); border-radius: var(--radius);
     background: var(--paper); overflow: auto; -webkit-overflow-scrolling: touch;
   }
-  .poster-frame img { display: block; width: 100%; height: auto; }
-  /* actual-size mode: hold the authored pixels and scroll instead of shrinking */
-  .poster-frame.actual img { width: 1024px; max-width: none; }
-
-  .poster-text { margin-top: 1.6rem; }
-  .poster-text summary {
-    cursor: pointer; font-weight: 700; font-size: 1.05rem; color: var(--indigo-deep);
-    padding: .7rem 0; min-height: 44px; display: flex; align-items: center;
-  }
-  .poster-text pre {
-    white-space: pre-wrap; word-break: break-word; font-size: .82rem; line-height: 1.6;
-    background: var(--indigo-50); border-radius: var(--radius); padding: 1.1rem 1.2rem;
-    color: var(--ink); overflow-x: auto;
-  }
-
-  @media (max-width: 820px) {
-    /* desktop is the default view; on a phone the sheet keeps its width and scrolls,
-       because shrinking a dense poster to 390px makes every label illegible */
-    .poster-frame img { width: 1024px; max-width: none; }
-    .poster-bar .pb-note { flex-basis: 100%; }
+  /* The poster is real text, not an image. Fit-to-width scales it with a transform, which
+     keeps type perfectly sharp at any scale - the whole reason for building it as vector.
+     Actual size holds 1400px and scrolls inside the frame. */
+  .poster-stage { position: relative; }
+.vposter{
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --mono:"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+}
+.vposter *{box-sizing:border-box;margin:0;padding:0}
+.vposter{width:1400px;background:var(--paper);font-family:var(--sans);color:var(--ink);
+       -webkit-font-smoothing:antialiased;transform-origin:top left}
+.vposter .vp-sheet{padding:34px 38px 0}
+.vposter /* masthead */ .vp-top{display:flex;align-items:flex-end;gap:28px;border-bottom:3px solid var(--indigo-deep);
+       padding-bottom:18px;margin-bottom:20px}
+.vposter .vp-top h1{font-size:58px;font-weight:800;letter-spacing:-.03em;line-height:.94;color:var(--indigo-deep)}
+.vposter .vp-top .vp-subs{flex:1;padding-bottom:4px}
+.vposter .vp-top .vp-s1{font-size:20px;font-weight:700;color:var(--indigo);line-height:1.25}
+.vposter .vp-top .vp-s2{font-size:14.5px;color:var(--muted);margin-top:5px;font-weight:500}
+.vposter .vp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.vposter .vp-mod{border:1px solid var(--hairline);border-radius:12px;background:#fff;overflow:hidden;
+       display:flex;flex-direction:column}
+.vposter .vp-mod > h2{background:var(--indigo-deep);color:#fff;font-size:14px;font-weight:800;
+       letter-spacing:.06em;padding:9px 14px;display:flex;align-items:baseline;gap:10px}
+.vposter .vp-mod > h2 b{font-family:var(--sans);font-size:11.5px;font-weight:800;color:var(--indigo-soft);
+       letter-spacing:.1em}
+.vposter .vp-body{padding:14px;display:flex;flex-direction:column;gap:10px;flex:1}
+.vposter .vp-span2{grid-column:span 2}
+.vposter .vp-note{font-size:12.5px;color:var(--muted);line-height:1.45}
+.vposter .vp-flag{background:var(--amber-50);border:1px solid var(--amber);border-radius:7px;
+        padding:8px 11px;font-size:12.5px;color:var(--amber-ink);font-weight:600;line-height:1.4}
+.vposter /* tracks */ .vp-tracks{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vposter .vp-tk h3{font-size:11px;font-weight:800;letter-spacing:.05em;color:#fff;background:var(--indigo);
+        padding:6px 9px;border-radius:6px;line-height:1.3}
+.vposter .vp-tk.vp-lead h3{background:var(--indigo-deep)}
+.vposter .vp-tk ol{list-style:none;margin-top:7px;display:flex;flex-direction:column;gap:3px}
+.vposter .vp-tk li{display:flex;gap:7px;align-items:baseline;font-size:12.5px;line-height:1.3}
+.vposter .vp-tk li i{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--indigo);
+        background:var(--indigo-50);border-radius:4px;padding:2px 5px;font-style:normal;min-width:29px;
+        text-align:center;flex:none}
+.vposter .vp-stats{margin-top:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:7px;
+        border-top:1px solid var(--hairline);padding-top:11px}
+.vposter .vp-stats div{text-align:center}
+.vposter .vp-stats b{display:block;font-size:23px;font-weight:800;color:var(--indigo-deep);line-height:1;
+        font-variant-numeric:tabular-nums}
+.vposter .vp-stats span{display:block;font-size:9.5px;font-weight:700;color:var(--muted);
+        text-transform:uppercase;letter-spacing:.07em;margin-top:3px}
+.vposter /* schema */ .vp-schema{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.vposter .vp-tbl{border:1px solid var(--indigo-soft);border-radius:8px;overflow:hidden;background:var(--indigo-50)}
+.vposter .vp-tbl h4{display:flex;justify-content:space-between;align-items:center;background:var(--indigo);
+        color:#fff;font-family:var(--mono);font-size:12.5px;font-weight:700;padding:5px 9px}
+.vposter .vp-tbl h4 span{font-family:var(--sans);font-size:11.5px;font-weight:800;color:var(--amber)}
+.vposter .vp-tbl ul{list-style:none;padding:7px 9px;display:flex;flex-direction:column;gap:1px}
+.vposter .vp-tbl li{font-family:var(--mono);font-size:11px;color:var(--ink);line-height:1.42}
+.vposter .vp-tbl li.vp-key{font-weight:700;color:var(--indigo-deep)}
+.vposter .vp-joins{font-size:11.5px;color:var(--muted);line-height:1.5}
+.vposter .vp-joins b{font-family:var(--mono);font-size:11px;color:var(--indigo-deep)}
+.vposter /* ladder */ .vp-lad{display:flex;flex-direction:column-reverse;gap:3px}
+.vposter .vp-rung{display:flex;align-items:stretch;gap:0;border:1px solid var(--hairline);border-radius:6px;
+        overflow:hidden}
+.vposter .vp-rung i{font-family:var(--mono);font-size:11.5px;font-weight:700;background:var(--indigo-deep);
+        color:#fff;display:flex;align-items:center;padding:0 8px;font-style:normal;flex:none}
+.vposter .vp-rung .vp-kw{flex:1;padding:5px 8px;font-size:11.5px;line-height:1.32}
+.vposter .vp-rung .vp-kw b{font-family:var(--mono);font-weight:700;color:var(--indigo-deep)}
+.vposter .vp-rung .vp-kw em{font-style:normal;color:var(--muted);display:block;margin-top:1px;font-size:11px}
+.vposter .vp-rung u{background:var(--amber);color:var(--amber-ink);font-family:var(--mono);font-size:11.5px;
+        font-weight:700;text-decoration:none;display:flex;align-items:center;padding:0 8px;flex:none}
+.vposter /* execution order */ .vp-ord{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vposter .vp-ord h3{font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--indigo-deep);
+        text-align:center;padding-bottom:6px;border-bottom:1px solid var(--hairline);margin-bottom:7px}
+.vposter .vp-ord ul{list-style:none;display:flex;flex-direction:column;gap:4px}
+.vposter .vp-ord li{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--indigo-soft);
+        border-radius:6px;padding:4px 8px;font-family:var(--mono);font-size:12px;font-weight:700;
+        color:var(--indigo-deep);background:#fff}
+.vposter .vp-ord li s{text-decoration:none;font-family:var(--sans);font-size:10.5px;font-weight:800;
+        color:var(--amber-ink);background:var(--amber-50);border:1px solid var(--amber);
+        border-radius:99px;width:17px;height:17px;display:grid;place-items:center;flex:none}
+.vposter /* joins */ .vp-jn{display:flex;flex-direction:column;gap:8px}
+.vposter .vp-jn .vp-row{display:flex;gap:9px;align-items:center;border:1px solid var(--hairline);
+        border-radius:7px;padding:7px 9px}
+.vposter .vp-jn svg{flex:none}
+.vposter .vp-jn b{font-family:var(--mono);font-size:11.5px;color:var(--indigo-deep);display:block}
+.vposter .vp-jn span{font-size:11.5px;color:var(--muted);line-height:1.35;display:block;margin-top:1px}
+.vposter /* traps */ .vp-traps{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.vposter .vp-trap{background:var(--amber-50);border:1px solid #F7C371;border-radius:8px;padding:9px 11px}
+.vposter .vp-trap b{font-size:12.5px;color:var(--amber-ink);font-weight:800;display:block;line-height:1.3}
+.vposter .vp-trap span{font-size:12px;color:var(--muted);line-height:1.4;display:block;margin-top:3px}
+.vposter .vp-trap span i{font-style:normal;font-weight:700;color:var(--indigo-deep)}
+.vposter .vp-worked{margin-top:auto;border-top:1px solid var(--hairline);padding-top:11px}
+.vposter .vp-worked b{font-size:11px;font-weight:800;color:var(--indigo-deep);letter-spacing:.05em;
+        text-transform:uppercase;display:block;margin-bottom:4px}
+.vposter .vp-worked p{font-size:12.5px;color:var(--muted);line-height:1.5;max-width:66ch}
+.vposter /* funnel */ .vp-fun{display:flex;flex-direction:column;gap:4px}
+.vposter .vp-step{display:flex;gap:9px;align-items:flex-start;background:var(--indigo-50);border-radius:6px;
+        padding:6px 9px}
+.vposter .vp-step i{font-family:var(--mono);font-size:11px;font-weight:700;color:#fff;background:var(--indigo);
+        border-radius:99px;width:18px;height:18px;display:grid;place-items:center;font-style:normal;flex:none;margin-top:1px}
+.vposter .vp-step b{font-size:11.5px;font-weight:800;color:var(--indigo-deep);letter-spacing:.02em;display:block;line-height:1.3}
+.vposter .vp-step span{font-size:11.5px;color:var(--muted);display:block;line-height:1.32}
+.vposter /* footer */ .vp-foot{margin:20px -38px 0;background:var(--indigo-deep);color:#fff;padding:13px 38px;
+        display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700}
+.vposter .vp-foot .vp-mid{font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--indigo-soft);letter-spacing:.01em}
+  @media print {
+    .masthead, .poster-bar, .pagefoot, .skip-link { display: none }
+    .poster-frame { border: 0; overflow: visible }
+    .poster-wrap { padding: 0; max-width: none }
+    .poster-stage { height: auto !important }
+    .vposter { transform: none !important }
   }
 </style>
 </head>
@@ -78,114 +161,247 @@
 <main class="poster-wrap" id="poster">
   <div class="poster-bar">
     <button class="poster-btn" id="zoomToggle" type="button" aria-pressed="false">Actual size</button>
-    <a class="poster-btn" href="assets/poster/learn-sql-with-phoebe-poster.webp" download>Download image</a>
+    <a class="poster-btn" href="assets/poster/learn-sql-with-phoebe-poster.png" download>Download for print (2800px)</a>
     <a class="poster-btn" href="index.html">All 16 sessions</a>
-    <span class="pb-note">Dense by design. Use <b>Actual size</b> and scroll, or open the text version below if you would rather read than squint.</span>
+    <span class="pb-note">Every word is real selectable text, so it stays sharp however far you zoom, and the page is searchable. Fit to width by default; switch to actual size to read it at full scale.</span>
   </div>
 
-  <figure class="poster-frame" id="frame">
-    <img src="assets/poster/learn-sql-with-phoebe-poster.webp"
-         width="1024" height="1536"
-         alt="Reference poster for learn sql with phoebe. Seven modules: the leader and builder tracks with all sixteen sessions; the Daybreak schema of six tables; the clause ladder in eight rungs from SELECT to CREATE TABLE; the order you write a query against the order SQL runs it; INNER, LEFT and SELF joins; four traps where honest numbers mislead; and the five-step March revenue-drop investigation. The full text is available below the image.">
-  </figure>
+  <div class="poster-frame" id="frame">
+    <div class="poster-stage" id="stage">
+      <div class="vposter" id="vp">
+<div class="vp-sheet">
 
-  <details class="poster-text">
-    <summary>Read the poster as text (every label, in order)</summary>
-    <pre id="postertext">learn sql with phoebe - course reference poster
-Two tracks from data-curious to query-fluent
-16 sessions - one database - runs in your browser, no install
+  <div class="vp-top">
+    <h1>learn sql<br>with phoebe</h1>
+    <div class="vp-subs">
+      <div class="vp-s1">Two tracks from data-curious to query-fluent</div>
+      <div class="vp-s2">16 sessions - one database - runs in your browser, no install</div>
+    </div>
+  </div>
 
-SEC-01  TWO TRACKS
-Leader track, read and question, no code:
-  a1 What SQL actually is
-  a2 Reading a query without fear
-  a3 Judging a data claim
-  a4 The dashboard behind the dashboard
-  a5 Asking for the right cut
-  a6 SQL, warehouses and AI
-Builder track, write it yourself, live editor:
-  b1 Meet your database
-  b2 Filtering rows with WHERE
-  b3 Aggregating
-  b4 Joining tables
-  b5 Combining and reshaping
-  b6 Subqueries and CTEs
-  b7 Window functions
-  b8 Building and changing data
-  b9 Analyst case study
-  b10 Performance and warehouses
-Both tracks run against the same database.
+  <div class="vp-grid">
 
-SEC-02  THE DAYBREAK DATABASE
-Daybreak is a coffee-subscription brand. One small database, all 16 sessions.
-  customers, 15 rows: customer_id, name, city, country, signup_date, plan
-  products, 8 rows: product_id, name, category, price, roast
-  orders, 33 rows: order_id, customer_id, order_date, status, channel
-  order_items, 53 rows: order_id, product_id, quantity, unit_price
-  subscriptions, 10 rows: sub_id, customer_id, product_id, start_date, cancel_date, monthly_qty
-  events, 10 rows: event_id, customer_id, event_date, event_type
-Relationships: customers to orders on customer_id, orders to order_items on order_id,
-products to order_items on product_id, customers to subscriptions on customer_id,
-customers to events on customer_id.
+    <section class="vp-mod">
+      <h2><b>SEC-01</b> TWO TRACKS</h2>
+      <div class="vp-body">
+        <div class="vp-tracks">
+          <div class="vp-tk vp-lead">
+            <h3>LEADER TRACK<br>read and question, no code</h3>
+            <ol>
+              <li><i>a1</i>What SQL actually is</li>
+              <li><i>a2</i>Reading a query without fear</li>
+              <li><i>a3</i>Judging a data claim</li>
+              <li><i>a4</i>The dashboard behind the dashboard</li>
+              <li><i>a5</i>Asking for the right cut</li>
+              <li><i>a6</i>SQL, warehouses and AI</li>
+            </ol>
+          </div>
+          <div class="vp-tk">
+            <h3>BUILDER TRACK<br>write it yourself, live editor</h3>
+            <ol>
+              <li><i>b1</i>Meet your database</li>
+              <li><i>b2</i>Filtering rows with WHERE</li>
+              <li><i>b3</i>Aggregating</li>
+              <li><i>b4</i>Joining tables</li>
+              <li><i>b5</i>Combining and reshaping</li>
+              <li><i>b6</i>Subqueries and CTEs</li>
+              <li><i>b7</i>Window functions</li>
+              <li><i>b8</i>Building and changing data</li>
+              <li><i>b9</i>Analyst case study</li>
+              <li><i>b10</i>Performance and warehouses</li>
+            </ol>
+          </div>
+        </div>
+        <div class="vp-note">Both tracks run against the same database.</div>
+        <div class="vp-stats">
+          <div><b>2</b><span>tracks</span></div>
+          <div><b>16</b><span>sessions</span></div>
+          <div><b>1</b><span>live database</span></div>
+          <div><b>45</b><span>min per session</span></div>
+        </div>
+      </div>
+    </section>
 
-SEC-03  THE CLAUSE LADDER
-  1  SELECT, FROM, LIMIT - ask for columns - b1
-  2  WHERE, AND, OR, LIKE, IN, BETWEEN, IS NULL - ask for some rows, not all - b2
-  3  COUNT, SUM, AVG, GROUP BY, HAVING, DISTINCT - collapse rows into a number - b3
-  4  JOIN, LEFT JOIN, INNER JOIN - stitch tables on a shared id - b4
-  5  CASE, UNION, aliases, date functions - reshape the output - b5
-  6  subqueries, WITH, CTEs - name your steps - b6
-  7  OVER, PARTITION BY, LAG, LEAD - compute across rows without collapsing them - b7
-  8  CREATE TABLE, INSERT, UPDATE, DELETE, ALTER TABLE - write, not just read - b8
+    <section class="vp-mod vp-span2">
+      <h2><b>SEC-02</b> THE DAYBREAK DATABASE</h2>
+      <div class="vp-body">
+        <div class="vp-schema">
+          <div class="vp-tbl"><h4>customers <span>15</span></h4><ul>
+            <li class="vp-key">customer_id</li><li>name</li><li>city</li><li>country</li>
+            <li>signup_date</li><li>plan</li></ul></div>
+          <div class="vp-tbl"><h4>orders <span>33</span></h4><ul>
+            <li class="vp-key">order_id</li><li class="vp-key">customer_id</li><li>order_date</li>
+            <li>status</li><li>channel</li></ul></div>
+          <div class="vp-tbl"><h4>order_items <span>53</span></h4><ul>
+            <li class="vp-key">order_id</li><li class="vp-key">product_id</li><li>quantity</li>
+            <li>unit_price</li></ul></div>
+          <div class="vp-tbl"><h4>products <span>8</span></h4><ul>
+            <li class="vp-key">product_id</li><li>name</li><li>category</li><li>price</li>
+            <li>roast</li></ul></div>
+          <div class="vp-tbl"><h4>subscriptions <span>10</span></h4><ul>
+            <li>sub_id</li><li class="vp-key">customer_id</li><li class="vp-key">product_id</li>
+            <li>start_date</li><li>cancel_date</li><li>monthly_qty</li></ul></div>
+          <div class="vp-tbl"><h4>events <span>10</span></h4><ul>
+            <li>event_id</li><li class="vp-key">customer_id</li><li>event_date</li>
+            <li>event_type</li></ul></div>
+        </div>
+        <div class="vp-joins">
+          Bold columns are the keys a question travels on.
+          <b>customers</b> to <b>orders</b> on customer_id &nbsp;/&nbsp;
+          <b>orders</b> to <b>order_items</b> on order_id &nbsp;/&nbsp;
+          <b>products</b> to <b>order_items</b> on product_id &nbsp;/&nbsp;
+          <b>customers</b> to <b>subscriptions</b> and <b>events</b> on customer_id
+        </div>
+        <div class="vp-note">Daybreak, a coffee-subscription brand. One small database, all 16 sessions.</div>
+      </div>
+    </section>
 
-SEC-04  THE REAL ORDER OF EXECUTION
-The order you write it, with the step it actually runs at:
-  SELECT (5), FROM (1), WHERE (2), GROUP BY (3), HAVING (4), ORDER BY (6), LIMIT (7)
-The order SQL runs it:
-  1 FROM, 2 WHERE, 3 GROUP BY, 4 HAVING, 5 SELECT, 6 ORDER BY, 7 LIMIT
-This is why you cannot use a SELECT alias inside WHERE.
+    <section class="vp-mod">
+      <h2><b>SEC-03</b> THE CLAUSE LADDER</h2>
+      <div class="vp-body">
+        <div class="vp-lad">
+          <div class="vp-rung"><i>1</i><div class="vp-kw"><b>SELECT, FROM, LIMIT</b> <em>ask for columns</em></div><u>b1</u></div>
+          <div class="vp-rung"><i>2</i><div class="vp-kw"><b>WHERE, AND, OR, LIKE, IN, BETWEEN, IS NULL</b> <em>ask for some rows, not all</em></div><u>b2</u></div>
+          <div class="vp-rung"><i>3</i><div class="vp-kw"><b>COUNT, SUM, AVG, GROUP BY, HAVING, DISTINCT</b> <em>collapse rows into a number</em></div><u>b3</u></div>
+          <div class="vp-rung"><i>4</i><div class="vp-kw"><b>JOIN, LEFT JOIN, INNER JOIN</b> <em>stitch tables on a shared id</em></div><u>b4</u></div>
+          <div class="vp-rung"><i>5</i><div class="vp-kw"><b>CASE, UNION</b>, aliases, date functions <em>reshape the output</em></div><u>b5</u></div>
+          <div class="vp-rung"><i>6</i><div class="vp-kw">subqueries, <b>WITH</b>, CTEs <em>name your steps</em></div><u>b6</u></div>
+          <div class="vp-rung"><i>7</i><div class="vp-kw"><b>OVER, PARTITION BY, LAG, LEAD</b> <em>compute across rows without collapsing them</em></div><u>b7</u></div>
+          <div class="vp-rung"><i>8</i><div class="vp-kw"><b>CREATE TABLE, INSERT, UPDATE, DELETE, ALTER TABLE</b> <em>write, not just read</em></div><u>b8</u></div>
+        </div>
+      </div>
+    </section>
 
-SEC-05  WHICH JOIN
-  INNER JOIN, rows that match in both. Drops customers who never ordered.
-  LEFT JOIN, every row on the left, matches where they exist. Keeps them, fills NULL.
-  SELF JOIN, one table joined to itself. Compare a row to another row in the same table.
-The question &quot;who never ordered&quot; is only answerable with LEFT JOIN and IS NULL.
+    <section class="vp-mod">
+      <h2><b>SEC-04</b> THE REAL ORDER OF EXECUTION</h2>
+      <div class="vp-body">
+        <div class="vp-ord">
+          <div>
+            <h3>THE ORDER YOU WRITE IT</h3>
+            <ul>
+              <li>SELECT<s>5</s></li><li>FROM<s>1</s></li><li>WHERE<s>2</s></li>
+              <li>GROUP BY<s>3</s></li><li>HAVING<s>4</s></li><li>ORDER BY<s>6</s></li><li>LIMIT<s>7</s></li>
+            </ul>
+          </div>
+          <div>
+            <h3>THE ORDER SQL RUNS IT</h3>
+            <ul>
+              <li>FROM<s>1</s></li><li>WHERE<s>2</s></li><li>GROUP BY<s>3</s></li>
+              <li>HAVING<s>4</s></li><li>SELECT<s>5</s></li><li>ORDER BY<s>6</s></li><li>LIMIT<s>7</s></li>
+            </ul>
+          </div>
+        </div>
+        <div class="vp-flag">Matching numbers are the same clause. This is why you cannot use a SELECT alias inside WHERE.</div>
+      </div>
+    </section>
 
-SEC-06  WHERE HONEST NUMBERS MISLEAD
-  Hidden granularity. GROUP BY decides &quot;per what&quot;. Ask: per customer, per order, or per line item?
-  COUNT, SUM and AVG tell different stories from the same rows. Ask: which one is on this slide?
-  Cohort versus snapshot. Ask: is this everyone today, or everyone who joined in March?
-  A rate whose two halves do not match. Ask: is the numerator&#x27;s population the same as the denominator&#x27;s?
-Most misleading numbers are not lies. They are honest queries that answered a narrower question.
+    <section class="vp-mod">
+      <h2><b>SEC-05</b> WHICH JOIN</h2>
+      <div class="vp-body">
+        <div class="vp-jn">
+          <div class="vp-row">
+            <svg width="58" height="34" viewBox="0 0 58 34" aria-hidden="true">
+              <circle cx="21" cy="17" r="14" fill="#fff" stroke="#0F80CC" stroke-width="1.4"/>
+              <circle cx="37" cy="17" r="14" fill="#fff" stroke="#0F80CC" stroke-width="1.4"/>
+              <path d="M29 3.6 A14 14 0 0 1 29 30.4 A14 14 0 0 1 29 3.6" fill="#0F80CC" fill-opacity=".85"/>
+            </svg>
+            <div><b>INNER JOIN</b><span>Rows that match in both. Drops customers who never ordered.</span></div>
+          </div>
+          <div class="vp-row">
+            <svg width="58" height="34" viewBox="0 0 58 34" aria-hidden="true">
+              <circle cx="21" cy="17" r="14" fill="#0F80CC" fill-opacity=".85" stroke="#0F80CC" stroke-width="1.4"/>
+              <circle cx="37" cy="17" r="14" fill="#fff" fill-opacity=".0" stroke="#0F80CC" stroke-width="1.4"/>
+            </svg>
+            <div><b>LEFT JOIN</b><span>Every row on the left, matches where they exist. Keeps them, fills NULL.</span></div>
+          </div>
+          <div class="vp-row">
+            <svg width="58" height="34" viewBox="0 0 58 34" aria-hidden="true">
+              <circle cx="29" cy="17" r="14" fill="#9FCFEE" fill-opacity=".55" stroke="#0F80CC" stroke-width="1.4"/>
+              <path d="M29 6 v22" stroke="#0F80CC" stroke-width="1.4" stroke-dasharray="3 3"/>
+            </svg>
+            <div><b>SELF JOIN</b><span>One table joined to itself. Compare a row to another row in the same table.</span></div>
+          </div>
+        </div>
+        <div class="vp-flag">"Who never ordered" is only answerable with LEFT JOIN and IS NULL.</div>
+      </div>
+    </section>
 
-SEC-07  THE MARCH REVENUE DROP
-  1 Confirm the drop: is it real, and how big
-  2 Drill into March: which product, which channel, which week
-  3 Hunt for causes: events and cancellations
-  4 Cohort peek: are we still acquiring customers
-  5 Write the brief: one paragraph the founder can act on
-Session b9. The founder asks one sentence: &quot;Revenue fell in March, why?&quot; No dashboard, just the database.
+    <section class="vp-mod vp-span2">
+      <h2><b>SEC-06</b> WHERE HONEST NUMBERS MISLEAD</h2>
+      <div class="vp-body">
+        <div class="vp-traps">
+          <div class="vp-trap"><b>Hidden granularity</b><span>GROUP BY decides "per what". <i>Ask: per customer, per order, or per line item?</i></span></div>
+          <div class="vp-trap"><b>One word, three answers</b><span>COUNT, SUM and AVG tell different stories from the same rows. <i>Ask: which one is on this slide?</i></span></div>
+          <div class="vp-trap"><b>Cohort versus snapshot</b><span><i>Ask: is this everyone today, or everyone who joined in March?</i></span></div>
+          <div class="vp-trap"><b>A rate whose halves disagree</b><span><i>Ask: is the numerator's population the same as the denominator's?</i></span></div>
+        </div>
+        <div class="vp-flag">Most misleading numbers are not lies. They are honest queries that answered a narrower question than the slide implies.</div>
+        <div class="vp-worked">
+          <b>Worked example, from session a3</b>
+          <p>When two company reports disagree on "revenue", the most common cause is not that one is
+          wrong. It is the same word carrying two definitions in two queries. The leader's move is to
+          ask what each query actually counted.</p>
+        </div>
+      </div>
+    </section>
 
-16 sessions - 6 tables - 33 orders - 0 installs
-by Phoebe Fu
-</pre>
-  </details>
+    <section class="vp-mod">
+      <h2><b>SEC-07</b> THE MARCH REVENUE DROP</h2>
+      <div class="vp-body">
+        <div class="vp-fun">
+          <div class="vp-step"><i>1</i><div><b>CONFIRM THE DROP</b><span>is it real, and how big</span></div></div>
+          <div class="vp-step"><i>2</i><div><b>DRILL INTO MARCH</b><span>which product, which channel, which week</span></div></div>
+          <div class="vp-step"><i>3</i><div><b>HUNT FOR CAUSES</b><span>events and cancellations</span></div></div>
+          <div class="vp-step"><i>4</i><div><b>COHORT PEEK</b><span>are we still acquiring customers</span></div></div>
+          <div class="vp-step"><i>5</i><div><b>WRITE THE BRIEF</b><span>one paragraph the founder can act on</span></div></div>
+        </div>
+        <div class="vp-note">Session b9. The founder asks one sentence: "Revenue fell in March, why?" No dashboard, just the database.</div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="vp-foot">
+    <span>learn sql with phoebe</span>
+    <span class="vp-mid">16 sessions - 6 tables - 33 orders - 0 installs</span>
+    <span>by Phoebe Fu</span>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
 </main>
 
 <footer class="pagefoot">
-  <span>learn-sql-with-phoebe · by Phoebe Fu &nbsp;·&nbsp; 📚 <a href="https://phoebefu6.github.io/learn-with-phoebe/">Learn with Phoebe ↗</a></span>
+  <span>learn-sql-with-phoebe &middot; by Phoebe Fu &nbsp;&middot;&nbsp; &#128218; <a href="https://phoebefu6.github.io/learn-with-phoebe/">Learn with Phoebe &#8599;</a></span>
 </footer>
 
 <script>
 (function () {
-  var btn = document.getElementById('zoomToggle');
-  var frame = document.getElementById('frame');
+  var W = 1400, frame = document.getElementById('frame'), stage = document.getElementById('stage'),
+      vp = document.getElementById('vp'), btn = document.getElementById('zoomToggle'), actual = false;
+  function apply() {
+    if (actual) {
+      vp.style.transform = 'none';
+      stage.style.height = '';
+      stage.style.width = W + 'px';
+      return;
+    }
+    var avail = frame.clientWidth;
+    var s = Math.min(1, avail / W);
+    vp.style.transform = s < 1 ? 'scale(' + s + ')' : 'none';
+    stage.style.width = W + 'px';
+    stage.style.height = s < 1 ? Math.ceil(vp.offsetHeight * s) + 'px' : '';
+  }
   btn.addEventListener('click', function () {
-    var on = frame.classList.toggle('actual');
-    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    btn.textContent = on ? 'Fit to width' : 'Actual size';
+    actual = !actual;
+    btn.setAttribute('aria-pressed', actual ? 'true' : 'false');
+    btn.textContent = actual ? 'Fit to width' : 'Actual size';
+    apply();
+    if (actual) frame.scrollLeft = 0;
   });
-
+  window.addEventListener('resize', function () { if (!actual) apply(); });
+  apply();
 })();
 </script>
 </body>
