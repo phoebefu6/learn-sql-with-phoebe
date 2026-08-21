@@ -378,29 +378,44 @@
 
 <script>
 (function () {
-  var W = 1400, frame = document.getElementById('frame'), stage = document.getElementById('stage'),
-      vp = document.getElementById('vp'), btn = document.getElementById('zoomToggle'), actual = false;
-  function apply() {
-    if (actual) {
-      vp.style.transform = 'none';
-      stage.style.height = '';
-      stage.style.width = W + 'px';
-      return;
-    }
-    var avail = frame.clientWidth;
-    var s = Math.min(1, avail / W);
-    vp.style.transform = s < 1 ? 'scale(' + s + ')' : 'none';
+  var W = 1400, MIN_FIT = 0.6;
+  var frame = document.getElementById('frame'), stage = document.getElementById('stage'),
+      vp = document.getElementById('vp'), btn = document.getElementById('zoomToggle');
+  var userChose = false, actual = false;
+
+  function full() {
+    vp.style.transform = 'none';
+    stage.style.height = '';
     stage.style.width = W + 'px';
-    stage.style.height = s < 1 ? Math.ceil(vp.offsetHeight * s) + 'px' : '';
   }
-  btn.addEventListener('click', function () {
-    actual = !actual;
+
+  function apply() {
+    var avail = frame.clientWidth;
+    // A hidden or zero-width frame must never scale the sheet to nothing.
+    if (!avail || avail < 40) { full(); return; }
+    var s = avail / W;
+    // Shrinking a dense reference sheet below 0.6 makes every label illegible, so on a
+    // narrow screen it holds its authored width and scrolls instead. Desktop is the
+    // default view; the phone gets a scrollable sheet, not a smaller unreadable one.
+    if (!userChose) actual = s < MIN_FIT;
+    if (actual || s >= 1) { full(); }
+    else {
+      vp.style.transform = 'scale(' + s + ')';
+      stage.style.width = W + 'px';
+      stage.style.height = Math.ceil(vp.offsetHeight * s) + 'px';
+    }
     btn.setAttribute('aria-pressed', actual ? 'true' : 'false');
     btn.textContent = actual ? 'Fit to width' : 'Actual size';
+  }
+
+  btn.addEventListener('click', function () {
+    userChose = true;
+    actual = !actual;
     apply();
     if (actual) frame.scrollLeft = 0;
   });
-  window.addEventListener('resize', function () { if (!actual) apply(); });
+  window.addEventListener('resize', apply);
+  if (typeof ResizeObserver === 'function') new ResizeObserver(apply).observe(frame);
   apply();
 })();
 </script>
